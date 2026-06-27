@@ -428,6 +428,15 @@ body.dark .breath-orb{box-shadow:0 14px 44px rgba(0,0,0,.45)}
 .ch-item-txt b{font-size:14.5px;color:var(--ink)}
 .ch-item-txt span{font-size:13px;color:var(--ink-soft);margin-top:1px}
 .ch-item .btn.small{flex:none}
+/* Muskelavspenning (PMR) */
+.pmr-stage{width:100%;max-width:380px;text-align:center;margin-bottom:24px}
+.pmr-group{font-family:'DM Serif Display',serif;font-size:23px;color:var(--ink);min-height:32px;line-height:1.2}
+.pmr-phase{font-size:14px;color:var(--ink-soft);margin-top:6px;min-height:20px}
+.pmr-bar{height:14px;border-radius:8px;background:var(--bg-warm);margin:18px 0 8px;overflow:hidden}
+.pmr-bar span{display:block;height:100%;width:0;border-radius:8px;background:var(--sage);transition:none}
+.pmr-bar span.tense{background:#C8956D}
+.pmr-bar span.release{background:var(--sage)}
+.pmr-count{font-family:'DM Serif Display',serif;font-size:34px;color:var(--ink);font-variant-numeric:tabular-nums;min-height:42px}
 
 /* meldinger */
 .msg-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;max-height:430px;overflow-y:auto;padding:4px}
@@ -946,7 +955,9 @@ var ICONS = {
   arrowdn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5.5 12.5L12 19l6.5-6.5"/></svg>',
   wind:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5h10.5a2.8 2.8 0 10-2.8-2.8M3 15.5h13a3 3 0 11-3 3M3 12h6"/></svg>',
   anchor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5.5" r="2.5"/><path d="M12 8V21M5 13a7 7 0 0014 0M5 13H8M19 13h-3"/></svg>',
-  gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1116 0"/><path d="M12 19l4-5"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>'
+  gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1116 0"/><path d="M12 19l4-5"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>',
+  waves:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 14c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>',
+  spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18.5 16l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/></svg>'
 };
 function ic(name){ return ICONS[name] || ''; }
 function escapeHtml(s){
@@ -1934,6 +1945,24 @@ var TOOLS = {
               { title:'Et lite steg', desc:'Del en oppgave i noe latterlig lite', link:'adhd_dekomponer' }
             ] }
         ] },
+      { id:'adhd_pmr', title:'Muskelavspenning', icon:'waves', type:'pmr', ephemeral:true, isNew:true,
+        desc:'Spenn og slipp kroppen, muskelgruppe for muskelgruppe.',
+        intro:'Progressiv muskelavspenning hjelper kroppen å slippe spenning den holder uten at du merker det. Følg guiden — spenn lett (aldri så det gjør vondt), og legg merke til hvor godt det kjennes å slippe.' },
+      { id:'adhd_dopamin', title:'Dopamin-meny', icon:'spark', type:'chooser', layout:'cards', ephemeral:true,
+        desc:'En meny av små, sunne ting som gir et lite løft. Velg en kategori.',
+        intro:'ADHD-hjernen jakter på dopamin — det er ikke en svakhet. Her er en meny av små, sunne kilder. Velg en kategori og plukk noe som passer akkurat nå.',
+        options:[
+          { key:'beveg', label:'Bevegelse', sub:'Få kroppen i gang', icon:'bolt',
+            items:[ { title:'10 spark eller hopp' }, { title:'Strekk armene mot taket' }, { title:'Gå en runde rundt rommet' }, { title:'Dans til én sang' } ] },
+          { key:'sans', label:'Sansing', sub:'Noe godt for sansene', icon:'sliders',
+            items:[ { title:'Kaldt vann i ansiktet' }, { title:'Lukt på noe godt' }, { title:'Kjenn på noe mykt eller kjølig' }, { title:'Sett på en lyd du liker' } ] },
+          { key:'mestre', label:'Mestring', sub:'En liten seier', icon:'check',
+            items:[ { title:'Rydd én flate' }, { title:'Kryss av én ting på lista' }, { title:'Fyll vannflaska' }, { title:'Send én melding du har utsatt' } ] },
+          { key:'kobling', label:'Kobling', sub:'Litt kontakt med noen', icon:'chat',
+            items:[ { title:'Send en hyggelig melding' }, { title:'Klapp et kjæledyr' }, { title:'Si noe fint til deg selv' }, { title:'Ring noen i to minutter' } ] },
+          { key:'kos', label:'Kos og pause', sub:'Noe godt for deg', icon:'heart',
+            items:[ { title:'Lag en varm drikk' }, { title:'Tre dype pust mot vinduet' }, { title:'Se på noe morsomt i to minutter' }, { title:'Sett deg riktig godt til rette' } ] }
+        ] },
       { id:'adhd_sortering', title:'Nå / Snart / Senere / En dag', icon:'cols', type:'multilist',
         desc:'Sorter oppgaver etter når de faktisk haster.',
         intro:'Alt kjennes ofte like presserende med ADHD. Her får hver oppgave én plass, så hjernen slipper å holde alt på én gang.',
@@ -2223,6 +2252,7 @@ function openTool(moduleId, toolId, histMode){
   }
   stopFocusTimer();
   stopBreath();
+  stopPmr();
   var html = '<button class="tool-back" onclick="portalToolBack(\'' + moduleId + '\')">← Alle ' + escapeHtml(TOOLS[moduleId].label).toLowerCase() + '</button>';
   html += '<div class="tool-head"><span class="th-ico">' + ic(tool.icon) + '</span><h2 class="serif">' + escapeHtml(tool.title) + '</h2></div>';
   if (tool.intro) html += '<div class="tool-intro">' + escapeHtml(tool.intro) + '</div>';
@@ -2238,6 +2268,7 @@ function openTool(moduleId, toolId, histMode){
   else if (tool.type === 'breath') renderBreathTool(body, moduleId, tool, data);
   else if (tool.type === 'grounding') renderGroundingTool(body, moduleId, tool, data);
   else if (tool.type === 'chooser') renderChooserTool(body, moduleId, tool);
+  else if (tool.type === 'pmr') renderPmrTool(body, moduleId, tool);
 }
 function toolToolbar(moduleId, tool){
   var html = '<div class="tool-toolbar">';
@@ -2915,6 +2946,84 @@ function chooserPick(key){
   wrap.innerHTML = '<button class="tool-back2" onclick="chooserPick(null)">← Velg på nytt</button>' +
     '<div class="ch-result ch-' + o.key + '"><div class="ch-result-head"><b>' + escapeHtml(o.label) + '</b><span>' + escapeHtml(o.sub) + '</span></div>' +
     '<div class="ch-items">' + items + '</div></div>';
+}
+
+// ---------- MUSKELAVSPENNING (PMR) ----------
+// JS-drevet progress (ikke CSS) så den virker i Ro-modus / reduced-motion.
+var PMR_GROUPS = [
+  'Hender og underarmer', 'Overarmer og skuldre', 'Ansikt og kjeve', 'Nakke og bakhode',
+  'Bryst og mage', 'Rygg og rumpe', 'Lår og legger', 'Føtter og tær'
+];
+var PMR_PHASES = [['spenn', 5000], ['slipp', 12000]];
+var PM = { iv:null, groupI:0, phaseI:0, phaseT0:0, running:false };
+function renderPmrTool(body){
+  body.innerHTML = '<div class="focus-wrap">' +
+    '<div class="pmr-stage">' +
+      '<div class="pmr-group" id="pmrGroup"></div>' +
+      '<div class="pmr-phase" id="pmrPhase"></div>' +
+      '<div class="pmr-bar"><span id="pmrFill"></span></div>' +
+      '<div class="pmr-count" id="pmrCount"></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px"><button class="btn" id="pmrStart" onclick="pmrToggle()">Start</button>' +
+    '<button class="btn ghost" onclick="pmrReset()">Nullstill</button></div>' +
+    '<p style="font-size:13px;color:var(--ink-faint);margin-top:18px;max-width:400px;text-align:center">Spenn musklene forsiktig — aldri så det gjør vondt — og kjenn forskjellen når du slipper. Hopp over grupper som ikke kjennes greit.</p></div>';
+  stopPmr(); PM.groupI = 0; PM.phaseI = 0; pmrPaint(true);
+}
+function pmrToggle(){
+  if (PM.running){ stopPmr(); var s = document.getElementById('pmrStart'); if (s) s.textContent = 'Fortsett'; return; }
+  PM.running = true;
+  var s2 = document.getElementById('pmrStart'); if (s2) s2.textContent = 'Pause';
+  PM.phaseT0 = Date.now(); PM.iv = setInterval(pmrTick, 50); pmrTick();
+}
+function stopPmr(){ PM.running = false; if (PM.iv){ clearInterval(PM.iv); PM.iv = null; } }
+function pmrReset(){
+  stopPmr(); PM.groupI = 0; PM.phaseI = 0;
+  var s = document.getElementById('pmrStart'); if (s) s.textContent = 'Start';
+  pmrPaint(true);
+}
+function pmrTick(){
+  var phase = PMR_PHASES[PM.phaseI], name = phase[0], dur = phase[1];
+  var el = Date.now() - PM.phaseT0, p = Math.min(1, el / dur);
+  pmrPaint(false, name, p, Math.ceil((dur - el) / 1000));
+  if (p >= 1){
+    PM.phaseI++;
+    if (PM.phaseI >= PMR_PHASES.length){
+      PM.phaseI = 0; PM.groupI++;
+      if (PM.groupI >= PMR_GROUPS.length){ stopPmr(); pmrDone(); return; }
+    }
+    PM.phaseT0 = Date.now();
+  }
+}
+function pmrPaint(idle, name, p, remain){
+  var g = document.getElementById('pmrGroup'), ph = document.getElementById('pmrPhase'),
+      fill = document.getElementById('pmrFill'), ct = document.getElementById('pmrCount');
+  if (!g) return;
+  if (idle){
+    g.textContent = 'Klar til å begynne';
+    if (ph) ph.textContent = 'Vi går gjennom kroppen, én muskelgruppe om gangen.';
+    if (fill){ fill.style.width = '0%'; fill.className = ''; }
+    if (ct) ct.textContent = '';
+    return;
+  }
+  g.textContent = (PM.groupI + 1) + ' / ' + PMR_GROUPS.length + ' · ' + PMR_GROUPS[PM.groupI];
+  if (name === 'spenn'){
+    if (ph) ph.textContent = 'Spenn musklene… og hold';
+    if (fill){ fill.style.width = (p * 100).toFixed(0) + '%'; fill.className = 'tense'; }
+  } else {
+    if (ph) ph.textContent = 'Slipp helt — kjenn forskjellen';
+    if (fill){ fill.style.width = ((1 - p) * 100).toFixed(0) + '%'; fill.className = 'release'; }
+  }
+  if (ct) ct.textContent = remain > 0 ? String(remain) : '';
+}
+function pmrDone(){
+  var g = document.getElementById('pmrGroup'), ph = document.getElementById('pmrPhase'),
+      fill = document.getElementById('pmrFill'), ct = document.getElementById('pmrCount'),
+      s = document.getElementById('pmrStart');
+  if (g) g.textContent = 'Ferdig';
+  if (ph) ph.textContent = 'Hele kroppen er gjennomgått. Bli sittende litt og kjenn etter.';
+  if (fill){ fill.style.width = '100%'; fill.className = 'release'; }
+  if (ct) ct.textContent = '';
+  if (s) s.textContent = 'Start på nytt';
 }
 
 // ---------- deling (til meldinger) ----------
