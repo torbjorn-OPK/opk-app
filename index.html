@@ -402,6 +402,32 @@ body.dark .breath-orb{box-shadow:0 14px 44px rgba(0,0,0,.45)}
 .gd-ico svg{width:54px;height:54px}
 .ground-done h3{font-size:24px;margin-bottom:8px}
 .ground-done p{color:var(--ink-soft);max-width:360px;margin:0 auto 18px}
+/* Velger (Reguleringsmeny / Toleransevindu) */
+.chooser-wrap{padding:4px 0}
+.chooser-menu{display:flex;flex-direction:column;gap:12px}
+.ch-opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;border:1.5px solid var(--border);border-radius:16px;background:var(--card);cursor:pointer;transition:border-color .15s,background .15s}
+.ch-opt:hover{border-color:var(--sage-light);background:var(--sage-mist)}
+.ch-ico{flex:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--sage-mist);color:var(--sage-dark)}
+.ch-ico svg{width:22px;height:22px}
+.ch-txt{display:flex;flex-direction:column}
+.ch-txt b{font-size:16px;color:var(--ink)}
+.ch-txt span{font-size:13px;color:var(--ink-faint);margin-top:1px}
+.win-cap{text-align:center;font-size:12px;color:var(--ink-faint);margin-bottom:8px}
+.chooser-menu.is-window .ch-opt{justify-content:center;text-align:center}
+.chooser-menu.is-window .ch-txt{align-items:center}
+.chooser-menu.is-window .ch-over{border-color:#C8956D;background:rgba(200,149,109,.10)}
+.chooser-menu.is-window .ch-inni{border-color:var(--sage-light);background:var(--sage-mist)}
+.chooser-menu.is-window .ch-under{border-color:#7C8BA6;background:rgba(124,139,166,.10)}
+.tool-back2{background:none;border:none;color:var(--sage);font-weight:600;font-size:13.5px;cursor:pointer;padding:4px 0;margin-bottom:12px}
+.ch-result-head{margin-bottom:14px}
+.ch-result-head b{display:block;font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--ink)}
+.ch-result-head span{font-size:13.5px;color:var(--ink-faint)}
+.ch-items{display:flex;flex-direction:column;gap:10px}
+.ch-item{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:13px 15px;border:1.5px solid var(--border);border-radius:13px;background:var(--card)}
+.ch-item-txt{display:flex;flex-direction:column}
+.ch-item-txt b{font-size:14.5px;color:var(--ink)}
+.ch-item-txt span{font-size:13px;color:var(--ink-soft);margin-top:1px}
+.ch-item .btn.small{flex:none}
 
 /* meldinger */
 .msg-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;max-height:430px;overflow-y:auto;padding:4px}
@@ -919,7 +945,8 @@ var ICONS = {
   arrowup:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg>',
   arrowdn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5.5 12.5L12 19l6.5-6.5"/></svg>',
   wind:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5h10.5a2.8 2.8 0 10-2.8-2.8M3 15.5h13a3 3 0 11-3 3M3 12h6"/></svg>',
-  anchor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5.5" r="2.5"/><path d="M12 8V21M5 13a7 7 0 0014 0M5 13H8M19 13h-3"/></svg>'
+  anchor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5.5" r="2.5"/><path d="M12 8V21M5 13a7 7 0 0014 0M5 13H8M19 13h-3"/></svg>',
+  gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1116 0"/><path d="M12 19l4-5"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>'
 };
 function ic(name){ return ICONS[name] || ''; }
 function escapeHtml(s){
@@ -1865,6 +1892,48 @@ var TOOLS = {
       { id:'adhd_333', title:'3-3-3 grunning', icon:'anchor', type:'grounding', ephemeral:true,
         desc:'Se 3 ting, hør 3 ting, beveg 3 ting — hent deg tilbake til øyeblikket.',
         intro:'Når tankene løper i forveien, kan sansene hente deg tilbake til her og nå. Ta ett skritt om gangen. Det finnes ingen gale svar.' },
+      { id:'adhd_regulering', title:'Reguleringsmeny', icon:'sliders', type:'chooser', layout:'cards', ephemeral:true, isNew:true,
+        desc:'Trenger du å roe ned eller komme i gang? Velg retning og få riktig verktøy.',
+        intro:'Noen ganger er kroppen for høyt oppe, andre ganger for langt nede. Velg hvilken vei du vil — så foreslår vi verktøy som drar deg dit.',
+        options:[
+          { key:'ned', label:'Roe ned', sub:'Urolig, stresset eller overaktivert', icon:'arrowdn',
+            items:[
+              { title:'Pust 3-6', desc:'Lang utpust som demper aktivering', link:'adhd_pust' },
+              { title:'3-3-3 grunning', desc:'Hent deg tilbake gjennom sansene', link:'adhd_333' },
+              { title:'Emosjonskort', desc:'Sett ord på følelsen og hva den trenger', link:'adhd_emosjon' },
+              { title:'Et lite kroppstips', desc:'Senk skuldrene, pust langt ut, drikk litt vann.' }
+            ] },
+          { key:'opp', label:'Komme i gang', sub:'Flat, umotivert eller underaktivert', icon:'arrowup',
+            items:[
+              { title:'Fokusøkt', desc:'En kort, lav terskel for å starte', link:'adhd_fokus' },
+              { title:'Oppgave-dekomponerer', desc:'Finn det aller første lille steget', link:'adhd_dekomponer' },
+              { title:'Visuell dagsplan', desc:'Gjør dagen synlig og håndterbar', link:'adhd_dagsplan' },
+              { title:'Et lite kroppstips', desc:'Reis deg, beveg kroppen i to minutter, sett på musikk.' }
+            ] }
+        ] },
+      { id:'adhd_vindu', title:'Toleransevindu-sjekk', icon:'gauge', type:'chooser', layout:'window', ephemeral:true,
+        desc:'Er du over, i eller under toleransevinduet akkurat nå? Få forslag.',
+        intro:'Toleransevinduet er sonen der du klarer å tenke og kjenne samtidig. Over er det for mye, under er det for lite. Hvor kjenner du deg nå?',
+        options:[
+          { key:'over', label:'Over vinduet', sub:'Hyperaktivert: urolig, stresset, «for mye»',
+            items:[
+              { title:'Pust 3-6', desc:'Lang utpust senker aktiveringen', link:'adhd_pust' },
+              { title:'3-3-3 grunning', desc:'Sansene henter deg ned', link:'adhd_333' },
+              { title:'Demp stimuli', desc:'Mindre lyd og lys, gå ut av situasjonen et øyeblikk.' }
+            ] },
+          { key:'inni', label:'Innenfor vinduet', sub:'Regulert: til stede, kan tenke og kjenne',
+            items:[
+              { title:'Godt sted å gjøre noe', desc:'Bruk øyeblikket på noe meningsfullt mens du er her.' },
+              { title:'Fokusøkt', desc:'Kom i gang med noe du har utsatt', link:'adhd_fokus' },
+              { title:'Visuell dagsplan', desc:'Legg en lett plan for resten av dagen', link:'adhd_dagsplan' }
+            ] },
+          { key:'under', label:'Under vinduet', sub:'Hypoaktivert: tom, flat, nummen, «for lite»',
+            items:[
+              { title:'Vekk kroppen', desc:'Beveg deg, kaldt vann i ansiktet, litt friskere lys.' },
+              { title:'Fokusøkt', desc:'En ørliten start kan løfte deg opp', link:'adhd_fokus' },
+              { title:'Et lite steg', desc:'Del en oppgave i noe latterlig lite', link:'adhd_dekomponer' }
+            ] }
+        ] },
       { id:'adhd_sortering', title:'Nå / Snart / Senere / En dag', icon:'cols', type:'multilist',
         desc:'Sorter oppgaver etter når de faktisk haster.',
         intro:'Alt kjennes ofte like presserende med ADHD. Her får hver oppgave én plass, så hjernen slipper å holde alt på én gang.',
@@ -2168,6 +2237,7 @@ function openTool(moduleId, toolId, histMode){
   else if (tool.type === 'timer') renderTimerTool(body, moduleId, tool, data);
   else if (tool.type === 'breath') renderBreathTool(body, moduleId, tool, data);
   else if (tool.type === 'grounding') renderGroundingTool(body, moduleId, tool, data);
+  else if (tool.type === 'chooser') renderChooserTool(body, moduleId, tool);
 }
 function toolToolbar(moduleId, tool){
   var html = '<div class="tool-toolbar">';
@@ -2813,6 +2883,39 @@ function groundPaint(){
 }
 function groundNext(){ GR.step++; groundPaint(); }
 function groundRestart(){ GR.step = 0; groundPaint(); }
+
+// ---------- VELGER (Reguleringsmeny / Toleransevindu) ----------
+// Generisk «velg retning → forslag»-verktøy. tool.layout: 'cards' | 'window'.
+// Forslag med .link åpner et eksisterende verktøy via openTool.
+var CH = {};
+function renderChooserTool(body, moduleId, tool){
+  CH = { moduleId:moduleId, tool:tool };
+  body.innerHTML = '<div class="chooser-wrap" id="chooserWrap"></div>';
+  chooserPick(null);
+}
+function chooserPick(key){
+  var wrap = document.getElementById('chooserWrap'); if (!wrap) return;
+  var tool = CH.tool, layout = tool.layout || 'cards';
+  if (key === null || key === undefined){
+    var opts = tool.options.map(function(o){
+      return '<button class="ch-opt ch-' + o.key + '" onclick="chooserPick(\'' + o.key + '\')">' +
+        (o.icon ? '<span class="ch-ico">' + ic(o.icon) + '</span>' : '') +
+        '<span class="ch-txt"><b>' + escapeHtml(o.label) + '</b><span>' + escapeHtml(o.sub) + '</span></span></button>';
+    }).join('');
+    wrap.innerHTML = (layout === 'window' ? '<div class="win-cap">Øverst = for mye · nederst = for lite</div>' : '') +
+      '<div class="chooser-menu' + (layout === 'window' ? ' is-window' : '') + '">' + opts + '</div>';
+    return;
+  }
+  var o = tool.options.filter(function(x){ return x.key === key; })[0]; if (!o) return;
+  var items = o.items.map(function(it){
+    var btn = it.link ? '<button class="btn small" onclick="openTool(\'' + CH.moduleId + '\',\'' + it.link + '\')">Åpne →</button>' : '';
+    return '<div class="ch-item"><div class="ch-item-txt"><b>' + escapeHtml(it.title) + '</b>' +
+      (it.desc ? '<span>' + escapeHtml(it.desc) + '</span>' : '') + '</div>' + btn + '</div>';
+  }).join('');
+  wrap.innerHTML = '<button class="tool-back2" onclick="chooserPick(null)">← Velg på nytt</button>' +
+    '<div class="ch-result ch-' + o.key + '"><div class="ch-result-head"><b>' + escapeHtml(o.label) + '</b><span>' + escapeHtml(o.sub) + '</span></div>' +
+    '<div class="ch-items">' + items + '</div></div>';
+}
 
 // ---------- deling (til meldinger) ----------
 function buildToolSummary(tool, data){
