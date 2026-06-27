@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klientportalen — Oslo Psykologkontor</title>
+<meta name="robots" content="noindex, nofollow">
+<!-- PWA / legg til på hjemskjerm (app-repo: rot-relative stier) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="img/icon-512.png">
+<meta name="theme-color" content="#3E4A33">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Min side">
+<link rel="apple-touch-icon" sizes="192x192" href="img/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KLIENTPORTAL v2 — designprototype
+   Designsystem: oslopsykologkontor.no (sage / varm off-white /
+   DM Serif Display + Inter). Estetikk: rolig, varm, redaksjonell.
+   Inspirasjon: Tiimo (visuell tid, vennlig språk, ingen skyld),
+   Sleepio (innsikt-grafer), How We Feel (emosjonskort).
+   ============================================================ */
+:root {
+  --sage:#5C6B4A; --sage-dark:#3E4A33; --sage-deep:#2E3726;
+  --sage-light:#A8B49A; --sage-pale:#C5CEBA; --sage-mist:#EDF0E8;
+  --bg:#FAF8F5; --bg-warm:#F2EDE4; --card:#FFFFFF; --border:#ECE6DC;
+  --ink:#2A2A28; --ink-soft:#5C5C58; --ink-faint:#8A857C;
+  --accent:#C8956D; --accent-soft:#F6EADC;        /* ADHD   */
+  --blue:#5E7290;  --blue-soft:#E9EDF3;           /* Søvn   */
+  --teal:#5F8575;  --teal-soft:#E4EDE8;           /* Autisme*/
+  --good:#4A7C59; --warn:#A8742F; --bad:#B05A4A;
+  --shadow:0 10px 40px -18px rgba(60,74,51,.28);
+  --shadow-lift:0 18px 50px -18px rgba(60,74,51,.35);
+  --r-card:20px; --r-pill:100px;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Inter',sans-serif;font-size:15.5px;line-height:1.55;
+  color:var(--ink-soft);background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,.serif{font-family:'DM Serif Display',serif;font-weight:400;color:var(--ink);letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
+::selection{background:var(--sage-pale)}
+
+/* ---------- felles småting ---------- */
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--sage-light)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border:1px solid var(--border);border-radius:var(--r-pill);font-size:12.5px;font-weight:500;color:var(--ink-soft);background:var(--card)}
+.pill.tint-sage{background:var(--sage-mist);border-color:transparent;color:var(--sage-dark)}
+.pill.tint-blue{background:var(--blue-soft);border-color:transparent;color:var(--blue)}
+.pill.tint-accent{background:var(--accent-soft);border-color:transparent;color:#8F6543}
+.pill.tint-teal{background:var(--teal-soft);border-color:transparent;color:var(--teal)}
+
+/* ---------- knapper ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--sage);color:#fff;border:none;border-radius:var(--r-pill);
+  padding:12px 26px;font-size:14.5px;font-weight:600;
+  transition:background .35s var(--ease),transform .35s var(--ease),box-shadow .35s var(--ease);
+}
+.btn:hover{background:var(--sage-dark);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn.ghost{background:transparent;color:var(--sage-dark);border:1px solid var(--sage-light)}
+.btn.ghost:hover{background:var(--sage-mist);box-shadow:none}
+.btn.subtle{background:var(--sage-mist);color:var(--sage-dark)}
+.btn.subtle:hover{background:var(--sage-pale)}
+.btn.small{padding:8px 18px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+.login-screen{position:fixed;inset:0;display:flex;z-index:50;background:var(--bg)}
+.login-brand{
+  flex:1.1;display:none;flex-direction:column;justify-content:space-between;
+  padding:56px 60px;background:
+    radial-gradient(1200px 700px at 85% -10%, rgba(197,206,186,.45), transparent 60%),
+    linear-gradient(160deg, var(--sage-deep), var(--sage-dark) 55%, #46543A);
+  color:#F1F3EC;position:relative;overflow:hidden;
+}
+@media(min-width:880px){.login-brand{display:flex}}
+.login-brand .org{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--sage-pale)}
+.login-brand h2{color:#fff;font-size:clamp(34px,3.6vw,52px);line-height:1.08;max-width:420px}
+.login-brand p{color:#C9D1BE;max-width:380px;font-size:15px;margin-top:14px}
+.login-brand .leaf{position:absolute;right:-90px;bottom:-110px;width:380px;height:380px;border-radius:46% 54% 60% 40%/50% 42% 58% 50%;background:rgba(197,206,186,.12)}
+.login-brand .leaf.l2{right:60px;bottom:-180px;width:300px;height:300px;background:rgba(200,149,109,.12)}
+.login-side{flex:1;display:flex;align-items:center;justify-content:center;padding:32px}
+.login-card{width:100%;max-width:400px}
+.login-card .org-mobile{font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+.login-card h1{font-size:38px;margin-bottom:6px}
+.login-card .sub{color:var(--ink-faint);margin-bottom:30px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}
+.field input[type=password],.field input[type=text],.field input[type=date],.field input[type=time],.field input[type=number],.field select,.field textarea{
+  width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--card);
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--sage-light);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
+.login-row{display:flex;align-items:center;gap:9px;margin:4px 0 22px;font-size:13.5px;color:var(--ink-soft)}
+.login-row input{accent-color:var(--sage)}
+.login-foot{font-size:13px;color:var(--ink-faint);margin-top:26px;line-height:1.6}
+.demo-link{margin-top:14px;text-align:center}
+.demo-link button{background:none;border:none;color:var(--sage);font-size:13.5px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.error-msg{display:none;background:#F7E9E5;color:var(--bad);border-radius:12px;padding:11px 14px;font-size:13.5px;margin-bottom:16px}
+
+/* ============================================================
+   APP-SKALL
+   ============================================================ */
+.app{display:none;min-height:100vh}
+.app.active{display:flex}
+.sidebar{
+  width:268px;flex-shrink:0;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,var(--sage-deep),var(--sage-dark) 70%);
+  color:#E7EBDF;position:sticky;top:0;height:100vh;padding:30px 18px 20px;
+}
+.side-org{font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--sage-pale);padding:0 14px}
+.side-title{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;padding:2px 14px 0}
+.user-chip{margin:22px 8px 8px;padding:13px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:16px}
+.user-chip .name{font-weight:600;color:#fff;font-size:14.5px}
+.user-chip .prog{font-size:12.5px;color:var(--sage-pale);margin-top:1px}
+.nav{flex:1;margin-top:18px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.nav-label{font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(231,235,223,.45);padding:14px 14px 5px}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:13px;
+  color:#D5DCC9;font-size:14.5px;font-weight:500;text-decoration:none;cursor:pointer;
+  transition:background .3s var(--ease),color .3s var(--ease);
+}
+.nav-item svg{width:19px;height:19px;flex-shrink:0;opacity:.85}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:var(--bg);color:var(--sage-dark);font-weight:600;box-shadow:0 6px 18px -8px rgba(0,0,0,.4)}
+.nav-item.active svg{opacity:1}
+.side-foot{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
+.side-foot .nav-item{font-size:13.5px;padding:9px 14px}
+
+/* innhold */
+.content{flex:1;min-width:0;padding:38px 48px 110px;max-width:1060px;margin:0 auto}
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:30px;flex-wrap:wrap}
+.topbar .date{font-size:13.5px;color:var(--ink-faint);margin-bottom:4px}
+.topbar h1{font-size:clamp(30px,3.4vw,40px);line-height:1.08}
+.view{display:none;animation:fadeUp .45s var(--ease)}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- kort & grid ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:26px 28px;box-shadow:var(--shadow)}
+.card+.card{margin-top:18px}
+.card-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:980px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* ---------- dashbord ---------- */
+.hero-row{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin-bottom:18px}
+@media(max-width:980px){.hero-row{grid-template-columns:1fr}}
+.hero-card{
+  position:relative;overflow:hidden;border:none;border-radius:24px;padding:30px 32px;
+  background:linear-gradient(150deg,var(--sage-deep),var(--sage-dark) 60%,#49573C);color:#E9EDE0;box-shadow:var(--shadow-lift);
+}
+.hero-card .deco{position:absolute;right:-70px;top:-80px;width:260px;height:260px;border-radius:46% 54% 60% 40%/50% 42% 58% 50%;background:rgba(197,206,186,.13)}
+.hero-card h2{color:#fff;font-size:26px;margin:4px 0 2px}
+.hero-card .sub{color:var(--sage-pale);font-size:13.5px}
+.hero-flex{display:flex;align-items:center;gap:26px;margin-top:18px;flex-wrap:wrap}
+.ring-wrap{position:relative;width:104px;height:104px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{stroke:rgba(255,255,255,.14)}
+.ring-fg{stroke:var(--sage-pale);stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-center b{font-size:22px;color:#fff;font-weight:700;line-height:1}
+.ring-center span{font-size:10.5px;color:var(--sage-pale);letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.hero-meta{display:flex;flex-direction:column;gap:9px}
+.hero-meta .row{display:flex;gap:8px;align-items:center;font-size:13.5px;color:#D9DFCE}
+.hero-meta .row b{color:#fff;font-weight:600}
+
+.window-card .time-big{font-family:'DM Serif Display',serif;font-size:clamp(30px,3vw,38px);color:var(--ink);display:flex;align-items:center;gap:12px}
+.window-card .time-big .arrow{color:var(--sage-light);font-size:24px}
+.tl{margin-top:18px}
+.tl-bar{position:relative;height:14px;border-radius:8px;background:linear-gradient(90deg,var(--bg-warm),#E4E0D5)}
+.tl-window{position:absolute;top:0;bottom:0;border-radius:8px;background:linear-gradient(90deg,var(--blue),#7A8DA8);box-shadow:0 4px 12px -4px rgba(94,114,144,.5)}
+.tl-now{position:absolute;top:-4px;width:2px;height:22px;background:var(--accent);border-radius:2px}
+.tl-ticks{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-faint);margin-top:7px}
+
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:980px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow)}
+.stat .lbl{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+.stat .val{font-family:'DM Serif Display',serif;font-size:30px;color:var(--ink);line-height:1.15;margin-top:4px}
+.stat .delta{font-size:12.5px;margin-top:2px}
+.stat .delta.up{color:var(--good)}.stat .delta.flat{color:var(--ink-faint)}
+
+/* sjekkliste */
+.checklist{display:flex;flex-direction:column}
+.check-item{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .3s var(--ease)}
+.check-item:last-child{border-bottom:none}
+.check-box{width:24px;height:24px;border-radius:9px;border:1.5px solid var(--sage-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s var(--ease);background:var(--card)}
+.check-item.done .check-box{background:var(--sage);border-color:var(--sage)}
+.check-box svg{width:13px;height:13px;stroke:#fff;opacity:0;transform:scale(.5);transition:all .3s var(--ease)}
+.check-item.done .check-box svg{opacity:1;transform:scale(1)}
+.check-item.done .check-text{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--sage-light)}
+.check-text{font-size:14.5px;color:var(--ink)}
+.check-sub{font-size:12.5px;color:var(--ink-faint)}
+
+/* modulkort (launcher) */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.tool-card{
+  position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);
+  padding:22px;cursor:pointer;box-shadow:var(--shadow);overflow:hidden;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease);
+}
+.tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--sage-pale)}
+.tool-card .ico{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:14px}
+.tool-card h3{font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.tool-card p{font-size:13.5px;color:var(--ink-faint);line-height:1.5}
+.tool-card .meta{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.tool-card .open{font-size:13px;font-weight:600;color:var(--sage)}
+.tool-card .status{font-size:11.5px;color:var(--ink-faint)}
+.tool-card .status.started{color:var(--good);font-weight:600}
+/* roadmap / «Ikke bygget» */
+.tool-card.future{cursor:default}
+.tool-card.future:hover{transform:none;box-shadow:var(--shadow);border-color:var(--border)}
+.tool-card.nb{opacity:.6}
+.tool-card.nb .ico{filter:grayscale(.45)}
+.nb-badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:999px;background:var(--border);color:var(--ink-faint);text-transform:uppercase}
+.nb-badge.ok{background:var(--sage-mist);color:var(--sage-dark)}
+body.dark .nb-badge.ok{color:var(--good)}
+.acc-sage .ico{background:var(--sage-mist);color:var(--sage-dark)}
+.acc-blue .ico{background:var(--blue-soft)}
+.acc-accent .ico{background:var(--accent-soft)}
+.acc-teal .ico{background:var(--teal-soft)}
+.tool-intro{
+  background:var(--bg-warm);border-radius:16px;padding:16px 20px;font-size:14px;color:var(--ink-soft);
+  margin:0 0 22px;border-left:3px solid var(--sage-light);
+}
+.tool-back{background:none;border:none;color:var(--sage);font-size:13.5px;font-weight:600;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px}
+.tool-back:hover{text-decoration:underline;text-underline-offset:3px}
+.tool-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.save-hint{font-size:12.5px;color:var(--good);font-weight:600;opacity:0;transition:opacity .4s var(--ease)}
+.save-hint.show{opacity:1}
+
+/* ---------- dagbok / skjema ---------- */
+.tabs{display:inline-flex;background:var(--bg-warm);border-radius:var(--r-pill);padding:4px;margin-bottom:22px;flex-wrap:wrap}
+.tab{border:none;background:transparent;padding:9px 20px;border-radius:var(--r-pill);font-size:13.5px;font-weight:600;color:var(--ink-soft);transition:all .3s var(--ease)}
+.tab.active{background:var(--card);color:var(--sage-dark);box-shadow:0 3px 10px -4px rgba(60,74,51,.3)}
+.form-section{margin-bottom:8px}
+.form-section>.fs-label{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:22px 0 14px}
+.form-section>.fs-label::after{content:"";flex:1;height:1px;background:var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+@media(max-width:760px){.form-grid{grid-template-columns:1fr}}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{
+  min-width:46px;padding:10px 0;border:1.5px solid var(--border);background:var(--card);border-radius:13px;
+  font-size:15px;font-weight:600;color:var(--ink-soft);transition:all .25s var(--ease);flex:1;
+}
+.seg button:hover{border-color:var(--sage-light)}
+.seg button.sel{background:var(--sage);border-color:var(--sage);color:#fff;box-shadow:0 6px 14px -6px rgba(92,107,74,.5)}
+.seg-cap{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-faint);margin-top:5px}
+.switch-row{display:flex;align-items:center;gap:12px}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch .sl{position:absolute;inset:0;background:#DDD8CC;border-radius:var(--r-pill);transition:.3s var(--ease)}
+.switch .sl::before{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.3s var(--ease);box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.switch input:checked+.sl{background:var(--sage)}
+.switch input:checked+.sl::before{transform:translateX(20px)}
+
+.result-banner{
+  display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-top:22px;padding:22px 26px;
+  background:linear-gradient(135deg,var(--sage-mist),#F3F0E7);border-radius:18px;border:1px solid var(--sage-pale);
+}
+.result-banner .se-ring{position:relative;width:88px;height:88px}
+.result-banner .se-ring svg{transform:rotate(-90deg)}
+.result-banner .metrics{display:flex;gap:28px;flex-wrap:wrap}
+.result-banner .m b{font-family:'DM Serif Display',serif;font-size:24px;color:var(--ink);font-weight:400;display:block}
+.result-banner .m span{font-size:12px;color:var(--ink-faint)}
+
+/* graf */
+.chart-wrap{margin-top:6px}
+.chart-svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:18px;font-size:12px;color:var(--ink-faint);margin-top:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+
+.table{width:100%;border-collapse:collapse;font-size:13.5px}
+.table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);padding:10px 12px;border-bottom:1.5px solid var(--border)}
+.table td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--ink)}
+.table tr:last-child td{border-bottom:none}
+.se-chip{display:inline-block;min-width:48px;text-align:center;padding:3px 9px;border-radius:var(--r-pill);font-weight:600;font-size:12.5px}
+.se-good{background:var(--sage-mist);color:var(--good)}
+.se-mid{background:#F5EBD8;color:var(--warn)}
+.se-low{background:#F7E9E5;color:var(--bad)}
+
+/* læringsmoduler */
+.edu-card{display:flex;gap:18px;align-items:flex-start;cursor:pointer}
+.edu-num{width:44px;height:44px;border-radius:14px;background:var(--sage-mist);color:var(--sage-dark);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:19px;flex-shrink:0}
+.edu-card.locked{opacity:.55;cursor:default}
+.edu-card.locked .edu-num{background:var(--bg-warm);color:var(--ink-faint)}
+.edu-card.done .edu-num{background:var(--sage);color:#fff}
+.edu-body h3{font-size:15.5px;font-weight:600;color:var(--ink)}
+.edu-body .st{font-size:12.5px;color:var(--ink-faint);margin-top:2px}
+.edu-content{display:none;margin-top:12px;font-size:14px;color:var(--ink-soft);line-height:1.65;border-top:1px solid var(--border);padding-top:12px}
+.edu-card.open .edu-content{display:block}
+
+/* planner (Tiimo-inspirert tidslinje) */
+.planner-day{display:flex;flex-direction:column;gap:0;margin-top:10px}
+.pl-row{display:flex;gap:14px}
+.pl-time{width:52px;text-align:right;font-size:11.5px;color:var(--ink-faint);padding-top:2px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.pl-lane{flex:1;border-left:2px solid var(--border);padding:0 0 4px 16px;min-height:34px;position:relative}
+.pl-lane::before{content:"";position:absolute;left:-5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--border)}
+.pl-block{
+  border-radius:14px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+  box-shadow:0 6px 16px -10px rgba(60,74,51,.35);
+}
+.pl-block b{font-size:14px;font-weight:600;display:block}
+.pl-block .tm{font-size:12px;opacity:.75;font-variant-numeric:tabular-nums}
+.pl-block .del{background:none;border:none;font-size:15px;opacity:.5;color:inherit}
+.pl-block .del:hover{opacity:1}
+.cat-fokus{background:var(--blue-soft);color:#3D516E}
+.cat-rutine{background:var(--sage-mist);color:var(--sage-dark)}
+.cat-pause{background:var(--teal-soft);color:#3F6354}
+.cat-sosialt{background:var(--accent-soft);color:#7E5733}
+.cat-anna{background:var(--bg-warm);color:var(--ink-soft)}
+.pl-add{display:grid;grid-template-columns:90px 90px 1fr 130px auto;gap:10px;align-items:end;margin-top:16px}
+@media(max-width:760px){.pl-add{grid-template-columns:1fr 1fr}}
+
+/* multilist / kanban */
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:8px}
+.kb-col{background:var(--bg-warm);border-radius:16px;padding:14px}
+.kb-col h4{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.kb-col .hint{font-size:11.5px;color:var(--ink-faint);margin:2px 0 10px}
+.kb-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink);margin-bottom:8px;box-shadow:0 3px 8px -5px rgba(60,74,51,.25)}
+.kb-item .kb-act{display:flex;gap:7px;margin-top:7px}
+.kb-item .kb-act button{background:var(--bg-warm);border:none;border-radius:8px;font-size:11px;padding:4px 9px;color:var(--ink-soft);font-weight:600}
+.kb-item .kb-act button:hover{background:var(--sage-mist);color:var(--sage-dark)}
+
+/* liste-verktøy */
+.list-rows{margin-top:6px}
+.list-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border)}
+.list-row:last-child{border-bottom:none}
+.list-row .txt{flex:1;font-size:14.5px;color:var(--ink)}
+.list-row.done .txt{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--sage-light)}
+.list-row .ops{display:flex;gap:4px}
+.list-row .ops button{background:none;border:none;color:var(--ink-faint);font-size:14px;padding:4px 6px;border-radius:8px}
+.list-row .ops button:hover{background:var(--bg-warm);color:var(--ink)}
+.add-row{display:flex;gap:10px;margin-top:16px}
+.add-row input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px}
+.add-row input:focus{outline:none;border-color:var(--sage-light);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
+
+/* emosjonskort */
+.emo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;margin:6px 0 4px}
+.emo{
+  border:1.5px solid var(--border);background:var(--card);border-radius:14px;padding:12px 8px;text-align:center;
+  font-size:13.5px;font-weight:600;color:var(--ink-soft);transition:all .25s var(--ease);
+}
+.emo span{display:block;font-size:20px;margin-bottom:4px}
+.emo:hover{transform:translateY(-2px);border-color:var(--sage-light)}
+.emo.sel{border-color:var(--sage);background:var(--sage-mist);color:var(--sage-dark);box-shadow:0 8px 18px -10px rgba(92,107,74,.5)}
+.int-row{display:flex;gap:8px;margin:10px 0 4px}
+.int-row button{flex:1;padding:9px 0;border:1.5px solid var(--border);background:var(--card);border-radius:12px;font-weight:600;color:var(--ink-soft)}
+.int-row button.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+.log-entry{border:1px solid var(--border);border-radius:16px;padding:14px 18px;margin-bottom:10px;background:var(--card)}
+.log-entry .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.log-entry .when{font-size:11.5px;color:var(--ink-faint)}
+.log-entry .body{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.55}
+
+/* fokus-økt (NY) */
+.focus-wrap{display:flex;flex-direction:column;align-items:center;padding:18px 0 6px}
+.focus-ring{position:relative;width:210px;height:210px;margin-bottom:22px}
+.focus-ring svg{transform:rotate(-90deg)}
+.focus-ring .fr-bg{stroke:var(--bg-warm)}
+.focus-ring .fr-fg{stroke:var(--sage);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.focus-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.focus-center b{font-family:'DM Serif Display',serif;font-size:46px;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.focus-center span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+.focus-presets{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;justify-content:center}
+.focus-presets button{padding:8px 16px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--ink-soft)}
+.focus-presets button.sel{background:var(--sage-mist);border-color:var(--sage-light);color:var(--sage-dark)}
+
+/* meldinger */
+.msg-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;max-height:430px;overflow-y:auto;padding:4px}
+.msg{max-width:78%;padding:13px 17px;border-radius:18px;font-size:14px;line-height:1.55}
+.msg.in{align-self:flex-start;background:var(--bg-warm);color:var(--ink);border-bottom-left-radius:6px}
+.msg.out{align-self:flex-end;background:var(--sage);color:#fff;border-bottom-right-radius:6px}
+.msg .who{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin-bottom:3px}
+.msg-compose{display:flex;gap:10px;align-items:flex-end}
+.msg-compose textarea{flex:1;padding:13px 16px;border:1.5px solid var(--border);border-radius:16px;resize:vertical;min-height:52px}
+.msg-compose textarea:focus{outline:none;border-color:var(--sage-light);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
+.msg-foot{font-size:12.5px;color:var(--ink-faint);margin-top:12px}
+
+/* ISI */
+.isi-q{margin-bottom:22px}
+.isi-q h3{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:10px}
+.isi-opts{display:flex;flex-direction:column;gap:7px}
+.isi-opts button{text-align:left;padding:11px 16px;border:1.5px solid var(--border);background:var(--card);border-radius:13px;font-size:14px;color:var(--ink-soft);transition:all .2s var(--ease)}
+.isi-opts button:hover{border-color:var(--sage-light)}
+.isi-opts button.sel{background:var(--sage-mist);border-color:var(--sage);color:var(--sage-dark);font-weight:600}
+.isi-result{text-align:center;padding:14px 0 4px}
+.isi-result .score{font-family:'DM Serif Display',serif;font-size:64px;color:var(--ink);line-height:1}
+.isi-scale{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:20px 0 6px}
+.isi-scale i{flex:1}
+.isi-scale-cap{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-faint)}
+
+/* bunn-nav (mobil) */
+.bottom-nav{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--border);
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+}
+.bottom-nav .bn-row{display:flex;justify-content:space-around}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--ink-faint);background:none;border:none;padding:4px 10px;border-radius:12px}
+.bn-item svg{width:21px;height:21px}
+.bn-item.active{color:var(--sage-dark)}
+.bn-item.active svg{color:var(--sage)}
+@media(max-width:880px){
+  .sidebar{display:none}
+  .bottom-nav{display:block}
+  .content{padding:26px 20px 130px}
+}
+
+/* ro-modus: færre effekter, mer luft, ingen dekor */
+body.calm .deco,body.calm .leaf{display:none}
+body.calm *{animation:none!important;transition:none!important}
+body.calm .card,body.calm .stat,body.calm .tool-card{box-shadow:none}
+body.calm .hero-card{background:var(--sage-dark)}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+/* utskrift */
+@media print{
+  .sidebar,.bottom-nav,.tool-toolbar,.tool-back,.btn{display:none!important}
+  body{background:#fff}
+  .card{box-shadow:none;border-color:#ccc}
+}
+/* ============ VERKTØY-OVERHAUL: bevegelse + presisjon ============ */
+@keyframes toolIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes blockIn{from{opacity:0;transform:translateX(-8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes popIn{0%{transform:scale(.86)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes softPulse{0%,100%{box-shadow:0 0 0 0 rgba(92,107,74,.28)}50%{box-shadow:0 0 0 7px rgba(92,107,74,0)}}
+@keyframes breathe{0%,100%{transform:rotate(-90deg) scale(1)}50%{transform:rotate(-90deg) scale(1.015)}}
+@keyframes barFill{from{width:0}}
+.tool-card{animation:toolIn .5s var(--ease) both}
+.tool-card:active{transform:translateY(-1px) scale(.985)}
+.tool-card .ico svg{width:23px;height:23px}
+.ico-t0 .ico{background:var(--sage-mist);color:var(--sage-dark)}
+.ico-t1 .ico{background:var(--blue-soft);color:#3D516E}
+.ico-t2 .ico{background:var(--accent-soft);color:#7E5733}
+.ico-t3 .ico{background:var(--teal-soft);color:#3F6354}
+.btn:active,.emo:active,.pl-chip:active{transform:scale(.97)}
+.tool-head{display:flex;align-items:center;gap:13px;margin-bottom:8px;animation:toolIn .45s var(--ease) both}
+.tool-head .th-ico{width:44px;height:44px;border-radius:14px;background:var(--sage-mist);color:var(--sage-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tool-head .th-ico svg{width:22px;height:22px}
+.tool-head h2{font-size:27px}
+.tool-intro,#toolBody{animation:toolIn .5s var(--ease) .06s both}
+
+/* fremdrift i lister/skjema */
+.t-progress{display:flex;align-items:center;gap:12px;margin:2px 0 16px}
+.t-progress .bar{flex:1;height:7px;border-radius:99px;background:var(--bg-warm);overflow:hidden}
+.t-progress .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sage-light),var(--sage));transition:width .55s var(--ease)}
+.t-progress span{font-size:12px;font-weight:700;color:var(--sage-dark);white-space:nowrap;font-variant-numeric:tabular-nums}
+.t-done-msg{display:flex;align-items:center;gap:9px;background:var(--sage-mist);color:var(--sage-dark);font-size:13.5px;font-weight:600;border-radius:14px;padding:11px 16px;margin-top:14px;animation:popIn .5s var(--ease)}
+
+/* lister */
+.list-row{border-bottom:none;border-radius:14px;padding:11px 12px;margin:0 -8px;transition:background .25s var(--ease);animation:blockIn .4s var(--ease) both}
+.list-row:hover{background:var(--bg-warm)}
+.list-row .check-box{cursor:pointer}
+.list-row.done .check-box{background:var(--sage);border-color:var(--sage)}
+.list-row.done .check-box svg{opacity:1;transform:scale(1);stroke:#fff}
+.list-row .txt{transition:color .3s var(--ease)}
+.list-row .ops button{display:flex;align-items:center;justify-content:center;width:28px;height:28px}
+.list-row .ops button svg{width:13px;height:13px}
+
+/* kanban */
+.kb-col{transition:box-shadow .3s var(--ease)}
+.kb-col h4 .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.kb-col h4 .cnt{margin-left:auto;font-size:11px;font-weight:700;background:var(--card);border-radius:99px;padding:2px 9px;color:var(--ink-faint)}
+.kb-item{animation:blockIn .35s var(--ease) both}
+.kb-item .kb-act button{display:inline-flex;align-items:center;gap:4px}
+
+/* dagsplan-tidslinje */
+.pl-comp{background:var(--bg-warm);border-radius:18px;padding:16px 18px;margin-bottom:6px}
+.pl-comp .row1{display:flex;gap:10px;align-items:center}
+.pl-comp input[type=text]{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--card)}
+.pl-comp input[type=time]{padding:10px 10px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-variant-numeric:tabular-nums}
+.pl-comp .btn-add{display:flex;align-items:center;gap:7px}
+.pl-comp .btn-add svg{width:15px;height:15px}
+.pl-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pl-chip{border:1.5px solid transparent;border-radius:var(--r-pill);padding:7px 15px;font-size:12.5px;font-weight:600;transition:all .25s var(--ease);display:inline-flex;align-items:center;gap:7px}
+.pl-chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.pl-chip.sel{border-color:currentColor;box-shadow:0 4px 12px -6px rgba(60,74,51,.4);transform:translateY(-1px)}
+.pl-tlwrap{position:relative;margin-top:22px}
+.pl-tl{position:relative;margin-left:58px;border-left:2px solid var(--border)}
+.pl-hr{position:absolute;left:-58px;width:46px;text-align:right;font-size:11px;color:var(--ink-faint);transform:translateY(-50%);font-variant-numeric:tabular-nums}
+.pl-hr::after{content:"";position:absolute;right:-16px;top:50%;width:8px;height:2px;background:var(--border)}
+.pl-blk{position:absolute;left:14px;right:4px;border-radius:13px;padding:8px 13px;overflow:hidden;box-shadow:0 5px 14px -8px rgba(60,74,51,.35);animation:blockIn .45s var(--ease) both;border-left:4px solid currentColor}
+.pl-blk b{font-size:13.5px;font-weight:600;display:block;line-height:1.3}
+.pl-blk .tm{font-size:11px;opacity:.75;font-variant-numeric:tabular-nums}
+.pl-blk .del{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.55);border:none;border-radius:8px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s var(--ease);color:inherit}
+.pl-blk:hover .del{opacity:1}
+.pl-blk .del svg{width:11px;height:11px}
+.pl-blk.past{opacity:.5;filter:saturate(.7)}
+.pl-blk.now{animation:blockIn .45s var(--ease) both,softPulse 2.6s ease-in-out infinite}
+.pl-nowline{position:absolute;left:-6px;right:0;height:2px;background:var(--accent);border-radius:2px;z-index:3}
+.pl-nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.pl-nowline .lbl{position:absolute;right:0;top:-19px;font-size:10.5px;font-weight:700;color:var(--accent);letter-spacing:.06em}
+.pl-empty{text-align:center;padding:28px 10px 10px}
+.pl-empty p{font-size:13.5px;color:var(--ink-faint);margin-bottom:14px}
+.pl-sugg{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pl-sugg button{border:1.5px dashed var(--sage-light);background:var(--card);border-radius:var(--r-pill);padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--sage-dark);transition:all .25s var(--ease)}
+.pl-sugg button:hover{background:var(--sage-mist);border-style:solid;transform:translateY(-1px)}
+
+/* emosjonskort */
+.emo{position:relative}
+.emo.sel{animation:popIn .45s var(--ease)}
+.emo.v-pos{border-color:transparent;background:var(--sage-mist)}
+.emo.v-neg{border-color:transparent;background:var(--blue-soft)}
+.emo.v-mid{border-color:transparent;background:var(--bg-warm)}
+.emo.v-pos.sel{border-color:var(--sage);box-shadow:0 8px 18px -10px rgba(92,107,74,.5)}
+.emo.v-neg.sel{border-color:#5C7099;box-shadow:0 8px 18px -10px rgba(80,100,140,.5)}
+.emo.v-mid.sel{border-color:var(--accent);box-shadow:0 8px 18px -10px rgba(200,149,109,.55)}
+.int-bars{display:flex;gap:8px;align-items:flex-end;margin:10px 0 2px;height:54px}
+.int-bars button{flex:1;border:none;border-radius:10px 10px 6px 6px;background:var(--bg-warm);transition:all .25s var(--ease);position:relative}
+.int-bars button:nth-child(1){height:38%}.int-bars button:nth-child(2){height:52%}.int-bars button:nth-child(3){height:66%}.int-bars button:nth-child(4){height:82%}.int-bars button:nth-child(5){height:100%}
+.int-bars button:hover{background:var(--sage-pale)}
+.int-bars button.sel,.int-bars button.fill{background:linear-gradient(180deg,var(--sage-light),var(--sage))}
+.int-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-bottom:4px}
+.log-entry{animation:blockIn .4s var(--ease) both}
+.log-entry .emo-dot{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+
+/* fokus-timer */
+.focus-ring svg.idle{animation:breathe 4.5s ease-in-out infinite}
+.focus-ring .fr-tick{stroke:var(--border);stroke-width:1.5}
+.t-done-msg svg{width:15px;height:15px;stroke:currentColor;flex-shrink:0}
+.pl-comp .btn-add svg{stroke:#fff}
+
+/* ---------- intro-splash (app-åpning på hjemskjerm) ---------- */
+#introSplash{display:none;position:fixed;inset:0;z-index:200;background:#4A573B}
+#introSplash.vis{display:block}
+#introSplash video{width:100%;height:100%;object-fit:cover}
+#introSplash.ut{opacity:0;transition:opacity 1.15s ease}
+
+/* ---------- logo-animasjon (innlogging) — ekte OPK-logo ---------- */
+.logo-anim{margin-bottom:6px;animation:logoFloat 7s ease-in-out 3s infinite}
+.logo-anim img{display:block;animation:logoIn 1.6s var(--ease) .2s backwards}
+@keyframes logoIn{0%{opacity:0;transform:translateY(10px) scale(.96)}100%{opacity:1;transform:none}}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.login-card .logo-anim{animation:none}
+/* ---------- natt-dekor (søvnmodulen) ---------- */
+.night-deco{position:absolute;top:18px;right:22px;pointer-events:none;opacity:.9}
+.night-deco .star{animation:twinkle 4.5s ease-in-out infinite}
+.night-deco .star.s2{animation-delay:1.4s;animation-duration:5.5s}
+.night-deco .star.s3{animation-delay:2.6s;animation-duration:6.2s}
+.night-deco .cloud{animation:drift 26s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.9}}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(-14px)}}
+.window-card{position:relative;overflow:hidden}
+.proto-badge{
+  position:fixed;top:14px;right:14px;z-index:60;background:var(--accent);color:#fff;
+  font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:5px 12px;border-radius:var(--r-pill);box-shadow:var(--shadow);pointer-events:none;
+}
+
+/* ============================================================
+   HIGH-END LOGIN — sage bakgrunn + rolig blinkende orbs + stigende bobler
+   (additivt; beholder eksisterende login-funksjon/JS)
+   ============================================================ */
+.login-brand{position:relative;overflow:hidden}
+.login-atmos{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.login-atmos .orb{position:absolute;border-radius:50%;filter:blur(34px);background:radial-gradient(circle,rgba(168,180,154,.55),rgba(92,107,74,.16) 64%,transparent 76%);animation:orbBlink 7s ease-in-out infinite;will-change:opacity,transform}
+.login-atmos .orb.o2{background:radial-gradient(circle,rgba(200,149,109,.4),rgba(160,116,70,.12) 64%,transparent 76%)}
+.login-atmos .lbub{position:absolute;bottom:-30px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(210,218,198,.7),rgba(120,135,98,.42) 66%,transparent);box-shadow:inset 0 1px 2px rgba(255,255,255,.4);animation:loginBubRise var(--d,12s) linear infinite;will-change:transform,opacity}
+@keyframes orbBlink{0%,100%{opacity:.4;transform:scale(.88)}50%{opacity:.92;transform:scale(1.2)}}
+@keyframes loginBubRise{0%{transform:translateY(0);opacity:0}12%{opacity:.7}86%{opacity:.45}100%{transform:translateY(-108vh);opacity:0}}
+/* hold tekst/logo over atmos i brand-panelet */
+.login-brand>.org,.login-brand>div:not(.login-atmos),.login-brand>h2{position:relative;z-index:1}
+/* MOBIL: hele login-skjermen blir sage med atmos, skjemaet flyter på et frostet kort */
+@media(max-width:879px){
+  .login-brand{display:flex !important;position:absolute;inset:0;z-index:0;padding:0}
+  .login-brand>.org,.login-brand>div:not(.login-atmos),.login-brand .leaf{display:none}
+  .login-side{position:relative;z-index:2;background:transparent}
+  .login-card{background:rgba(255,253,250,.93);backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1);border-radius:24px;padding:30px 26px 26px;box-shadow:0 28px 66px -20px rgba(20,28,12,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+}
+body.calm .login-atmos .orb,body.calm .login-atmos .lbub{animation:none}
+@media(prefers-reduced-motion:reduce){.login-atmos .orb,.login-atmos .lbub{animation:none}}
+
+/* ============================================================
+   HIGH-END APP — levende bakgrunn (brun/leire-mønster) + dybde (additivt)
+   Portert fra prototypen: rikere blob-system (5 stk), røyk-/vignett-
+   overlay og lagdelte varme skygger → mønster med dybde, ikke flat haze.
+   ============================================================ */
+body{background:radial-gradient(125% 110% at 52% 8%, #FFFEFC 0%, #F6F2EA 38%, #EBE3D5 70%, #DDD3C0 100%) !important;background-attachment:fixed}
+/* rolig kant-vignett (statisk) gir farget dybde i kantene */
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 130% at 50% 34%, transparent 50%, rgba(74,86,58,.08) 100%)}
+.app-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.app-bg .ab{position:absolute;border-radius:50%;filter:blur(50px);will-change:transform}
+/* LYS modus: varme brun/leire-bobler (mørkere enn bunnen) → tydeligere mønster */
+.app-bg .ab1{width:540px;height:540px;left:-110px;top:-110px;background:radial-gradient(circle,rgba(148,101,52,.52) 0%,rgba(148,101,52,.27) 44%,transparent 67%);animation:abDrift1 30s ease-in-out infinite alternate}
+.app-bg .ab2{width:460px;height:460px;right:-90px;top:6%;background:radial-gradient(circle,rgba(198,144,96,.56) 0%,rgba(198,144,96,.29) 44%,transparent 67%);animation:abDrift2 36s ease-in-out infinite alternate}
+.app-bg .ab3{width:520px;height:520px;left:18%;bottom:-150px;background:radial-gradient(circle,rgba(124,84,46,.5) 0%,rgba(124,84,46,.25) 44%,transparent 67%);animation:abDrift3 33s ease-in-out infinite alternate}
+.app-bg .ab4{width:430px;height:430px;right:14%;bottom:-120px;background:radial-gradient(circle,rgba(190,139,90,.54) 0%,rgba(190,139,90,.28) 44%,transparent 67%);animation:abDrift4 27s ease-in-out infinite alternate}
+.app-bg .ab5{width:380px;height:380px;left:46%;top:24%;background:radial-gradient(circle,rgba(142,154,118,.44) 0%,rgba(142,154,118,.22) 44%,transparent 67%);animation:abDrift5 23s ease-in-out infinite alternate}
+@keyframes abDrift1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(150px,130px) scale(1.22)}}
+@keyframes abDrift2{0%{transform:translate(0,0) scale(1.1)}100%{transform:translate(-160px,110px) scale(.9)}}
+@keyframes abDrift3{0%{transform:translate(0,0) scale(1)}100%{transform:translate(130px,-130px) scale(1.2)}}
+@keyframes abDrift4{0%{transform:translate(0,0) scale(1.08)}100%{transform:translate(-130px,-100px) scale(.92)}}
+@keyframes abDrift5{0%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-34%,-64%) scale(1.28)}}
+/* mykt røyk-/lyslag (lav-frekvens turbulens) som driver sakte → mønster-karakter */
+.app-bg .smoke{position:absolute;inset:-30%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015' numOctaves='3' seed='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");background-size:cover;opacity:.1;mix-blend-mode:multiply;filter:blur(3px);animation:smokeDrift 58s ease-in-out infinite alternate}
+@keyframes smokeDrift{0%{transform:translate(-2%,1%) scale(1.2) rotate(-3deg)}100%{transform:translate(3%,-3%) scale(1.4) rotate(8deg)}}
+.app{position:relative;z-index:1}
+.content{position:relative;z-index:1}
+/* frostede flater (dybde) — beholder layout, bare overflate; lagdelte varme skygger + inset top-highlight */
+.card,.tool-card,.stat,.stat-strip{background:rgba(255,253,250,.74) !important;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1);border-color:rgba(255,255,255,.6) !important;box-shadow:0 1px 2px rgba(62,74,51,.05),0 28px 64px -24px rgba(62,74,51,.2),inset 0 1px 0 rgba(255,255,255,.5) !important}
+.tool-card{box-shadow:0 1px 2px rgba(62,74,51,.05),0 22px 50px -22px rgba(62,74,51,.2),inset 0 1px 0 rgba(255,255,255,.5) !important}
+.tool-card:hover{box-shadow:0 2px 6px rgba(62,74,51,.06),0 30px 60px -22px rgba(62,74,51,.28),inset 0 1px 0 rgba(255,255,255,.55) !important}
+/* hero-kort: rikere lagdelt skygge + topp-highlight + film-korn-overlay */
+.hero-card{box-shadow:0 2px 6px rgba(62,74,51,.06),0 14px 30px -10px rgba(62,74,51,.14),0 34px 80px -26px rgba(40,48,30,.4),inset 0 1px 0 rgba(255,255,255,.12)}
+.hero-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(700px 400px at 88% -20%, rgba(197,206,186,.16), transparent 60%)}
+body.calm .app-bg .ab,body.calm .app-bg .smoke{animation:none}
+@media(prefers-reduced-motion:reduce){.app-bg .ab,.app-bg .smoke{animation:none}}
+/* søvnvindu-klokke */
+.clock-wrap{position:relative;width:212px;height:212px;margin:6px auto 12px}
+.sleep-clock{width:212px;height:212px;display:block;color:var(--ink-faint)}
+.clock-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.clock-center b{font-family:'DM Serif Display',serif;font-size:30px;color:var(--ink);line-height:1;letter-spacing:-.01em}
+.clock-center span{font-size:12px;color:var(--ink-faint);margin-top:5px;font-variant-numeric:tabular-nums}
+.clock-legend{display:flex;justify-content:center;gap:20px;font-size:11.5px;color:var(--ink-faint)}
+.clock-legend span{display:inline-flex;align-items:center;gap:7px}
+.clock-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.clock-legend .lg-clay{background:linear-gradient(180deg,#D4A074,#C8956D)}
+.clock-legend .lg-green{background:linear-gradient(180deg,#4A5838,#3E4A33)}
+
+/* ============================================================
+   VERKTØYHJUL (radial dial) — portert fra prototypen
+   Ikon-noder i sirkel, aktiv node fremst/størst, mørkegrønt
+   detalj-panel, stigende bobler som «slosher» ved spinn.
+   Brukes i verktøy-launcheren (ADHD/autisme).
+   ============================================================ */
+/* pustende sage-bobler i bakgrunnen på verktøysidene */
+.tool-wheel{position:relative}
+.adhd-bubbles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+/* ytre: kontinuerlig stigning bunn→topp + fade — avbrytes ALDRI av spinn */
+.bub{position:absolute;bottom:-40px;will-change:transform,opacity;animation:bubRise var(--d,9s) linear infinite,bubFade var(--d,9s) linear infinite;animation-delay:var(--delay,0s)}
+@keyframes bubRise{0%{transform:translateY(0)}100%{transform:translateY(-112vh)}}
+@keyframes bubFade{0%{opacity:0}8%{opacity:.78}55%{opacity:.85}88%{opacity:.5}100%{opacity:0}}
+/* indre: mild sidelengs sway (egen akse, så stigningen er urørt) */
+.bub i{display:block;width:var(--size,22px);height:var(--size,22px);border-radius:50%;background:radial-gradient(circle at 34% 30%, rgba(168,180,154,.55), rgba(92,107,74,.24) 68%, transparent);box-shadow:0 6px 18px -4px rgba(92,107,74,.2),inset 0 1px 2px rgba(255,255,255,.45);will-change:transform;animation:bubSway var(--sd,4s) ease-in-out infinite}
+@keyframes bubSway{0%,100%{transform:translateX(-7px)}50%{transform:translateX(8px)}}
+/* spinn → bobler «slosher» sidelengs (kun X-akse) mens de fortsetter å stige uten lag */
+.adhd-bubbles.agitate .bub i{animation:bubSlosh .95s cubic-bezier(.36,.07,.19,.97)}
+.adhd-bubbles.agitate .bub:nth-child(2n) i{animation-duration:1.12s}
+.adhd-bubbles.agitate .bub:nth-child(3n) i{animation-duration:.82s}
+@keyframes bubSlosh{0%{transform:translateX(0)}13%{transform:translateX(-20px)}30%{transform:translateX(16px)}48%{transform:translateX(-12px)}66%{transform:translateX(8px)}82%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+/* selve hjul-scenen: dial-kolonne + detalj-panel */
+.stage{position:relative;z-index:1;display:grid;grid-template-columns:minmax(360px,1fr) 0.92fr;gap:52px;align-items:center;margin-top:6px;min-height:520px}
+.dial-col{position:relative;height:520px;overflow:visible}
+.dial-col::before{content:"";position:absolute;left:50%;top:50%;width:800px;height:800px;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;filter:blur(54px);background:radial-gradient(circle, rgba(92,107,74,.24) 0%, rgba(200,149,109,.11) 40%, transparent 70%);animation:orbBreath 19s ease-in-out infinite alternate}
+@keyframes orbBreath{0%{transform:translate(-50%,-50%) scale(.96)}100%{transform:translate(-54%,-46%) scale(1.2)}}
+.dial{position:absolute;top:50%;left:50%;width:0;height:0}
+.dial-ring{position:absolute;top:50%;left:44%;width:var(--dring);height:var(--dring);margin:calc(var(--dring)/-2) 0 0 calc(var(--dring)/-2);border:1.5px dashed rgba(92,107,74,.16);border-radius:50%;pointer-events:none}
+.dial-hub{position:absolute;top:50%;left:44%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:var(--sage-light);box-shadow:0 0 0 6px rgba(168,180,154,.14)}
+.node{position:absolute;top:0;left:0;display:flex;align-items:center;justify-content:center;width:78px;height:78px;margin:-39px 0 0 -39px;border-radius:23px;background:rgba(255,251,245,.6);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 18px -8px rgba(92,82,55,.32);cursor:pointer;will-change:transform,opacity;transition:transform .7s cubic-bezier(.5,1.2,.4,1),opacity .7s var(--ease),box-shadow .4s var(--ease),background .4s var(--ease)}
+.node svg{width:40px;height:40px;color:var(--accent);transition:width .4s var(--ease),height .4s var(--ease)}
+.node .tag{position:absolute;top:-7px;right:-7px;font-size:8.5px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:var(--r-pill);background:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(60,50,35,.18);opacity:0;transition:opacity .3s}
+.node.is-active .tag{opacity:1}
+.node.is-active{background:linear-gradient(150deg,#FFFCF7,#F0DFCB);border-color:rgba(200,149,109,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -3px 8px rgba(200,149,109,.18),0 18px 38px -10px rgba(200,149,109,.55)}
+.node.is-active svg{width:52px;height:52px;color:#9C6A3C}
+/* detalj-panel = mørkegrønt kort (kontrast mot lys side) */
+.detail{position:relative;z-index:4;margin-left:0;color:#E9EDE0;background:radial-gradient(680px 380px at 82% -12%, rgba(197,206,186,.18), transparent 60%),linear-gradient(152deg,#2B331F,#3E4A33 56%,#4E5C3D);border:none;border-radius:26px;padding:30px 34px;box-shadow:0 2px 6px rgba(40,48,30,.2),0 34px 80px -26px rgba(40,48,30,.5),inset 0 1px 0 rgba(255,255,255,.1);min-height:282px;display:flex;flex-direction:column;overflow:hidden}
+.detail::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(80% 60% at 22% 12%, rgba(255,255,255,.08), transparent 58%)}
+.detail>*{position:relative}
+.detail .d-head{display:flex;align-items:center;gap:8px;margin-bottom:18px;justify-content:space-between}
+.detail .d-count{font-size:12px;font-weight:600;letter-spacing:.04em;color:rgba(205,213,194,.8)}
+.detail .d-status{font-size:12px;color:rgba(205,213,194,.8);display:inline-flex;align-items:center;gap:6px}
+.detail .d-status .sdot{width:7px;height:7px;border-radius:50%;background:var(--sage-light)}
+.detail .d-status.started{color:#A7CDB2;font-weight:600}.detail .d-status.started .sdot{background:#A7CDB2;box-shadow:0 0 0 3px rgba(167,205,178,.2)}
+.detail .d-ico{width:62px;height:62px;border-radius:19px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:linear-gradient(150deg,#FFFCF7,#F0DFCB);border:1px solid rgba(200,149,109,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 22px -10px rgba(0,0,0,.35)}
+.detail .d-ico svg{width:30px;height:30px;color:#9C6A3C}
+.detail h2{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:-.01em;font-size:29px;line-height:1.06;margin-bottom:10px;color:#fff}
+.detail .d-desc{font-size:14.5px;color:#CFD7C4;line-height:1.6;max-width:44ch;flex:1}
+.detail .d-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.detail .btn{background:linear-gradient(180deg,#EEF1E7,#DBE1CE);color:#2E3726;box-shadow:0 1px 2px rgba(40,48,30,.3),0 10px 22px -10px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.7)}
+.detail .btn:hover{background:linear-gradient(180deg,#F3F5EC,#E3E8D6);transform:translateY(-1px)}
+.detail .btn.ghost{background:none;color:#E9EDE0;border:1.5px solid rgba(233,237,224,.38);box-shadow:none}
+.detail .btn.ghost:hover{background:rgba(255,255,255,.08)}
+.detail .fade{transition:opacity .2s var(--ease),transform .3s var(--ease)}
+.detail.swapping .fade{opacity:0;transform:translateY(6px)}
+.dial-hint{margin-top:14px;font-size:12.5px;color:rgba(205,213,194,.74);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dial-hint kbd{font:inherit;font-size:11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:2px 7px;color:#E9EDE0}
+/* «Vis alle som liste»-toggle: faller tilbake til flatt rutenett */
+.wheel-listtoggle{margin:10px 0 0;text-align:center}
+.wheel-listtoggle button{background:none;border:none;color:var(--sage);font-weight:600;font-size:13px;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.tool-wheel.as-list .stage,.tool-wheel.as-list .adhd-bubbles{display:none}
+.tool-wheel:not(.as-list) .module-grid{display:none}
+@media(max-width:840px){
+  .stage{grid-template-columns:1fr;min-height:0;gap:8px;margin-top:4px}
+  .dial-col{height:200px}
+  .dial,.dial-ring,.dial-hub{top:118px;left:50%}
+  .dial-col::before{left:50%;top:118px}
+  .node{width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:18px}
+  .node svg{width:28px;height:28px}
+  .node.is-active svg{width:35px;height:35px}
+  .detail{padding:28px 22px;min-height:0;margin-left:0}
+  .detail h2{font-size:28px}.detail .d-desc{font-size:15.5px}
+  .dial-hint{justify-content:center}
+}
+/* Ro-modus / redusert bevegelse: slå av all hjul-/boble-/bakgrunnsanimasjon */
+body.calm .dial-col::before,body.calm .node,body.calm .bub,body.calm .bub i{animation:none !important}
+body.calm .adhd-bubbles{display:none}
+@media(prefers-reduced-motion:reduce){.dial-col::before,.node,.bub,.bub i{animation:none !important}.adhd-bubbles{display:none}}
+
+/* ============================================================
+   HIGH-END MØRK MODUS — varm oliven-sort, token-nivå (dekker mest)
+   ============================================================ */
+body.dark{
+  --bg:#16180F; --bg-warm:#20231A; --card:#23261C; --border:rgba(255,255,255,.12);
+  --ink:#ECE9E1; --ink-soft:#BBB6AB; --ink-faint:#938E82;
+  --sage-mist:rgba(168,180,154,.18); --sage-pale:#9FAE8C; --good:#82B891; --accent:#D8A77B;
+  --shadow:0 12px 40px -18px rgba(0,0,0,.55); --shadow-lift:0 20px 52px -18px rgba(0,0,0,.65);
+  background:radial-gradient(125% 110% at 52% 6%, #23271C 0%, #191C12 46%, #111308 100%) !important;
+}
+body.dark .card,body.dark .tool-card,body.dark .stat{background:rgba(34,38,27,.7) !important;border-color:rgba(255,255,255,.08) !important;box-shadow:0 1px 2px rgba(0,0,0,.3),0 22px 50px -24px rgba(0,0,0,.5) !important}
+body.dark::after{background:radial-gradient(120% 130% at 50% 34%, transparent 46%, rgba(0,0,0,.34) 100%)}
+body.dark .app-bg .smoke{mix-blend-mode:screen;opacity:.05}
+/* MØRK modus: grønne/salvie-bobler (som login-panelet) */
+body.dark .app-bg .ab1{background:radial-gradient(circle,rgba(92,107,74,.5),transparent 72%)}
+body.dark .app-bg .ab2{background:radial-gradient(circle,rgba(168,180,154,.5),transparent 72%)}
+body.dark .app-bg .ab3{background:radial-gradient(circle,rgba(200,149,109,.24),transparent 72%)}
+body.dark .app-bg .ab4{background:radial-gradient(circle,rgba(197,206,186,.44),transparent 72%)}
+body.dark .app-bg .ab5{background:radial-gradient(circle,rgba(168,180,154,.3),transparent 72%)}
+/* verktøyhjul i mørk modus */
+body.dark .node{background:rgba(42,47,34,.6);border-color:rgba(255,255,255,.12)}
+body.dark .node svg{color:#DAA97C}
+body.dark .node.is-active,body.dark .detail .d-ico{background:linear-gradient(150deg,#3a4130,#2b3022);border-color:rgba(218,169,124,.3)}
+body.dark .node.is-active svg,body.dark .detail .d-ico svg{color:#DAA97C}
+body.dark .dial-hint kbd{background:#23261C;color:var(--ink-soft)}
+body.dark input,body.dark textarea,body.dark select{background:#20231A;color:var(--ink);border-color:rgba(255,255,255,.14)}
+body.dark .result-banner{background:linear-gradient(135deg,rgba(40,45,33,.7),rgba(34,38,27,.6));border-color:rgba(255,255,255,.1)}
+body.dark .seg button,body.dark .tab,body.dark .emo,body.dark .isi-opts button,body.dark .focus-presets button{background:rgba(40,44,33,.6) !important;border-color:rgba(255,255,255,.12) !important;color:var(--ink-soft)}
+body.dark .tab.active,body.dark .seg button.sel,body.dark .isi-opts button.sel,body.dark .focus-presets button.sel,body.dark .emo.sel{background:rgba(168,180,154,.2) !important;color:#E7EBDF !important}
+body.dark .table th,body.dark .table td{border-color:rgba(255,255,255,.1)}
+body.dark .check-box,body.dark .acc-sage .ico,body.dark .tool-head .th-ico,body.dark .edu-num{background:rgba(40,44,33,.7);color:#C9D2BD}
+body.dark .t-done-msg,body.dark .cat-rutine{background:rgba(168,180,154,.18);color:#C9D2BD}
+body.dark .btn.ghost,body.dark .btn.subtle{color:#C9D2BD}
+body.dark .pl-sugg button{background:rgba(40,44,33,.6);color:#C9D2BD}
+/* dark-toggle (sol/måne) */
+.theme-tog svg{width:24px;height:24px}
+</style>
+</head>
+<body>
+
+<!-- Intro-animasjon ved app-åpning (kun standalone/hjemskjerm, hopp over ved trykk) -->
+<div id="introSplash" aria-hidden="true">
+  <video id="introVideo" muted playsinline preload="none"></video>
+</div>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-brand">
+    <div class="login-atmos" aria-hidden="true">
+      <span class="orb" style="left:8%;top:16%;width:140px;height:140px"></span>
+      <span class="orb o2" style="left:58%;top:50%;width:110px;height:110px;animation-delay:-2.4s"></span>
+      <span class="orb" style="left:26%;top:66%;width:84px;height:84px;animation-delay:-4s"></span>
+      <span class="orb o2" style="left:72%;top:14%;width:66px;height:66px;animation-delay:-1.2s"></span>
+      <span class="lbub" style="left:16%;width:20px;height:20px;--d:11s;animation-delay:-2s"></span>
+      <span class="lbub" style="left:34%;width:13px;height:13px;--d:8.5s;animation-delay:-5s"></span>
+      <span class="lbub" style="left:52%;width:24px;height:24px;--d:13s;animation-delay:-7s"></span>
+      <span class="lbub" style="left:67%;width:15px;height:15px;--d:9.5s;animation-delay:-1s"></span>
+      <span class="lbub" style="left:80%;width:18px;height:18px;--d:12s;animation-delay:-4.5s"></span>
+      <span class="lbub" style="left:44%;width:11px;height:11px;--d:7.5s;animation-delay:-3s"></span>
+    </div>
+    <div class="org">Oslo Psykologkontor</div>
+    <div>
+      <div class="logo-anim" aria-hidden="true">
+        <img src="/img/logo-hvit.png" alt="" width="190" height="100" style="height:auto">
+      </div>
+      <h2>Et rolig sted å jobbe med det som er vanskelig.</h2>
+      <p>Verktøyene her er dine. Bruk det som hjelper, hopp over resten — og ta det i ditt tempo.</p>
+    </div>
+    <div style="font-size:12.5px;color:#9FAD8E">oslopsykologkontor.no</div>
+    <div class="leaf"></div><div class="leaf l2"></div>
+  </div>
+  <div class="login-side">
+    <div class="login-card">
+      <div class="logo-anim" aria-hidden="true" style="margin-bottom:12px">
+        <img src="/img/logo.png" alt="" width="130" height="68" style="height:auto;margin:0 auto">
+      </div>
+      <div class="org-mobile">Oslo Psykologkontor</div>
+      <h1>Klientportalen</h1>
+      <p class="sub">Logg inn med din personlige tilgangskode</p>
+      <div class="error-msg" id="loginError"></div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="portalCode">Din tilgangskode</label>
+          <input type="password" id="portalCode" placeholder="Skriv inn din kode" autocomplete="off">
+        </div>
+        <div class="login-row">
+          <input type="checkbox" id="rememberCode"> <label for="rememberCode">Husk koden min på denne enheten</label>
+        </div>
+        <button type="submit" class="btn" style="width:100%">Logg inn</button>
+      </form>
+      <p class="login-foot">Koden fikk du fra din behandler ved oppstart av programmet.<br>Kontakt oss hvis du har problemer med innlogging.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app" id="app">
+  <div class="app-bg" aria-hidden="true"><span class="ab ab1"></span><span class="ab ab2"></span><span class="ab ab3"></span><span class="ab ab4"></span><span class="ab ab5"></span><span class="smoke"></span></div>
+  <aside class="sidebar">
+    <div class="side-org">Oslo Psykologkontor</div>
+    <div class="side-title">Klientportalen</div>
+    <div class="user-chip">
+      <div class="name" id="userName">Mitt program</div>
+      <div class="prog" id="userProg">Søvn-bootcamp · uke 3 av 8</div>
+    </div>
+    <nav class="nav" id="mainNav"><!-- bygges av JS --></nav>
+    <div class="side-foot">
+      <a class="nav-item theme-tog" onclick="toggleDark()" id="themeToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span id="themeLabel">Mørk modus</span></a>
+      <a class="nav-item" onclick="toggleCalm()" id="calmToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2"/></svg><span id="calmLabel">Ro-modus</span></a>
+      <a class="nav-item" onclick="handleLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Logg ut</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <div class="date" id="topDate">tirsdag 9. juni</div>
+        <h1 id="topTitle">God morgen</h1>
+      </div>
+      <span class="pill tint-sage" id="topBadge">Søvn-bootcamp · uke 3 av 8</span>
+    </div>
+    <div id="views"><!-- bygges av JS --></div>
+  </main>
+
+  <nav class="bottom-nav"><div class="bn-row" id="bottomNav"></div></nav>
+</div>
+
+<script>
+'use strict';
+/* ============================================================
+   KLIENTPORTAL v2 — FULL: v2-design + komplett funksjonalitet
+   fra produksjonsversjonen (GAS-backend, ekte login, demo-
+   fallback, print, deling, clearAllToolData). Kandidat for å
+   erstatte /min-side/index.html etter godkjenning.
+   ============================================================ */
+var CONFIG = {
+  portalUrl: 'https://script.google.com/macros/s/AKfycbzMVUsBC1FRoE6KAvYZsgryUGCEQPZpTgGjvYxIoa-2wbUyXJcWuL8o6gubYfphvBsNiw/exec'
+};
+
+/* ============================================================
+   PREVIEW/MOCK-MODUS
+   På den ekte prod-verten (oslopsykologkontor.no) kjører appen
+   som normalt mot GAS-backenden. På ALLE andre verter (privat
+   forhåndsvisnings-host, localhost, fil) slår mock-modus seg på
+   automatisk: ekte backend kontaktes ikke, og mock-brukerne
+   (K001/SØVN = søvn, K002/ADHD = adhd) logger inn lokalt.
+   Tving fram med ?preview=1, eller skru av med ?live=1.
+   ============================================================ */
+var PREVIEW = (function(){
+  try {
+    if (/[?&#]live(=1)?\b/.test(location.href)) return false;
+    if (/[?&#]preview(=1)?\b/.test(location.href)) return true;
+    return location.hostname !== 'oslopsykologkontor.no';
+  } catch(e){ return false; }
+})();
+
+// ---------- ikonbibliotek (inline SVG, stroke = currentColor) ----------
+var ICONS = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 14.5A8.5 8.5 0 119.5 3.5a7 7 0 1011 11z"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M4 19.5A2.5 2.5 0 006.5 22H20v-5"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11.5l2.5 2.5L17 8.5"/><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/></svg>',
+  clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5M9 10h6M9 14h6M9 18h3.5"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4.5 13.5H11L9.5 22 19 10h-6.5L13 2z" stroke-linejoin="round"/></svg>',
+  puzzle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3.5a1.8 1.8 0 113.6 0V5H17a1.5 1.5 0 011.5 1.5v3h1.4a1.8 1.8 0 110 3.6H18.5v3.4A1.5 1.5 0 0117 18h-3v1.5a1.8 1.8 0 11-3.6 0V18H7a1.5 1.5 0 01-1.5-1.5v-3.4H4.1a1.8 1.8 0 110-3.6h1.4v-3A1.5 1.5 0 017 5h3V3.5z"/></svg>',
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a7.5 7.5 0 01-7.5 7.5H8l-4.5 3 1-4.6A7.5 7.5 0 1121 11.5z"/></svg>',
+  tick:'<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="12.5" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  hour:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13l2.5 2M9.5 2.5h5"/><path d="M12 2.5v3"/></svg>',
+  cols:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="5.2" height="16" rx="1.8"/><rect x="9.4" y="4" width="5.2" height="10" rx="1.8"/><rect x="15.8" y="4" width="5.2" height="13" rx="1.8"/></svg>',
+  repeat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 2.5l3.5 3.5L17 9.5"/><path d="M3.5 11V9.5A3.5 3.5 0 017 6h13.5M7 21.5L3.5 18 7 14.5"/><path d="M20.5 13v1.5A3.5 3.5 0 0117 18H3.5"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20.5S3.5 15.5 3.5 9.5a4.6 4.6 0 018.5-2.4A4.6 4.6 0 0120.5 9.5c0 6-8.5 11-8.5 11z" stroke-linejoin="round"/></svg>',
+  steps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4v-4h4v-4h4V8h4"/><path d="M4 20h16"/></svg>',
+  battery:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="8" width="16" height="9" rx="2.5"/><path d="M21.5 11v3"/><path d="M6 11v3M9.5 11v3"/></svg>',
+  shuffle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h3.5l4 5 4-5H21M3 17h3.5M14.5 17H21"/><path d="M18.5 4.5L21 7l-2.5 2.5M18.5 14.5L21 17l-2.5 2.5"/><path d="M10.5 12l4 5"/></svg>',
+  sliders:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4v6m0 4v6M12 4v2m0 4v10M19 4v10m0 4v2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="19" cy="16" r="2"/></svg>',
+  ring:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M5.7 5.7l3.5 3.5M14.8 14.8l3.5 3.5M18.3 5.7l-3.5 3.5M9.2 14.8l-3.5 3.5"/></svg>',
+  idcard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="8.5" cy="11" r="2"/><path d="M5.8 16a3 3 0 015.4 0M14 9.5h4M14 13h4"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5l4 4L9 19l-5 1 1-5L16.5 3.5z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  arrowup:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg>',
+  arrowdn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5.5 12.5L12 19l6.5-6.5"/></svg>'
+};
+function ic(name){ return ICONS[name] || ''; }
+function escapeHtml(s){
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ---------- state + demobruker ----------
+var state = {
+  user: null,
+  portalCode: '',
+  sleepData: [],
+  messages: [],
+  currentView: 'dashboard',
+  isiAnswers: [],
+  pendingShare: null,
+  demoMode: PREVIEW
+};
+
+// ---------- navigasjon (modulgruppert) ----------
+var NAV = [
+  { group:'Oversikt' },
+  { id:'dashboard', label:'Hjem', icon:'home', module:'core' },
+  { group:'Søvn-bootcamp', module:'sleep' },
+  { id:'diary', label:'Søvndagbok', icon:'moon', module:'sleep' },
+  { id:'education', label:'Læringsmoduler', icon:'book', module:'sleep' },
+  { id:'homework', label:'Ukens oppgaver', icon:'check', module:'sleep' },
+  { id:'assessment', label:'Kartlegging (ISI)', icon:'clip', module:'sleep' },
+  { group:'Mine verktøy' },
+  { id:'adhd', label:'ADHD-verktøy', icon:'bolt', module:'adhd' },
+  { id:'autism', label:'Autisme-verktøy', icon:'puzzle', module:'autism' },
+  { group:'Kontakt' },
+  { id:'messages', label:'Meldinger', icon:'chat', module:'core' }
+];
+var VIEW_TITLES = {
+  dashboard:'', diary:'Søvndagbok', education:'Læringsmoduler', homework:'Ukens oppgaver',
+  assessment:'Kartlegging', adhd:'ADHD-verktøy', autism:'Autisme-verktøy', messages:'Meldinger'
+};
+
+function hasModule(id){ return !!(state.user && state.user.modules && state.user.modules.indexOf(id) !== -1); }
+
+// Modul-roadmap (vises i «Flere moduler» på Hjem).
+//  built:true  = modulen finnes, men brukeren har den ikke → «Be om tilgang»
+//  built:false = ikke bygget ennå → «Ikke bygget»
+var FUTURE_MODULES = [
+  { id:'sleep',  icon:'moon',   title:'Søvn-bootcamp',   desc:'Søvndagbok, søvnvindu og ukentlige moduler', acc:'acc-sage',   built:true },
+  { id:'adhd',   icon:'bolt',   title:'ADHD-verktøy',    desc:'Struktur, tid og følelser',                  acc:'acc-accent', built:true },
+  { id:'autism', icon:'puzzle', title:'Autisme-verktøy', desc:'Forutsigbarhet, energi og kommunikasjon',    acc:'acc-teal',   built:true },
+  { id:'arbeid', icon:'bolt',   title:'Arbeidsliv',      desc:'ADHD og autisme på jobb og i studier',       acc:'acc-accent', built:false },
+  { id:'angst',  icon:'heart',  title:'Angst & uro',     desc:'Uro, bekymring og eksponering — steg for steg', acc:'acc-sage', built:false },
+  { id:'par',    icon:'chat',   title:'Parterapi',       desc:'Kommunikasjon og samspill i parforhold',     acc:'acc-sage',   built:false }
+];
+
+function buildNav(){
+  var html = '';
+  NAV.forEach(function(n){
+    if (n.group){
+      if (n.module && !hasModule(n.module)) return;
+      html += '<div class="nav-label">' + n.group + '</div>';
+      return;
+    }
+    if (n.module !== 'core' && !hasModule(n.module)) return;
+    html += '<a class="nav-item' + (n.id===state.currentView?' active':'') + '" data-view="' + n.id + '" onclick="switchView(\'' + n.id + '\')">' + ic(n.icon) + n.label + '</a>';
+  });
+  document.getElementById('mainNav').innerHTML = html;
+  // bunn-nav (mobil): de fem viktigste
+  var bottom = ['dashboard','diary','adhd','autism','messages'].filter(function(v){
+    var n = NAV.find(function(x){ return x.id===v; });
+    return n && (n.module==='core' || hasModule(n.module));
+  });
+  document.getElementById('bottomNav').innerHTML = bottom.map(function(v){
+    var n = NAV.find(function(x){ return x.id===v; });
+    var lbl = v==='dashboard' ? 'Hjem' : (v==='diary' ? 'Søvn' : (v==='adhd' ? 'ADHD' : (v==='autism' ? 'Autisme' : 'Meldinger')));
+    return '<button class="bn-item' + (v===state.currentView?' active':'') + '" data-view="' + v + '" onclick="switchView(\'' + v + '\')">' + ic(n.icon) + lbl + '</button>';
+  }).join('');
+}
+
+// ---------- views (skall) ----------
+function buildViews(){
+  var v = document.getElementById('views');
+  v.innerHTML =
+    '<div class="view" id="dashboard-view"></div>' +
+    '<div class="view" id="diary-view"></div>' +
+    '<div class="view" id="education-view"></div>' +
+    '<div class="view" id="homework-view"></div>' +
+    '<div class="view" id="assessment-view"></div>' +
+    '<div class="view" id="adhd-view"></div>' +
+    '<div class="view" id="autism-view"></div>' +
+    '<div class="view" id="messages-view"></div>';
+}
+function switchView(name, histMode){
+  state.currentView = name;
+  // Nettleserens Tilbake/Frem skal navigere inne i portalen (som i behandlerportalen)
+  if (histMode !== 'none'){
+    try {
+      var hs = { portalView: name };
+      if (histMode === 'replace') history.replaceState(hs, '', '#' + name);
+      else history.pushState(hs, '', '#' + name);
+    } catch(e){}
+  }
+  document.querySelectorAll('.view').forEach(function(el){ el.classList.remove('active'); });
+  var el = document.getElementById(name + '-view');
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item[data-view], .bn-item[data-view]').forEach(function(item){
+    item.classList.toggle('active', item.getAttribute('data-view') === name);
+  });
+  var greetEl = document.getElementById('topTitle');
+  if (name === 'dashboard'){ greetEl.textContent = greeting(); }
+  else { greetEl.textContent = VIEW_TITLES[name] || ''; }
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'diary') renderDiary();
+  if (name === 'education') renderEducation();
+  if (name === 'homework') renderHomework();
+  if (name === 'assessment') renderAssessment();
+  if (name === 'adhd') renderToolLauncher('adhd');
+  if (name === 'autism') renderToolLauncher('autism');
+  if (name === 'messages') renderMessages();
+  window.scrollTo({ top:0, behavior:'auto' });
+}
+function greeting(){
+  var h = new Date().getHours();
+  if (h < 5)  return 'God natt';
+  if (h < 10) return 'God morgen';
+  if (h < 18) return 'God dag';
+  return 'God kveld';
+}
+
+// ---------- API-LAG (GAS-backend med demo-fallback) ----------
+function apiCall(action, data){
+  if (state.demoMode) return Promise.resolve(getDemoData(action, data));
+  return fetch(CONFIG.portalUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(Object.assign({ action: action, code: state.portalCode }, data))
+  })
+  .then(function(r){ return r.json(); })
+  .catch(function(err){
+    console.warn('Backend utilgjengelig, bruker demodata for: ' + action);
+    return getDemoData(action, data);
+  });
+}
+// Mock-brukere for testing av modultilgang (legg til flere ved behov):
+//  • OPK1 → kun Søvn-bootcamp
+//  • OPK2 → ADHD-modulen
+var DEMO_USERS = {
+  OPK1: {
+    valid: true, clientId: 'OPK1', program: 'Søvn-bootcamp',
+    week: 3, totalWeeks: 8, startDate: '2026-03-16', expiresDate: '2026-05-25',
+    therapist: 'Torbjørn', sleepWindowStart: '23:30', sleepWindowEnd: '06:30',
+    modules: ['sleep']
+  },
+  OPK2: {
+    valid: true, clientId: 'OPK2', program: 'ADHD-verktøy',
+    week: 2, totalWeeks: 10, startDate: '2026-05-11', expiresDate: '2026-08-17',
+    therapist: 'Torbjørn', sleepWindowStart: '00:00', sleepWindowEnd: '07:00',
+    modules: ['adhd']
+  }
+};
+// Aksepterte koder → mock-bruker (alias beholdt som backup)
+var DEMO_CODES = {
+  OPK1:'OPK1', SØVN:'OPK1', SOVN:'OPK1', K001:'OPK1', DEMO:'OPK1',
+  OPK2:'OPK2', ADHD:'OPK2', K002:'OPK2'
+};
+function getDemoData(action, data){
+  if (action === 'clientLogin'){
+    var code = (data && data.code ? String(data.code) : '').trim().toUpperCase();
+    return DEMO_USERS[DEMO_CODES[code] || 'OPK1']; // standard: kun søvn
+  }
+  if (action === 'getSleepEntries') return { entries: generateDemoSleepData() };
+  if (action === 'saveSleepEntry') return { success: true, entry: data.entry };
+  if (action === 'getMessages'){
+    return { messages: [
+      { id:1, sender:'behandler', name:'Torbjørn', timestamp:'2026-03-12T14:30:00', text:'Velkommen til Søvn-bootcamp! Her kan du sende meg spørsmål mellom samlingene. Jeg svarer normalt innen 1-2 virkedager.' },
+      { id:2, sender:'klient', name:'Klient', timestamp:'2026-03-18T19:45:00', text:'Hei! Jeg sliter med å holde meg til søvnvinduet i helgene. Er det greit å være fleksibel?' },
+      { id:3, sender:'behandler', name:'Torbjørn', timestamp:'2026-03-19T10:15:00', text:'Godt spørsmål! I starten er det viktig å holde seg til vinduet konsekvent, også i helgene. Det er der den største endringen skjer. Prøv å holde ut de første ukene — det blir lettere.' }
+    ]};
+  }
+  if (action === 'sendMessage') return { success: true };
+  if (action === 'updateHomework') return { success: true };
+  if (action === 'saveISI') return { success: true };
+  return { success: true };
+}
+// ---------- LOGIN ----------
+document.getElementById('loginForm').addEventListener('submit', handleLogin);
+function handleLogin(e){
+  e.preventDefault();
+  var code = document.getElementById('portalCode').value.trim();
+  if (!code){ showLoginError('Vennligst skriv inn din tilgangskode'); return; }
+  state.portalCode = code;
+  state.demoMode = PREVIEW;
+  apiCall('clientLogin', { code: code })
+    .then(function(response){
+      if (response.valid){
+        if (document.getElementById('rememberCode').checked){
+          localStorage.setItem('portalCode', code);
+        } else {
+          localStorage.removeItem('portalCode');
+        }
+        loginSuccess(response);
+      } else {
+        showLoginError('Ugyldig tilgangskode. Sjekk at du har skrevet den riktig.');
+      }
+    })
+    .catch(function(err){
+      console.error('Login error:', err);
+      showLoginError('Innlogging feilet. Prøv igjen.');
+    });
+}
+function showLoginError(msg){
+  var el = document.getElementById('loginError');
+  el.textContent = msg; el.style.display = 'block';
+}
+function enterDemo(code){
+  state.demoMode = true;
+  state.portalCode = code || 'OPK1';
+  loginSuccess(getDemoData('clientLogin', { code: code || 'OPK1' }));
+}
+function loginSuccess(response){
+  state.user = response;
+  // Bakoverkompatibelt: hvis GAS-svaret ikke har modules, anta søvn (som i live-versjonen)
+  if (!state.user.modules || !state.user.modules.length) state.user.modules = ['sleep'];
+  if (!state.user.totalWeeks) state.user.totalWeeks = 8;
+  state.user.sleepWindow = { bed: response.sleepWindowStart || '23:30', rise: response.sleepWindowEnd || '06:30' };
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  // Anonymisert: vis program og behandler, ikke klientnavn
+  document.getElementById('userName').textContent = state.user.program;
+  document.getElementById('userProg').textContent = 'Behandler: ' + (state.user.therapist || '');
+  document.getElementById('topBadge').textContent = state.user.program + ' · uke ' + state.user.week + ' av ' + state.user.totalWeeks;
+  document.getElementById('topDate').textContent = new Date().toLocaleDateString('no-NO', { weekday:'long', day:'numeric', month:'long' });
+  buildNav(); buildViews(); restoreCalm();
+  switchView('dashboard', 'replace');
+  loadPortalData();
+  playIntro(); // intro-animasjon ved innlogging (alle flater), fader over i portalen
+}
+function toMinFromHM(s){
+  if (typeof s === 'number') return s;
+  if (!s) return 0;
+  var p = String(s).split(':');
+  return (+p[0]) * 60 + (+p[1] || 0);
+}
+// Tåler både backend-format (sleepLatency, tis/tst som "H:MM", bedExit)
+// og internt format (latency, tib/tst i minutter, riseTime)
+function normalizeEntry(e){
+  var n = {
+    date: e.date,
+    bedtime: gasHM(e.bedtime),
+    riseTime: gasHM(e.riseTime || e.bedExit || e.outOfBed),
+    latency: gasNum(e.latency !== '' && e.latency !== undefined && e.latency !== null ? e.latency : e.sleepLatency),
+    waso: gasNum(e.waso),
+    awakenings: gasNum(e.awakenings),
+    tib: (typeof e.tib === 'number') ? e.tib : toMinFromHM(e.tis),
+    tst: (typeof e.tst === 'number') ? e.tst : toMinFromHM(e.tst),
+    se: gasNum(e.se),
+    quality: gasNum(e.quality) || 3,
+    daytime: gasNum(e.daytimeFunction !== '' && e.daytimeFunction !== undefined ? e.daytimeFunction : e.daytime) || 3,
+    medicine: e.medication || e.medicine || false,
+    alcohol: e.alcohol || false
+  };
+  // GAS returnerer ikke tis/tst/se — regn ut fra det vi har
+  if (!n.tib && n.bedtime && (n.riseTime || gasHM(e.finalWake))) {
+    var b = toMinFromHM(n.bedtime), r = toMinFromHM(n.riseTime || gasHM(e.finalWake));
+    if (!isNaN(b) && !isNaN(r)) { if (r <= b) r += 1440; n.tib = r - b; }
+  }
+  if (!n.tst && n.tib) n.tst = Math.max(0, n.tib - n.latency - n.waso);
+  if (!n.se && n.tib && n.tst) n.se = Math.round(n.tst / n.tib * 100);
+  n.date = gasDate(e.date);
+  return n;
+}
+// Hjelpere for GAS/Sheets-formater (ISO-tidsstempler for tid og dato)
+function gasHM(v){
+  if (!v) return '';
+  if (typeof v === 'string' && v.indexOf('T') === -1) return v;
+  var d = new Date(v);
+  if (isNaN(d)) return '';
+  return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+}
+function gasDate(v){
+  if (!v) return '';
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  var d = new Date(v);
+  if (isNaN(d)) return v;
+  return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+}
+function gasNum(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function loadPortalData(){
+  apiCall('getSleepEntries', {}).then(function(response){
+    state.sleepData = (response.entries || []).map(normalizeEntry).sort(function(a,b){
+      return a.date < b.date ? -1 : 1;
+    });
+    if (state.currentView === 'dashboard') renderDashboard();
+    if (state.currentView === 'diary') renderDiary();
+  });
+  apiCall('getMessages', {}).then(function(response){
+    state.messages = response.messages || [];
+    if (state.currentView === 'messages') renderMessages();
+  });
+}
+function toggleDark(){var d=document.body.classList.toggle('dark');var l=document.getElementById('themeLabel');if(l)l.textContent=d?'Lys modus':'Mørk modus';try{localStorage.setItem('opk_dark',d?'1':'0');}catch(e){}}
+(function(){var v=null;try{v=localStorage.getItem('opk_dark');}catch(e){}
+  var on=(v==='1')||(v===null&&window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches);
+  if(on){document.body.classList.add('dark');var l=document.getElementById('themeLabel');if(l)l.textContent='Lys modus';}
+})();
+/* Logo-fallback (inline enso) + preview-hint — virker på enhver host */
+(function(){
+  function enso(color,size){
+    return '<svg viewBox="0 0 100 100" width="'+size+'" height="'+size+'" fill="none" stroke="'+color+'" stroke-width="7" stroke-linecap="round" aria-hidden="true"><path d="M74 28 A33 33 0 1 0 80 64"/></svg>';
+  }
+  function fixLogo(img){
+    if (!img) return;
+    var white = (img.getAttribute('src')||'').indexOf('hvit') !== -1;
+    var span = document.createElement('span');
+    span.style.display = 'inline-block';
+    span.innerHTML = enso(white ? '#EDEAE0' : '#5C6B4A', white ? 64 : 54);
+    img.replaceWith(span);
+  }
+  document.querySelectorAll('.logo-anim img').forEach(function(img){
+    if (img.complete && img.naturalWidth === 0) fixLogo(img);
+    else img.addEventListener('error', function(){ fixLogo(img); });
+  });
+  if (PREVIEW){
+    var sub = document.querySelector('#loginScreen .sub');
+    if (sub && sub.parentNode){
+      var hint = document.createElement('div');
+      hint.style.cssText = 'margin-top:10px;font-size:12.5px;line-height:1.5;color:#8A8578;background:rgba(200,149,109,.10);border:1px solid rgba(200,149,109,.28);border-radius:12px;padding:9px 12px';
+      hint.innerHTML = '<b style="color:#9A7A53">Forhåndsvisning</b> — prøv kode <b>OPK1</b> (søvn-modul) eller <b>OPK2</b> (adhd-modul).';
+      sub.parentNode.insertBefore(hint, sub.nextSibling);
+    }
+  }
+})();
+function handleLogout(){
+  if (!confirm('Er du sikker på at du vil logge ut?')) return;
+  state.user = null;
+  state.portalCode = '';
+  state.demoMode = PREVIEW;
+  localStorage.removeItem('portalCode');
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('portalCode').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+// Husket kode fylles inn ved oppstart
+(function(){
+  try {
+    var saved = localStorage.getItem('portalCode');
+    if (saved){
+      document.getElementById('portalCode').value = saved;
+      document.getElementById('rememberCode').checked = true;
+    }
+  } catch(e){}
+})();
+
+// ---------- demodata: 14 dagers søvndagbok ----------
+function generateDemoSleepData(){
+  var out = [], today = new Date();
+  // svak bedring over tid (uke 1 → uke 3), realistisk støy
+  var latencies = [55,48,62,40,45,38,35, 30,42,28,25,30,22,18];
+  var wasos     = [50,65,40,55,35,45,40, 30,38,25,28,20,22,15];
+  var quality   = [2,2,1,2,3,2,3, 3,2,3,3,4,3,4];
+  for (var i = 13; i >= 0; i--){
+    var d = new Date(today); d.setDate(d.getDate() - i - 1);
+    var idx = 13 - i;
+    var bed = 23 + (idx % 3 === 0 ? 0.5 : 0), rise = 6.5 + (idx % 4 === 0 ? 0.5 : 0);
+    var tib = (24 - bed + rise) * 60;
+    var tst = Math.max(240, tib - latencies[idx] - wasos[idx]);
+    out.push({
+      date: d.toISOString().slice(0,10),
+      bedtime: (bed === 23 ? '23:00' : '23:30'),
+      riseTime: (rise === 6.5 ? '06:30' : '07:00'),
+      latency: latencies[idx], waso: wasos[idx],
+      tib: Math.round(tib), tst: Math.round(tst),
+      se: Math.round(tst / tib * 100),
+      quality: quality[idx]
+    });
+  }
+  return out;
+}
+function fmtMin(min){
+  var h = Math.floor(min / 60), m = Math.round(min % 60);
+  return h + ':' + (m < 10 ? '0' : '') + m;
+}
+function fmtDateShort(iso){
+  var d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('no-NO', { weekday:'short', day:'numeric', month:'short' }).replace(/\./g,'');
+}
+
+// ---------- DASHBORD ----------
+function renderDashboard(){
+  var u = state.user, data = state.sleepData;
+  var sleep = hasModule('sleep');
+  if (sleep && !data.length){
+    document.getElementById('dashboard-view').innerHTML =
+      '<div class="card"><div class="card-title">Velkommen</div><p style="font-size:14.5px">Henter dataene dine… Hvis dette er første gang du er her, starter du med å fylle ut søvndagboken i kveld.</p></div>';
+    return;
+  }
+  var pct = Math.round(u.week / u.totalWeeks * 100);
+  var C = 2 * Math.PI * 44;
+  var last7, avgSe, avgTst, avgLat, prev7, prevSe, streak;
+  if (sleep){
+    last7 = data.slice(-7);
+    avgSe = Math.round(last7.reduce(function(s,e){ return s + e.se; },0) / last7.length);
+    avgTst = Math.round(last7.reduce(function(s,e){ return s + e.tst; },0) / last7.length);
+    avgLat = Math.round(last7.reduce(function(s,e){ return s + e.latency; },0) / last7.length);
+    prev7 = data.slice(0,7);
+    prevSe = Math.round(prev7.reduce(function(s,e){ return s + e.se; },0) / prev7.length);
+    streak = calcStreak();
+  }
+
+  var html = '';
+  // hero-rad
+  html += '<div class="hero-row">';
+  html += '<div class="hero-card"><div class="deco"></div>';
+  html += '<div class="eyebrow" style="color:var(--sage-pale)">Ditt program</div>';
+  html += '<h2>' + escapeHtml(u.program) + '</h2><div class="sub">Du er i gang med uke ' + u.week + ' av ' + u.totalWeeks + ' — godt jobbet så langt.</div>';
+  html += '<div class="hero-flex">';
+  html += '<div class="ring-wrap"><svg width="104" height="104" viewBox="0 0 104 104"><circle class="ring-bg" cx="52" cy="52" r="44" fill="none" stroke-width="9"/><circle class="ring-fg" cx="52" cy="52" r="44" fill="none" stroke-width="9" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct/100)).toFixed(1) + '"/></svg><div class="ring-center"><b>' + pct + '%</b><span>Uke ' + u.week + '/' + u.totalWeeks + '</span></div></div>';
+  html += '<div class="hero-meta">';
+  if (sleep){
+    html += '<div class="row"><b>' + streak + ' dager</b>&nbsp;med dagbok på rad</div>';
+    html += '<div class="row">Søvneffektivitet&nbsp;<b>' + avgSe + '%</b>&nbsp;(' + (avgSe >= prevSe ? '+' : '') + (avgSe - prevSe) + ' siden forrige uke)</div>';
+    var eduNow = EDU[u.week - 1];
+    html += '<div class="row">Neste: <b>Modul ' + u.week + (eduNow ? ' — ' + eduNow.t : '') + '</b></div>';
+  } else {
+    html += '<div class="row"><b>Verktøyene her er dine.</b>&nbsp;Bruk det som hjelper.</div>';
+    html += '<div class="row">Struktur, tid og følelser — ett steg av gangen</div>';
+    html += '<div class="row">Ta det i ditt eget tempo</div>';
+  }
+  html += '</div></div></div>';
+
+  if (sleep){
+    // søvnvindu (med subtil natt-dekor)
+    html += '<div class="card window-card">' + nightDeco() + '<div class="eyebrow">Ditt søvnvindu denne uken</div>';
+    html += renderSleepClock(u.sleepWindow.bed, u.sleepWindow.rise);
+    html += '<div style="font-size:12.5px;color:var(--ink-faint);text-align:center;margin-top:-4px">Basert på din gjennomsnittlige søvntid</div>';
+    html += '</div></div>';
+
+    // statistikk-stripe
+    html += '<div class="stat-strip">';
+    html += stat('Søvneffektivitet', avgSe + '%', deltaTxt(avgSe - prevSe, '%'), avgSe - prevSe);
+    html += stat('Søvntid (snitt)', fmtMin(avgTst), 'siste 7 netter', 0);
+    html += stat('Innsovning', avgLat + ' min', deltaTxt(avgLat - Math.round(prev7.reduce(function(s,e){return s+e.latency;},0)/7), ' min', true), -1);
+    html += stat('Dagbok-streak', streak + ' d', 'uten press — bare info', 0);
+    html += '</div>';
+
+    // dagens + siste registrering
+    html += '<div class="grid-2">';
+    html += '<div class="card"><div class="card-title">I dag</div><div class="checklist" id="dailyChecklist"></div></div>';
+    var le = data[data.length - 1];
+    html += '<div class="card"><div class="card-title">Siste dagbok-registrering</div>';
+    html += '<div style="font-size:13px;color:var(--ink-faint);margin-bottom:10px">' + fmtDateShort(le.date) + '</div>';
+    html += '<div class="result-banner" style="margin-top:0">' + seRing(le.se, 88) +
+            '<div class="metrics"><div class="m"><b>' + fmtMin(le.tst) + '</b><span>Søvntid</span></div>' +
+            '<div class="m"><b>' + le.latency + ' min</b><span>Innsovning</span></div>' +
+            '<div class="m"><b>' + le.quality + '/5</b><span>Kvalitet</span></div></div></div>';
+    html += '<div style="margin-top:16px"><button class="btn small subtle" onclick="switchView(\'diary\')">Åpne søvndagboken →</button></div>';
+    html += '</div></div>';
+  }
+
+  // snarveier til verktøy
+  var shortcuts = '';
+  if (hasModule('adhd'))  shortcuts += toolShortcut('adhd', 'bolt', 'ADHD-verktøy', 'Struktur, tid og følelser', 'acc-accent');
+  if (hasModule('autism')) shortcuts += toolShortcut('autism', 'puzzle', 'Autisme-verktøy', 'Forutsigbarhet, energi og kommunikasjon', 'acc-teal');
+  if (shortcuts){
+    var lead = sleep ? '' : '<p style="font-size:14px;color:var(--ink-faint);margin:-2px 0 14px;max-width:46ch">Velg et verktøy for å komme i gang. Du kan alltid hoppe mellom dem.</p>';
+    html += '<div style="margin-top:18px"><div class="eyebrow" style="margin-bottom:' + (sleep ? '14px' : '10px') + '">Mine verktøy</div>' + lead + '<div class="module-grid">' + shortcuts + '</div></div>';
+  }
+
+  // flere moduler (roadmap) — appen vokser gradvis; det som ikke er klart er merket «Ikke bygget»
+  var future = FUTURE_MODULES.filter(function(m){ return !hasModule(m.id); });
+  if (future.length){
+    var fhtml = future.map(function(m){
+      var badge = m.built
+        ? '<span class="nb-badge ok">Be om tilgang</span>'
+        : '<span class="nb-badge">Ikke bygget</span>';
+      return '<div class="tool-card future' + (m.built ? '' : ' nb') + ' ' + (m.acc || 'acc-sage') + '">' +
+        '<div class="ico">' + ic(m.icon) + '</div>' +
+        '<h3>' + m.title + '</h3><p>' + m.desc + '</p>' +
+        '<div class="meta">' + badge + '</div></div>';
+    }).join('');
+    html += '<div style="margin-top:22px"><div class="eyebrow" style="margin-bottom:6px">Flere moduler</div>' +
+      '<p style="font-size:13px;color:var(--ink-faint);margin:0 0 14px;max-width:52ch">Appen bygges ut gradvis. Dette er på vei — det som ennå ikke er klart, er tydelig merket.</p>' +
+      '<div class="module-grid">' + fhtml + '</div></div>';
+  }
+  document.getElementById('dashboard-view').innerHTML = html;
+  if (sleep) renderDailyChecklist();
+}
+function toolShortcut(view, icon, title, desc, acc){
+  return '<div class="tool-card ' + acc + '" onclick="switchView(\'' + view + '\')"><div class="ico">' + ic(icon) + '</div>' +
+    '<h3>' + title + '</h3><p>' + desc + '</p><div class="meta"><span class="open">Åpne →</span></div></div>';
+}
+function stat(lbl, val, sub, dir){
+  var cls = dir > 0 ? 'up' : 'flat';
+  return '<div class="stat"><div class="lbl">' + lbl + '</div><div class="val">' + val + '</div><div class="delta ' + cls + '">' + sub + '</div></div>';
+}
+function deltaTxt(d, unit, invert){
+  if (d === 0) return 'uendret';
+  var good = invert ? d < 0 : d > 0;
+  return (d > 0 ? '+' : '') + d + unit + (good ? ' — riktig vei' : ' siden forrige uke');
+}
+function calcStreak(){
+  // Tell sammenhengende dager med registrering, bakover fra nyeste
+  var dates = state.sleepData.map(function(e){ return e.date; }).sort();
+  if (!dates.length) return 0;
+  var n = 1;
+  for (var i = dates.length - 1; i > 0; i--){
+    var d1 = new Date(dates[i] + 'T12:00:00'), d0 = new Date(dates[i-1] + 'T12:00:00');
+    if (Math.round((d1 - d0) / 86400000) === 1) n++;
+    else break;
+  }
+  return n;
+}
+/* søvnvindu som 24t-klokke: clay = startvindu, mørkegrønt = utvidelsen */
+function _clkParseH(t){var p=(t||'0:0').split(':');return (+p[0])+(+p[1]||0)/60;}
+function renderSleepClock(bedStr, riseStr, baseDur){
+  var bed=_clkParseH(bedStr), wake=_clkParseH(riseStr);
+  var wakeAdj=wake<=bed?wake+24:wake, total=wakeAdj-bed;
+  if(baseDur==null) baseDur=Math.max(0,total-1);
+  var baseEnd=bed+Math.min(baseDur,total), cx=120,cy=120,R=86,W=20;
+  function Pt(r,h){var a=(h/24)*2*Math.PI-Math.PI/2;return [(cx+r*Math.cos(a)).toFixed(2),(cy+r*Math.sin(a)).toFixed(2)];}
+  function arc(r,h1,h2){var p1=Pt(r,h1),p2=Pt(r,h2),lg=((h2-h1)/24)>0.5?1:0;return 'M'+p1[0]+','+p1[1]+' A'+r+','+r+' 0 '+lg+' 1 '+p2[0]+','+p2[1];}
+  var s='<defs><linearGradient id="clayG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D8A77B"/><stop offset="1" stop-color="#B17A4B"/></linearGradient><linearGradient id="greenG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#55643F"/><stop offset="1" stop-color="#323F29"/></linearGradient></defs>';
+  s+='<circle cx="120" cy="120" r="'+R+'" fill="none" stroke="currentColor" stroke-opacity=".13" stroke-width="'+W+'"/>';
+  for(var h=0;h<24;h++){var maj=h%6===0;var r1=R-W/2-3,r2=maj?r1-9:r1-5;var a=Pt(r1,h),b2=Pt(r2,h);s+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b2[0]+'" y2="'+b2[1]+'" stroke="currentColor" stroke-opacity="'+(maj?'.5':'.22')+'" stroke-width="'+(maj?1.6:1)+'"/>';}
+  [[0,'00'],[6,'06'],[12,'12'],[18,'18']].forEach(function(L){var p=Pt(R-W/2-21,L[0]);s+='<text x="'+p[0]+'" y="'+p[1]+'" fill="currentColor" fill-opacity=".55" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">'+L[1]+'</text>';});
+  s+='<path d="'+arc(R,bed,wakeAdj)+'" fill="none" stroke="url(#greenG)" stroke-width="'+W+'" stroke-linecap="round"/>';
+  s+='<path d="'+arc(R,bed,baseEnd)+'" fill="none" stroke="url(#clayG)" stroke-width="'+W+'" stroke-linecap="round"/>';
+  var pb=Pt(R,bed),pw=Pt(R,wakeAdj);
+  s+='<circle cx="'+pb[0]+'" cy="'+pb[1]+'" r="3.2" fill="#fff" stroke="#B17A4B" stroke-width="2"/>';
+  s+='<circle cx="'+pw[0]+'" cy="'+pw[1]+'" r="3.2" fill="#fff" stroke="#323F29" stroke-width="2"/>';
+  var hh=Math.floor(total+1e-6),mm=Math.round((total-hh)*60);
+  return '<div class="clock-wrap"><svg class="sleep-clock" viewBox="0 0 240 240" aria-hidden="true">'+s+'</svg>'+
+    '<div class="clock-center"><b>'+hh+'t'+(mm?' '+mm+'m':'')+'</b><span>'+bedStr+'–'+riseStr+'</span></div></div>'+
+    '<div class="clock-legend"><span><i class="lg-clay"></i>Startvindu</span><span><i class="lg-green"></i>Utvidet etterhvert</span></div>';
+}
+function renderWindowTimeline(bed, rise){
+  // akse 20:00 → 10:00 (14 t)
+  function toPos(t){
+    var p = t.split(':'), h = +p[0] + (+p[1])/60;
+    if (h < 12) h += 24;
+    return (h - 20) / 14 * 100;
+  }
+  var l = toPos(bed), r = toPos(rise);
+  var now = new Date(), nh = now.getHours() + now.getMinutes()/60;
+  var nowPos = null;
+  if (nh >= 20 || nh < 10){
+    var adj = nh < 12 ? nh + 24 : nh;
+    nowPos = (adj - 20) / 14 * 100;
+  }
+  var html = '<div class="tl"><div class="tl-bar">';
+  html += '<div class="tl-window" style="left:' + l.toFixed(1) + '%;width:' + (r - l).toFixed(1) + '%"></div>';
+  if (nowPos !== null && nowPos >= 0 && nowPos <= 100) html += '<div class="tl-now" style="left:' + nowPos.toFixed(1) + '%"></div>';
+  html += '</div><div class="tl-ticks"><span>20:00</span><span>23:00</span><span>02:00</span><span>05:00</span><span>08:00</span><span>10:00</span></div></div>';
+  return html;
+}
+function seRing(se, size){
+  var r = size/2 - 7, C = 2 * Math.PI * r;
+  var col = se >= 85 ? 'var(--good)' : (se >= 75 ? 'var(--warn)' : 'var(--bad)');
+  return '<div class="se-ring" style="width:' + size + 'px;height:' + size + 'px;position:relative;flex-shrink:0">' +
+    '<svg width="' + size + '" height="' + size + '" style="transform:rotate(-90deg)"><circle cx="' + size/2 + '" cy="' + size/2 + '" r="' + r + '" fill="none" stroke="rgba(92,107,74,.14)" stroke-width="8"/>' +
+    '<circle cx="' + size/2 + '" cy="' + size/2 + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - se/100)).toFixed(1) + '"/></svg>' +
+    '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:' + (size > 90 ? 20 : 17) + 'px;color:var(--ink)">' + se + '%</b><span style="font-size:9.5px;color:var(--ink-faint);letter-spacing:.08em">SE</span></div></div>';
+}
+var DAILY = [
+  { t:'Fyll ut søvndagboken', s:'Tar under 2 minutter', done:false },
+  { t:'Stå opp 06:30 — også i helgen', s:'Fast oppstå-tid er det viktigste grepet', done:true },
+  { t:'Dagslys innen 1 time etter oppvåkning', s:'Minst 10 minutter ute', done:true },
+  { t:'Ingen koffein etter kl. 14', s:'', done:true },
+  { t:'Skjermfri nedtrapping fra 22:30', s:'Lesing, musikk eller rolig podkast', done:false }
+];
+function renderDailyChecklist(){
+  var el = document.getElementById('dailyChecklist');
+  if (!el) return;
+  el.innerHTML = DAILY.map(function(d, i){
+    return '<div class="check-item' + (d.done ? ' done' : '') + '" onclick="toggleDaily(' + i + ')">' +
+      '<div class="check-box">' + ic('tick') + '</div><div><div class="check-text">' + d.t + '</div>' +
+      (d.s ? '<div class="check-sub">' + d.s + '</div>' : '') + '</div></div>';
+  }).join('');
+}
+function toggleDaily(i){ DAILY[i].done = !DAILY[i].done; renderDailyChecklist(); }
+
+// ---------- natt-dekor (SVG, samme strekspråk som logoen) ----------
+function nightDeco(){
+  return '<div class="night-deco" aria-hidden="true"><svg width="150" height="64" viewBox="0 0 150 64" fill="none">' +
+    '<path d="M 96 8 A 24 24 0 1 0 119 44" stroke="var(--sage-light)" stroke-width="3" stroke-linecap="round"/>' +
+    '<circle class="star" cx="28" cy="16" r="2.2" fill="var(--sage-light)"/>' +
+    '<circle class="star s2" cx="56" cy="34" r="1.7" fill="var(--sage-pale)"/>' +
+    '<circle class="star s3" cx="138" cy="14" r="1.9" fill="var(--accent)" opacity=".6"/>' +
+    '<path class="cloud" d="M 8 52 q 13 -11 29 -4 q 9 -12 26 -7 q 14 -6 23 4" stroke="var(--sage-pale)" stroke-width="3" stroke-linecap="round"/>' +
+    '</svg></div>';
+}
+// ---------- SØVNDAGBOK ----------
+var diaryTab = 'new';
+function renderDiary(){
+  var html = '<div class="tabs">' +
+    diaryTabBtn('new','Ny registrering') + diaryTabBtn('insight','Innsikt') + diaryTabBtn('history','Historikk') + '</div>' +
+    '<div id="diaryBody"></div>';
+  document.getElementById('diary-view').innerHTML = html;
+  renderDiaryBody();
+}
+function diaryTabBtn(id, lbl){
+  return '<button class="tab' + (diaryTab===id?' active':'') + '" onclick="setDiaryTab(\'' + id + '\')">' + lbl + '</button>';
+}
+function setDiaryTab(id){ diaryTab = id; renderDiary(); }
+function renderDiaryBody(){
+  var el = document.getElementById('diaryBody');
+  if (diaryTab === 'new') el.innerHTML = diaryFormHtml();
+  else if (diaryTab === 'insight') el.innerHTML = diaryInsightHtml();
+  else el.innerHTML = diaryHistoryHtml();
+  if (diaryTab === 'new'){
+    document.getElementById('entryDate').value = new Date().toISOString().slice(0,10);
+    buildSeg('qualitySeg'); buildSeg('daytimeSeg');
+  }
+}
+function diaryFormHtml(){
+  return '<div class="card"><form onsubmit="saveSleepEntry(event)">' +
+    '<div class="form-section"><div class="fs-label">Kvelden</div><div class="form-grid">' +
+    field('date','entryDate','Dato') +
+    field('time','bedtime','Når la du deg i sengen?','23:30') +
+    field('time','sleepAttempt','Når forsøkte du å sovne?','23:45') +
+    field('number','sleepLatency','Minutter før du sovnet','25') +
+    '</div></div>' +
+    '<div class="form-section"><div class="fs-label">Natten</div><div class="form-grid">' +
+    field('number','awakenings','Antall oppvåkninger','1') +
+    field('number','waso','Våkentid om natten (min)','20') +
+    '</div></div>' +
+    '<div class="form-section"><div class="fs-label">Morgenen</div><div class="form-grid">' +
+    field('time','finalWake','Når våknet du sist?','06:20') +
+    field('time','bedExit','Når sto du opp?','06:30') +
+    '</div></div>' +
+    '<div class="form-section"><div class="fs-label">Annet</div><div class="form-grid">' +
+    '<div class="field"><label>Sovemedisin i går kveld?</label><div class="switch-row"><label class="switch"><input type="checkbox" id="medToggle" onchange="document.getElementById(\'medType\').disabled=!this.checked"><span class="sl"></span></label><input type="text" id="medType" placeholder="Type og dose" disabled style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:13px"></div></div>' +
+    '<div class="field"><label>Alkohol siste 4 timer før sengetid?</label><div class="switch-row"><label class="switch"><input type="checkbox" id="alcToggle"><span class="sl"></span></label><span style="font-size:13px;color:var(--ink-faint)">Av/på</span></div></div>' +
+    '</div></div>' +
+    '<div class="form-section"><div class="fs-label">Hvordan var det?</div><div class="form-grid">' +
+    '<div class="field"><label>Søvnkvalitet</label><div class="seg" id="qualitySeg"></div><div class="seg-cap"><span>Svært dårlig</span><span>Svært god</span></div></div>' +
+    '<div class="field"><label>Dagsform i går</label><div class="seg" id="daytimeSeg"></div><div class="seg-cap"><span>Helt utladet</span><span>Full av energi</span></div></div>' +
+    '</div></div>' +
+    '<div style="margin-top:18px"><button type="submit" class="btn">Lagre registrering</button></div>' +
+    '</form><div id="entryResult"></div></div>';
+}
+function field(type, id, label, ph){
+  return '<div class="field"><label for="' + id + '">' + label + '</label><input type="' + type + '" id="' + id + '"' + (ph ? ' placeholder="' + ph + '"' : '') + ' required></div>';
+}
+function buildSeg(id){
+  var el = document.getElementById(id);
+  el.innerHTML = [1,2,3,4,5].map(function(n){
+    return '<button type="button" onclick="segSel(this)">' + n + '</button>';
+  }).join('');
+}
+function segSel(btn){
+  btn.parentNode.querySelectorAll('button').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+}
+function segVal(id){
+  var s = document.querySelector('#' + id + ' button.sel');
+  return s ? +s.textContent : null;
+}
+function saveSleepEntry(e){
+  e.preventDefault();
+  function toMin(t){ var p = t.split(':'); return (+p[0])*60 + (+p[1]); }
+  var bed = toMin(document.getElementById('bedtime').value);
+  var exit = toMin(document.getElementById('bedExit').value);
+  var lat = +document.getElementById('sleepLatency').value;
+  var waso = +document.getElementById('waso').value;
+  var tib = exit - bed; if (tib <= 0) tib += 24*60;
+  var tst = Math.max(0, tib - lat - waso);
+  var se = Math.round(tst / tib * 100);
+  // Backend-format (samme feltnavn som produksjons-GAS forventer)
+  var medVal = document.getElementById('medToggle').checked ? (document.getElementById('medType').value || 'ja') : false;
+  var backendEntry = {
+    date: document.getElementById('entryDate').value,
+    bedtime: document.getElementById('bedtime').value,
+    sleepLatency: lat,
+    awakenings: +document.getElementById('awakenings').value || 0,
+    waso: waso,
+    finalWake: document.getElementById('finalWake').value,
+    bedExit: document.getElementById('bedExit').value,
+    medicine: medVal,
+    alcohol: document.getElementById('alcToggle').checked,
+    quality: segVal('qualitySeg') || 3,
+    daytime: segVal('daytimeSeg') || 3,
+    tis: fmtMin(tib),
+    tst: fmtMin(tst),
+    se: se,
+    // GAS-arket bruker disse kolonnenavnene — send begge sett
+    sleepAttempt: document.getElementById('sleepAttempt').value,
+    latency: lat,
+    outOfBed: document.getElementById('bedExit').value,
+    medication: medVal,
+    medicationDetails: document.getElementById('medToggle').checked ? document.getElementById('medType').value : '',
+    daytimeFunction: segVal('daytimeSeg') || 3
+  };
+  var entry = normalizeEntry(backendEntry);
+  state.sleepData = state.sleepData.filter(function(x){ return x.date !== entry.date; }).concat([entry]);
+  apiCall('saveSleepEntry', { entry: backendEntry });
+  document.getElementById('entryResult').innerHTML =
+    '<div class="result-banner">' + seRing(se, 88) +
+    '<div class="metrics"><div class="m"><b>' + fmtMin(tib) + '</b><span>Tid i sengen</span></div>' +
+    '<div class="m"><b>' + fmtMin(tst) + '</b><span>Total søvntid</span></div>' +
+    '<div class="m"><b>' + se + '%</b><span>Søvneffektivitet</span></div></div>' +
+    '<div style="font-size:13px;color:var(--ink-soft);max-width:280px">Lagret ✓ — fine tall å ta med videre. Husk: enkeltnetter betyr lite, mønsteret over uker er det som teller.</div></div>';
+}
+function diaryInsightHtml(){
+  var data = state.sleepData.slice(-14);
+  if (!data.length) return '<div class="card"><p style="font-size:14.5px">Ingen registreringer ennå. Fyll ut søvndagboken noen netter, så dukker innsikten opp her.</p></div>';
+  var avgSe = Math.round(data.reduce(function(s,e){return s+e.se;},0)/data.length);
+  var avgTst = Math.round(data.reduce(function(s,e){return s+e.tst;},0)/data.length);
+  var avgLat = Math.round(data.reduce(function(s,e){return s+e.latency;},0)/data.length);
+  var html = '<div class="card"><div class="card-title">Søvneffektivitet — siste 14 netter</div>' + seBarChart(data) +
+    '<div class="legend"><span><i style="background:var(--sage)"></i>SE% per natt</span><span><i style="background:var(--accent)"></i>Mål: 85%</span></div></div>';
+  html += '<div class="stat-strip" style="margin-top:18px">' +
+    stat('SE% (snitt)', avgSe + '%', avgSe >= 85 ? 'over målet ✓' : 'på vei mot 85%', avgSe >= 85 ? 1 : 0) +
+    stat('Søvntid (snitt)', fmtMin(avgTst), 'per natt', 0) +
+    stat('Innsovning (snitt)', avgLat + ' min', avgLat <= 30 ? 'innenfor målet ✓' : 'mål: under 30 min', 0) +
+    stat('Netter loggført', data.length + '', 'siste to uker', 0) + '</div>';
+  html += '<div class="card"><div class="card-title">Leggetid — jevnhet</div>' +
+    '<p style="font-size:13px;color:var(--ink-faint);margin-bottom:12px">Jevn leggetid gjør det lettere for kroppen å finne rytmen. Hver prikk er én natt.</p>' +
+    bedtimeStrip(data) + '</div>';
+  html += '<div class="card window-card">' + nightDeco() + '<div class="card-title">Anbefalt søvnvindu neste uke</div>' +
+    '<div class="time-big" style="font-family:\'DM Serif Display\',serif;font-size:30px;color:var(--ink)">23:15 → 06:45 <span class="pill tint-blue" style="vertical-align:middle;margin-left:10px">+15 min</span></div>' +
+    '<p style="font-size:14px;margin-top:10px">Søvneffektiviteten din har vært over 85 % de siste fem nettene. Da utvider vi vinduet med 15 minutter — kroppen din er klar for det.</p></div>';
+  return html;
+}
+function seBarChart(data){
+  var W = 720, H = 200, pad = 30, bw = (W - pad*2) / data.length;
+  var svg = '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + (H + 30) + '" preserveAspectRatio="xMidYMid meet">';
+  [50, 70, 85, 100].forEach(function(v){
+    var y = H - (v/100) * (H - 20);
+    svg += '<line x1="' + pad + '" y1="' + y + '" x2="' + (W - 6) + '" y2="' + y + '" stroke="' + (v === 85 ? 'var(--accent)' : 'var(--border)') + '" stroke-width="1"' + (v === 85 ? ' stroke-dasharray="5 4"' : '') + '/>';
+    svg += '<text x="2" y="' + (y + 4) + '" font-size="10" fill="#8A857C">' + v + '</text>';
+  });
+  data.forEach(function(e, i){
+    var h = (e.se/100) * (H - 20);
+    var x = pad + i * bw + bw * 0.18, y = H - h, w = bw * 0.64;
+    var col = e.se >= 85 ? 'var(--sage)' : (e.se >= 75 ? 'var(--sage-light)' : '#D8CDBE');
+    svg += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="5" fill="' + col + '"/>';
+    if (i % 2 === 0){
+      var d = new Date(e.date + 'T12:00:00');
+      svg += '<text x="' + (x + w/2).toFixed(1) + '" y="' + (H + 16) + '" font-size="9.5" fill="#8A857C" text-anchor="middle">' + d.getDate() + '.' + (d.getMonth()+1) + '</text>';
+    }
+  });
+  svg += '</svg>';
+  return '<div class="chart-wrap">' + svg + '</div>';
+}
+function bedtimeStrip(data){
+  // akse 22:00 → 01:00
+  var W = 720, H = 64;
+  var svg = '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '">';
+  ['22:00','23:00','00:00','01:00'].forEach(function(t, i){
+    var x = 30 + i * (W - 60) / 3;
+    svg += '<line x1="' + x + '" y1="10" x2="' + x + '" y2="' + (H - 22) + '" stroke="var(--border)" stroke-width="1"/>';
+    svg += '<text x="' + x + '" y="' + (H - 6) + '" font-size="10.5" fill="#8A857C" text-anchor="middle">' + t + '</text>';
+  });
+  data.forEach(function(e){
+    var p = e.bedtime.split(':'), h = +p[0] + (+p[1])/60;
+    if (h < 12) h += 24;
+    var x = 30 + (h - 22) / 3 * (W - 60);
+    var y = 10 + Math.random() * (H - 44);
+    svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="5.5" fill="var(--sage)" opacity=".55"/>';
+  });
+  svg += '</svg>';
+  return svg;
+}
+function diaryHistoryHtml(){
+  if (!state.sleepData.length) return '<div class="card"><p style="font-size:14.5px">Ingen registreringer ennå.</p></div>';
+  var rows = state.sleepData.slice().reverse().map(function(e){
+    var cls = e.se >= 85 ? 'se-good' : (e.se >= 75 ? 'se-mid' : 'se-low');
+    return '<tr><td>' + fmtDateShort(e.date) + '</td><td>' + e.bedtime + '</td><td>' + fmtMin(e.tib) + '</td><td>' + fmtMin(e.tst) + '</td>' +
+      '<td><span class="se-chip ' + cls + '">' + e.se + '%</span></td><td>' + e.quality + '/5</td></tr>';
+  }).join('');
+  return '<div class="card" style="overflow-x:auto"><table class="table"><thead><tr><th>Dato</th><th>Leggetid</th><th>Tid i seng</th><th>Søvntid</th><th>SE%</th><th>Kvalitet</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+// ---------- LÆRINGSMODULER ----------
+var EDU = [
+  { w:1, t:'Forstå søvnen din', c:'Insomni defineres som gjentatte vansker med å sovne eller vedlikeholde søvn, eller for dårlig søvnkvalitet, på tross av tilstrekkelig anledning til søvn, som fører til problemer på dagtid.\n\nI følge to-faktormodellen oppstår kronisk insomni når (1) en disposisjon for høyt aktiviseringsnivå møter (2) opprettholding og forsterkende faktorer som stressful hendelse, dårlig søvnhygiene eller søvnrelaterte bekymringer.\n\nSøvn består av REM-søvn (drømmesøvn) og ikke-REM-søvn, som sammen sikrer fysisk og psykisk gjenoppretting. Når søvnmønsteret forstyrres, påvirkes både kognitive og emosjonelle funksjoner.' },
+  { w:2, t:'Søvnrestriksjon', c:'Søvnrestriksjon er en bevart teknikk som innebærer å redusere tiden tillatt i sengen til å matche den faktiske søvntiden. Selv om det høres kontraintuitivt ut, viser forskning at mindre tid i sengen faktisk øker søvneffektiviteten.\n\nHvis du har 6 timers faktisk søvn, begynner vi med 6 timer og 15 minutter i sengen. Gradvis øker vi tiden etter hvert som søvneffektiviteten forbedres. Dette reduserer tiden brukt på å ligger våken i sengen, som er en av de viktigste faktorene i å opprettholde insomni.' },
+  { w:3, t:'Stimuluskontroll', c:'Stimuluskontroll handler om å bygge en sterk positiv assosasjon mellom sengen/soverommet og søvn. Mange mennesker med insomni har utviklet assosiasjoner hvor sengen blir knyttet til bekymringer, stressing og våkenhet.\n\nGrunnleggende regler: (1) Bruk sengen kun til søvn (og sex), ikke for TV, arbeid eller andre aktiviteter. (2) Gå ikke i sengen før du er søvnig. (3) Hvis du ligger våken i mer enn 15 minutter, stå opp og gjør noe avslappende på et annet rom til du blir søvnig. (4) Vekk opp på samme tid hver dag, selv på helger, for å stabilisere døgnrytmen.' },
+  { w:4, t:'Tankemønstre og søvn', c:null },
+  { w:5, t:'Bekymringshåndtering', c:null },
+  { w:6, t:'Døgnrytme og livsstil', c:null },
+  { w:7, t:'Konsolidering', c:null },
+  { w:8, t:'Veien videre', c:null }
+];
+function renderEducation(){
+  var u = state.user;
+  var html = '<div class="tool-intro">Én modul i uken. Du kan alltid gå tilbake til tidligere moduler — de neste åpner seg etter hvert som programmet skrider frem.</div>';
+  html += EDU.map(function(m){
+    var locked = m.w > u.week, done = m.w < u.week;
+    var st = locked ? 'Tilgjengelig fra uke ' + m.w : (done ? 'Fullført ✓' : 'Denne uken');
+    var content = '';
+    if (m.c && !locked){
+      content = '<div class="edu-content">' + m.c.split('\n\n').map(function(p){ return '<p style="margin-bottom:10px">' + escapeHtml(p) + '</p>'; }).join('') + '</div>';
+    }
+    return '<div class="card edu-card' + (locked ? ' locked' : '') + (done ? ' done' : '') + '"' + (locked || !content ? '' : ' onclick="this.classList.toggle(\'open\')"') + '>' +
+      '<div class="edu-num">' + m.w + '</div><div class="edu-body" style="flex:1"><h3>' + escapeHtml(m.t) + '</h3><div class="st">' + st + '</div>' + content + '</div></div>';
+  }).join('');
+  document.getElementById('education-view').innerHTML = html;
+}
+
+// ---------- UKENS OPPGAVER ----------
+var HOMEWORK = [
+  { id:1, t:'Fyll ut søvndagbok hver morgen', daily:true, done:false, progress:'5/7' },
+  { id:2, t:'Følg søvnvinduet (23:30 – 06:30)', daily:true, done:false, progress:'6/7' },
+  { id:3, t:'Ikke gå i sengen før du er søvnig', daily:true, done:false, progress:'5/7' },
+  { id:4, t:'Stå opp hvis du ligger våken >15 min', daily:true, done:false, progress:'4/7' },
+  { id:5, t:'Les ukens læringsmodul', daily:false, done:false, progress:null }
+];
+function hwIsDone(h){
+  if (h.progress){ var p = h.progress.split('/'); return p[0] === p[1]; }
+  return h.done;
+}
+function renderHomework(){
+  var doneN = HOMEWORK.filter(hwIsDone).length;
+  var pct = Math.round(doneN / HOMEWORK.length * 100);
+  var html = '<div class="card"><div class="card-title">Uke ' + state.user.week + ' — dine oppgaver</div><div class="checklist" id="hwList"></div>' +
+    '<div style="display:flex;align-items:center;gap:14px;margin-top:18px"><div style="flex:1;height:8px;border-radius:6px;background:var(--bg-warm);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--sage),var(--sage-light));border-radius:6px;transition:width .6s var(--ease)"></div></div>' +
+    '<span style="font-size:13px;color:var(--ink-faint);white-space:nowrap">' + doneN + ' av ' + HOMEWORK.length + '</span></div>' +
+    (doneN === HOMEWORK.length ? '<p style="margin-top:14px;font-size:14px;color:var(--good);font-weight:600">Alt fullført — imponerende innsats denne uken.</p>' : '') +
+    '</div>';
+  document.getElementById('homework-view').innerHTML = html;
+  document.getElementById('hwList').innerHTML = HOMEWORK.map(function(h, i){
+    var done = hwIsDone(h);
+    return '<div class="check-item' + (done ? ' done' : '') + '" onclick="toggleHomeworkTask(' + i + ')">' +
+      '<div class="check-box">' + ic('tick') + '</div><div style="flex:1"><div class="check-text">' + h.t + '</div></div>' +
+      (h.progress ? '<span style="font-size:12px;color:var(--ink-faint)">' + h.progress + '</span>' : '') + '</div>';
+  }).join('');
+}
+function toggleHomeworkTask(i){
+  var h = HOMEWORK[i];
+  if (h.progress){
+    var p = h.progress.split('/');
+    h.progress = (p[0] === p[1] ? '0' : p[1]) + '/' + p[1];
+  } else {
+    h.done = !h.done;
+  }
+  apiCall('updateHomework', { week: state.user.week, taskId: h.id, completed: hwIsDone(h) });
+  renderHomework();
+}
+
+// ---------- ISI-KARTLEGGING ----------
+var ISI_Q = [
+  { q:'Vansker med å sovne', opts:['Ingen','Litt','Moderat','Store','Svært store'] },
+  { q:'Vansker med å opprettholde søvnen', opts:['Ingen','Litt','Moderat','Store','Svært store'] },
+  { q:'Problemer med å våkne for tidlig', opts:['Ingen','Litt','Moderat','Store','Svært store'] },
+  { q:'Hvor fornøyd er du med søvnmønsteret ditt?', opts:['Svært fornøyd','Fornøyd','Nøytral','Misfornøyd','Svært misfornøyd'] },
+  { q:'I hvilken grad mener du søvnvanskene er merkbare for andre?', opts:['Ikke i det hele tatt','Litt','Noe','Mye','Svært mye'] },
+  { q:'Hvor bekymret er du for søvnvanskene dine?', opts:['Ikke i det hele tatt','Litt','Noe','Mye','Svært mye'] },
+  { q:'I hvilken grad forstyrrer søvnvanskene din daglige fungering?', opts:['Ikke i det hele tatt','Litt','Noe','Mye','Svært mye'] }
+];
+function renderAssessment(){
+  var html = '<div class="tool-intro">Insomnia Severity Index (ISI) måler alvorlighetsgraden av søvnvansker de siste to ukene. Du tok den i uke 1 — å ta den igjen nå viser utviklingen din.</div>';
+  html += '<div class="grid-2"><div class="card"><div class="card-title">Uke 1 — ditt utgangspunkt</div>' +
+    '<div class="isi-result"><div class="score">18</div><div class="pill tint-accent" style="margin-top:8px">Klinisk insomni, moderat</div></div>' + isiScale(18) + '</div>' +
+    '<div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:12px">' +
+    '<div class="card-title" style="margin:0">Uke ' + state.user.week + ' — ny kartlegging</div>' +
+    '<p style="font-size:13.5px;color:var(--ink-faint);max-width:260px">7 spørsmål · tar ca. 2 minutter</p>' +
+    '<button class="btn" onclick="startISI()">Start kartleggingen</button></div></div>' +
+    '<div id="isiArea" style="margin-top:18px"></div>';
+  document.getElementById('assessment-view').innerHTML = html;
+}
+function isiScale(score){
+  var pos = Math.min(100, score / 28 * 100);
+  return '<div style="position:relative"><div class="isi-scale">' +
+    '<i style="background:#DCE5D2"></i><i style="background:#E9DFC8"></i><i style="background:#EBD2BC"></i><i style="background:#E5C0B2"></i></div>' +
+    '<div style="position:absolute;top:-4px;left:' + pos + '%;width:2.5px;height:18px;background:var(--ink);border-radius:2px"></div>' +
+    '<div class="isi-scale-cap"><span>0–7 ingen</span><span>8–14 lett</span><span>15–21 moderat</span><span>22–28 alvorlig</span></div></div>';
+}
+function startISI(){
+  state.isiAnswers = new Array(ISI_Q.length).fill(null);
+  var html = '<div class="card">' + ISI_Q.map(function(item, qi){
+    return '<div class="isi-q"><h3>' + (qi+1) + '. ' + item.q + '</h3><div class="isi-opts">' +
+      item.opts.map(function(o, oi){
+        return '<button onclick="isiPick(this,' + qi + ',' + oi + ')">' + o + '</button>';
+      }).join('') + '</div></div>';
+  }).join('') +
+  '<button class="btn" id="isiSubmit" disabled onclick="isiSubmit()">Se resultatet mitt</button></div>';
+  document.getElementById('isiArea').innerHTML = html;
+  var area = document.getElementById('isiArea');
+  if (area.scrollIntoView) area.scrollIntoView({ behavior:'smooth' });
+}
+function isiPick(btn, qi, oi){
+  btn.parentNode.querySelectorAll('button').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  state.isiAnswers[qi] = oi;
+  document.getElementById('isiSubmit').disabled = state.isiAnswers.some(function(a){ return a === null; });
+}
+function isiSubmit(){
+  var score = state.isiAnswers.reduce(function(s,a){ return s + a; }, 0);
+  apiCall('saveISI', { answers: state.isiAnswers, score: score });
+  var cat = score <= 7 ? 'Ingen klinisk insomni' : (score <= 14 ? 'Lett insomni' : (score <= 21 ? 'Klinisk insomni, moderat' : 'Klinisk insomni, alvorlig'));
+  var diff = 18 - score;
+  document.getElementById('isiArea').innerHTML = '<div class="card"><div class="isi-result">' +
+    '<div class="eyebrow" style="justify-content:center">Resultat uke ' + state.user.week + '</div>' +
+    '<div class="score">' + score + '</div><div class="pill tint-sage" style="margin-top:8px">' + cat + '</div></div>' + isiScale(score) +
+    (diff > 0 ? '<p style="text-align:center;margin-top:18px;font-size:14.5px"><b style="color:var(--good)">' + diff + ' poeng bedre</b> enn i uke 1. Det er en reell, målbar endring — fortsett med det som virker.</p>'
+      : '<p style="text-align:center;margin-top:18px;font-size:14.5px">Resultatet deles med behandleren din før neste time, så ser dere på det sammen.</p>') +
+    '<div style="text-align:center;margin-top:14px"><button class="btn small subtle" onclick="renderAssessment()">Lukk</button></div></div>';
+}
+
+// ============================================================
+// MODULSYSTEM + VERKTØY (ADHD / autisme)
+// Lagring i localStorage per klientnummer. Ingen automatisk
+// sky-lagring av sensitive refleksjoner (personvern). Klienten
+// kan eksplisitt «Dele med behandler» eller skrive ut.
+// ============================================================
+function toolKey(toolId){
+  // Samme prefiks som produksjonsversjonen — eksisterende klientdata bevares
+  var cid = (state.user && state.user.clientId) ? state.user.clientId : 'anon';
+  return 'opk_tool_' + cid + '_' + toolId;
+}
+function loadTool(toolId){
+  try { var raw = localStorage.getItem(toolKey(toolId)); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+function persistTool(toolId, data){
+  try { localStorage.setItem(toolKey(toolId), JSON.stringify(data)); } catch(e){}
+  flashSaved();
+}
+function clearToolStore(toolId){ try { localStorage.removeItem(toolKey(toolId)); } catch(e){} }
+function flashSaved(){
+  var el = document.getElementById('saveHint');
+  if (!el) return;
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 1600);
+}
+
+var TOOL_ACCENTS = { adhd:'acc-accent', autism:'acc-teal' };
+var TOOLS = {
+  adhd: {
+    label:'ADHD-verktøy', icon:'⚡',
+    intro:'Verktøy for struktur, tid og følelser. Du er eksperten på deg selv — bruk det som hjelper, hopp over resten. Ingenting her er en test.',
+    tools:[
+      { id:'adhd_dagsplan', title:'Visuell dagsplan', icon:'cal', type:'planner',
+        desc:'Legg dagen i tidsblokker du kan se for deg.',
+        intro:'Det kan være lettere å komme i gang når dagen er synlig. Legg inn noen holdepunkter — ikke hvert minutt. Det er helt greit om planen endrer seg underveis.' },
+      { id:'adhd_fokus', title:'Fokusøkt', icon:'hour', type:'timer', isNew:true,
+        desc:'En rolig nedtelling for å komme i gang — med innebygde pauser.',
+        intro:'Det vanskeligste er ofte å begynne. Velg en kort økt, start, og gjør bare det første lille steget. Pausen kommer av seg selv — du trenger ikke fortjene den.' },
+      { id:'adhd_sortering', title:'Nå / Snart / Senere / En dag', icon:'cols', type:'multilist',
+        desc:'Sorter oppgaver etter når de faktisk haster.',
+        intro:'Alt kjennes ofte like presserende med ADHD. Her får hver oppgave én plass, så hjernen slipper å holde alt på én gang.',
+        buckets:[
+          { id:'naa', label:'Nå', hint:'Må gjøres i dag' },
+          { id:'snart', label:'Snart', hint:'Denne uka' },
+          { id:'senere', label:'Senere', hint:'Haster ikke' },
+          { id:'endag', label:'En dag', hint:'Idéer og ønsker' }
+        ] },
+      { id:'adhd_rutine', title:'Rutinebygger', icon:'repeat', type:'list', resettable:true, checkable:true,
+        desc:'Bygg en rutine du kan krysse av — og nullstille hver dag.',
+        intro:'Rutiner avlaster hukommelsen. Bygg den i den rekkefølgen som gir mening for deg. Du kan nullstille avkryssingene når du starter på nytt.',
+        header:{ label:'Hva heter rutinen?', placeholder:'F.eks. Morgenrutine' }, addLabel:'Legg til et steg' },
+      { id:'adhd_dekomponer', title:'Oppgave-dekomponerer', icon:'puzzle', type:'list', checkable:true,
+        desc:'Del en stor oppgave i små, gjørbare steg.',
+        intro:'En oppgave som kjennes umulig er ofte bare uoppdelt. Skriv det aller første lille steget — så det neste. Det første steget kan være latterlig lite. Det er meningen.',
+        header:{ label:'Hvilken oppgave kjennes stor?', placeholder:'F.eks. Rydde leiligheten' }, addLabel:'Legg til et delsteg' },
+      { id:'adhd_emosjon', title:'Emosjonskort', icon:'heart', type:'log',
+        desc:'Sett ord på følelsen og hva den prøver å si deg.',
+        intro:'Alle følelser er greie å ha — de gir ofte informasjon om hva du trenger. Det finnes ingen riktige eller gale svar her.',
+        emotions:['Glad','Rolig','Trist','Sint','Redd','Frustrert','Overveldet','Skuffet','Ensom','Stolt','Sliten','Nøytral'] },
+      { id:'adhd_terapi', title:'Forberedelse til terapitime', icon:'note', type:'form', share:true,
+        desc:'Samle tankene før neste time, så du husker det som er viktig.',
+        intro:'Det er lett å glemme hva man ville si når man først sitter der. Noter litt på forhånd — du bestemmer selv hva du tar opp.',
+        fields:[
+          { id:'sidenSist', label:'Hva har skjedd siden sist?', placeholder:'Opp- og nedturer, hendelser, mønstre du la merke til', type:'textarea' },
+          { id:'taOpp', label:'Hva vil jeg ta opp denne gangen?', placeholder:'Skriv stikkord — du trenger ikke formulere det perfekt', type:'textarea' },
+          { id:'fungerte', label:'Hva har fungert / hjulpet?', placeholder:'Selv små ting teller', type:'textarea' },
+          { id:'sporsmal', label:'Spørsmål jeg vil stille', placeholder:'Ting du lurer på', type:'textarea' }
+        ] }
+    ]
+  },
+  autism: {
+    label:'Autisme-verktøy', icon:'🧩',
+    intro:'Verktøy for forutsigbarhet, energi og kommunikasjon. Du kjenner deg selv best — dette er hjelpemidler, ikke fasit. Bruk det som er nyttig for deg.',
+    tools:[
+      { id:'aut_sekvens', title:'Visuell aktivitetssekvens', icon:'steps', type:'list', checkable:true,
+        desc:'Bryt en aktivitet ned i tydelige steg i rekkefølge.',
+        intro:'Når stegene er synlige og i rekkefølge, blir det mindre å holde i hodet. Legg inn så mange eller få steg som du trenger.',
+        header:{ label:'Hvilken aktivitet?', placeholder:'F.eks. Handle på butikken' }, addLabel:'Legg til neste steg' },
+      { id:'aut_energi', title:'Energibudsjett', icon:'battery', type:'multilist',
+        desc:'Kartlegg hva som lader og hva som tapper deg.',
+        intro:'Energi er en begrenset ressurs — å fordele den bevisst er ikke latskap, det er klokt. Legg aktiviteter der de hører hjemme.',
+        buckets:[
+          { id:'gir', label:'Gir energi', hint:'Lader deg opp' },
+          { id:'tar', label:'Tar energi', hint:'Tapper deg' },
+          { id:'noytral', label:'Nøytralt', hint:'Verken eller' }
+        ] },
+      { id:'aut_endring', title:'Endringshåndtering', icon:'shuffle', type:'form', share:true,
+        desc:'Forbered deg på en endring — steg for steg.',
+        intro:'Endringer kan kjennes store. Ofte er det mer som forblir likt enn man tror. Å skrive det ned kan gjøre det mer håndterbart.',
+        fields:[
+          { id:'hvaEndres', label:'Hva endrer seg?', placeholder:'Beskriv endringen konkret', type:'textarea' },
+          { id:'hvaLikt', label:'Hva forblir likt?', hint:'Ofte er dette en lang liste — det kan være beroligende å se.', placeholder:'Ting som ikke endrer seg', type:'textarea' },
+          { id:'usikker', label:'Hva er jeg usikker på?', placeholder:'Spørsmål eller bekymringer', type:'textarea' },
+          { id:'hjelper', label:'Hva kan hjelpe meg gjennom det?', placeholder:'Forberedelser, pauser, ting du kan ta med', type:'textarea' },
+          { id:'hvem', label:'Hvem kan jeg spørre om noe blir uklart?', placeholder:'Navn eller rolle', type:'text' }
+        ] },
+      { id:'aut_manus', title:'Sosiale manus', icon:'chat', type:'form',
+        desc:'Forbered hva du kan si i en situasjon — velg et utgangspunkt.',
+        intro:'Et manus er bare et utgangspunkt du kan øve på og endre. Velg en situasjon under for forslag, eller skriv ditt eget.',
+        presets:[
+          { label:'Ringe en avtale', values:{ situasjon:'Ringe for å bestille eller endre en time', mal:'Få avtalt tidspunkt uten å bli stresset', apne:'Hei, jeg heter [navn]. Jeg ringer for å [bestille/endre] en time.', pause:'Kan du vente litt? Jeg trenger et øyeblikk.', avslutt:'Takk for hjelpen. Bare for å være sikker: avtalen er [dato/tid]?' } },
+          { label:'Si nei til noe', values:{ situasjon:'Noen ber meg om noe jeg ikke har kapasitet til', mal:'Si nei tydelig og høflig', apne:'Takk for at du spør. Det passer dessverre ikke for meg.', pause:'Jeg trenger å tenke på det — kan jeg si fra senere?', avslutt:'Jeg håper det går fint. Lykke til.' } },
+          { label:'Be om hjelp', values:{ situasjon:'Jeg trenger hjelp med noe', mal:'Få konkret hjelp', apne:'Hei, har du et øyeblikk? Jeg trenger hjelp med [det konkrete].', pause:'Kan du forklare det en gang til, gjerne litt saktere?', avslutt:'Tusen takk, det hjalp.' } },
+          { label:'Småprat på jobb', values:{ situasjon:'Uformell prat med kollega', mal:'Delta uten å bli sliten', apne:'Hei, hvordan går det?', pause:'Jeg må stikke videre nå, men hyggelig å prate.', avslutt:'Vi snakkes!' } }
+        ],
+        fields:[
+          { id:'situasjon', label:'Situasjon', placeholder:'Hva slags situasjon er det?', type:'text' },
+          { id:'mal', label:'Mitt mål', placeholder:'Hva vil jeg oppnå?', type:'text' },
+          { id:'apne', label:'Slik kan jeg åpne', placeholder:'Første setning', type:'textarea' },
+          { id:'pause', label:'Hvis jeg trenger en pause eller noe blir uklart', placeholder:'Setning jeg kan bruke', type:'textarea' },
+          { id:'avslutt', label:'Slik kan jeg avslutte', placeholder:'Avsluttende setning', type:'textarea' }
+        ] },
+      { id:'aut_sensorisk', title:'Sensorisk profil', icon:'sliders', type:'form', share:true,
+        desc:'Kartlegg hva som er ubehagelig og hva som hjelper, sans for sans.',
+        intro:'Sansene dine er en del av hvordan du fungerer — verken rett eller galt. Når du kjenner mønstrene, blir de lettere å planlegge rundt.',
+        fields:[
+          { section:'Syn / lys' },
+          { id:'synUbehag', label:'Hva er ubehagelig?', placeholder:'F.eks. sterkt lys, lysstoffrør, flimmer', type:'textarea' },
+          { id:'synGodt', label:'Hva hjelper / kjennes godt?', placeholder:'F.eks. dempet lys, solbriller', type:'textarea' },
+          { section:'Lyd' },
+          { id:'lydUbehag', label:'Hva er ubehagelig?', placeholder:'F.eks. mange lyder samtidig, plutselige lyder', type:'textarea' },
+          { id:'lydGodt', label:'Hva hjelper / kjennes godt?', placeholder:'F.eks. øreplugger, musikk, stillhet', type:'textarea' },
+          { section:'Berøring / klær' },
+          { id:'berUbehag', label:'Hva er ubehagelig?', placeholder:'F.eks. merkelapper, visse stoffer', type:'textarea' },
+          { id:'berGodt', label:'Hva hjelper / kjennes godt?', placeholder:'F.eks. tyngdeteppe, myke klær', type:'textarea' },
+          { section:'Lukt / smak' },
+          { id:'luktUbehag', label:'Hva er ubehagelig?', placeholder:'F.eks. sterke lukter, visse teksturer', type:'textarea' },
+          { id:'luktGodt', label:'Hva hjelper / kjennes godt?', placeholder:'Trygge lukter eller smaker', type:'textarea' },
+          { section:'Bevegelse / kropp' },
+          { id:'bevUbehag', label:'Hva er ubehagelig?', placeholder:'F.eks. trange rom, kø, uforutsigbar berøring', type:'textarea' },
+          { id:'bevGodt', label:'Hva hjelper / kjennes godt?', placeholder:'F.eks. gynging, gåturer, trykk', type:'textarea' }
+        ] },
+      { id:'aut_overbelastning', title:'Overbelastningsplan', icon:'ring', type:'form', share:true,
+        desc:'Lag en plan for tidlige tegn og hva som hjelper.',
+        intro:'Det er lettere å snu en overbelastning tidlig. Lag planen nå, mens du har overskudd — så er den klar når du trenger den.',
+        fields:[
+          { id:'tegn', label:'Tidlige tegn på at jeg nærmer meg overbelastning', placeholder:'Kroppslige, følelsesmessige eller tankemessige tegn', type:'textarea' },
+          { id:'roNed', label:'Hva hjelper meg å roe ned', placeholder:'Konkrete ting som virker for deg', type:'textarea' },
+          { id:'trygt', label:'Mitt trygge sted / min pause', placeholder:'Hvor kan du trekke deg tilbake?', type:'textarea' },
+          { id:'andre', label:'Hva jeg trenger fra andre da', placeholder:'F.eks. ro, plass, færre spørsmål', type:'textarea' },
+          { id:'kontakt', label:'Hvem kan jeg kontakte ved behov', placeholder:'Navn / telefon', type:'text' }
+        ] },
+      { id:'aut_profil', title:'«Slik fungerer jeg»-profil', icon:'idcard', type:'form', share:true,
+        desc:'En oversikt du kan dele med dem du vil — på dine premisser.',
+        intro:'Dette er din profil, til å dele med dem du ønsker (behandler, arbeidsgiver, nære). Du bestemmer hva som står og hvem som får se den.',
+        fields:[
+          { id:'kommunikasjon', label:'Slik kommuniserer jeg best', placeholder:'F.eks. tydelig og direkte, skriftlig, med tid til å svare', type:'textarea' },
+          { id:'trenger', label:'Dette trenger jeg for å fungere godt', placeholder:'F.eks. forutsigbarhet, pauser, ro', type:'textarea' },
+          { id:'vanskelig', label:'Dette kan være vanskelig for meg', placeholder:'F.eks. brå endringer, mye støy, uklare beskjeder', type:'textarea' },
+          { id:'styrker', label:'Mine styrker', placeholder:'F.eks. grundighet, lojalitet, fokus på detaljer', type:'textarea' },
+          { id:'hjelpMeg', label:'Slik kan du hjelpe meg', placeholder:'Konkrete ting andre kan gjøre', type:'textarea' }
+        ] }
+    ]
+  }
+};
+function findTool(moduleId, toolId){
+  var mod = TOOLS[moduleId];
+  if (!mod) return null;
+  for (var i = 0; i < mod.tools.length; i++) if (mod.tools[i].id === toolId) return mod.tools[i];
+  return null;
+}
+
+// ---------- launcher ----------
+// Hjelper: redusert bevegelse aktiv? (Ro-modus eller systeminnstilling)
+function wheelReduced(){
+  if (document.body.classList.contains('calm')) return true;
+  return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+// Aktivt hjul (kun ett om gangen). Holder DOM-referanser + rotasjonstilstand.
+var TOOLWHEEL = null;
+function renderToolLauncher(moduleId){
+  var mod = TOOLS[moduleId], view = document.getElementById(moduleId + '-view');
+  if (!mod || !view) return;
+  var acc = TOOL_ACCENTS[moduleId] || 'acc-sage';
+
+  // 1) Flatt rutenett (uendret) — gjenbrukes som «Vis alle som liste»-fallback
+  var grid = '<div class="module-grid">';
+  mod.tools.forEach(function(t, ti){
+    var hasData = !!loadTool(t.id);
+    grid += '<div class="tool-card ' + acc + ' ico-t' + (ti % 4) + '" style="animation-delay:' + (ti * 55) + 'ms" onclick="openTool(\'' + moduleId + '\',\'' + t.id + '\')">' +
+      '<div class="ico">' + ic(t.icon) + '</div>' +
+      (t.isNew ? '<span class="pill tint-accent" style="position:absolute;top:14px;right:14px;font-size:10px;padding:3px 10px">Ny</span>' : '') +
+      '<h3>' + escapeHtml(t.title) + '</h3><p>' + escapeHtml(t.desc) + '</p>' +
+      '<div class="meta"><span class="status' + (hasData ? ' started' : '') + '">' + (hasData ? 'Påbegynt ✓' : 'Ikke startet') + '</span><span class="open">Åpne →</span></div></div>';
+  });
+  grid += '</div>';
+
+  // 2) Verktøyhjul (radial dial) + mørkegrønt detalj-panel
+  var n = mod.tools.length;
+  var bubbles = '<div class="adhd-bubbles" aria-hidden="true">' +
+    '<span class="bub" style="left:16%;--size:13px;--d:8s;--delay:-4s;--sd:2.7s"><i></i></span>' +
+    '<span class="bub" style="left:37%;--size:20px;--d:12s;--delay:-8.5s;--sd:3.6s"><i></i></span>' +
+    '<span class="bub" style="left:57%;--size:12px;--d:9.3s;--delay:-2.6s;--sd:3.1s"><i></i></span>' +
+    '<span class="bub" style="left:25%;--size:24px;--d:14s;--delay:-9s;--sd:4.6s"><i></i></span>' +
+    '<span class="bub" style="left:74%;--size:16px;--d:10.5s;--delay:-6s;--sd:3.3s"><i></i></span>' +
+    '</div>';
+  var stage = '<div class="stage">' +
+      '<div class="dial-col">' +
+        '<div class="dial-ring"></div>' +
+        '<div class="dial" id="wheelDial" tabindex="0" role="listbox" aria-label="Verktøyhjul" aria-activedescendant="wnode-0"></div>' +
+        '<div class="dial-hub"></div>' +
+      '</div>' +
+      '<div class="detail" id="wheelDetail">' +
+        '<div class="d-head fade"><span class="d-count" id="wCount"></span><span class="d-status" id="wStatus"><span class="sdot"></span></span></div>' +
+        '<div class="d-ico fade" id="wIco"></div>' +
+        '<h2 class="fade" id="wTitle"></h2>' +
+        '<p class="d-desc fade" id="wDesc"></p>' +
+        '<div class="d-actions fade">' +
+          '<button class="btn" id="wOpen">Åpne verktøyet</button>' +
+          '<button class="btn ghost" id="wNext">Neste verktøy</button>' +
+        '</div>' +
+        '<div class="dial-hint">Klikk et symbol, scroll, eller bruk <kbd>↑</kbd><kbd>↓</kbd> for å bla.</div>' +
+      '</div>' +
+    '</div>';
+
+  var html = '<div class="tool-wheel">' +
+    '<div class="tool-intro">' + escapeHtml(mod.intro) + '</div>' +
+    bubbles + stage + grid +
+    '<div class="wheel-listtoggle"><button id="wheelListBtn" type="button" aria-pressed="false">Vis alle som liste</button></div>' +
+    '<p style="margin-top:22px;font-size:12.5px;color:var(--ink-faint)">Alt du skriver i verktøyene lagres kun på denne enheten — ikke i skyen. ' +
+      '<button style="background:none;border:none;color:var(--sage);font-weight:600;font-size:12.5px;text-decoration:underline;text-underline-offset:2px" onclick="confirmClearAllToolData(\'' + moduleId + '\')">Slett alle mine verktøydata</button></p>' +
+    '</div>';
+  view.innerHTML = html;
+
+  initToolWheel(moduleId, mod, n);
+}
+
+// Bygger og kobler opp hjul-mekanikken for gjeldende launcher
+function initToolWheel(moduleId, mod, n){
+  var wrap   = document.querySelector('#' + moduleId + '-view .tool-wheel');
+  var dial   = document.getElementById('wheelDial');
+  var detail = document.getElementById('wheelDetail');
+  if (!wrap || !dial || !detail) return;
+
+  var step = 2 * Math.PI / n, rot = 0, active = 0, nodes = [];
+  mod.tools.forEach(function(t, i){
+    var b = document.createElement('button');
+    b.className = 'node'; b.id = 'wnode-' + i;
+    b.type = 'button'; b.setAttribute('role', 'option'); b.setAttribute('aria-label', t.title);
+    b.innerHTML = ic(t.icon) + (t.isNew ? '<span class="tag">Ny</span>' : '');
+    b.onclick = function(){ active === i ? openTool(moduleId, mod.tools[i].id) : setActive(i); };
+    dial.appendChild(b); nodes.push(b);
+  });
+
+  function isMob(){ return window.innerWidth <= 840; }
+  function place(){
+    var mob = isMob(), R = mob ? 96 : 185, A0 = mob ? -Math.PI/2 : -0.35;
+    document.documentElement.style.setProperty('--dring', (R*2) + 'px');
+    nodes.forEach(function(b, i){
+      var a0 = i*step + rot, disp = a0 + A0;
+      var x = Math.cos(disp)*R, y = Math.sin(disp)*R, act = (Math.cos(a0)+1)/2, s = 0.62 + 0.50*act;
+      b.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) scale(' + s.toFixed(3) + ')';
+      b.style.opacity   = (0.40 + 0.60*act).toFixed(2);
+      b.style.zIndex    = Math.round(act*100);
+      b.classList.toggle('is-active', i === active);
+      b.setAttribute('aria-selected', i === active ? 'true' : 'false');
+    });
+  }
+  function setActive(i){
+    i = ((i % n) + n) % n;
+    var target = -i*step, d = target - rot; d = Math.atan2(Math.sin(d), Math.cos(d)); rot += d; active = i;
+    dial.setAttribute('aria-activedescendant', 'wnode-' + i);
+    place(); swapDetail(i); agitate();
+  }
+  function rotate(dir){ setActive(active + dir); }
+  function agitate(){
+    var el = wrap.querySelector('.adhd-bubbles');
+    if (!el || wheelReduced()) return;
+    el.classList.remove('agitate'); void el.offsetWidth; el.classList.add('agitate');
+    clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('agitate'); }, 1050);
+  }
+  function swapDetail(i){
+    detail.classList.add('swapping');
+    setTimeout(function(){
+      var t = mod.tools[i], hasData = !!loadTool(t.id);
+      var c = document.getElementById('wCount'); if (c) c.textContent = 'Verktøy ' + (i+1) + ' av ' + n;
+      var st = document.getElementById('wStatus');
+      if (st){ st.className = 'd-status' + (hasData ? ' started' : ''); st.innerHTML = '<span class="sdot"></span>' + (hasData ? 'Påbegynt' : 'Ikke startet'); }
+      var ico = document.getElementById('wIco'); if (ico) ico.innerHTML = ic(t.icon);
+      var ti = document.getElementById('wTitle'); if (ti) ti.textContent = t.title;
+      var de = document.getElementById('wDesc'); if (de) de.textContent = t.intro || t.desc || '';
+      detail.classList.remove('swapping');
+    }, 180);
+  }
+
+  // «Åpne verktøyet» og «Neste verktøy» kobles til EKSISTERENDE openTool
+  var openBtn = document.getElementById('wOpen');
+  if (openBtn) openBtn.onclick = function(){ openTool(moduleId, mod.tools[active].id); };
+  var nextBtn = document.getElementById('wNext');
+  if (nextBtn) nextBtn.onclick = function(){ rotate(1); };
+
+  // scroll over dial-kolonnen roterer hjulet
+  var dcol = wrap.querySelector('.dial-col'), wlock = false;
+  function wheelScroll(e){ e.preventDefault(); if (wlock) return; wlock = true; rotate(e.deltaY > 0 ? 1 : -1); setTimeout(function(){ wlock = false; }, 260); }
+  if (dcol) dcol.addEventListener('wheel', wheelScroll, { passive:false });
+  // piltaster på dial
+  dial.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight'){ e.preventDefault(); rotate(1); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft'){ e.preventDefault(); rotate(-1); }
+    else if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openTool(moduleId, mod.tools[active].id); }
+  });
+
+  // «Vis alle som liste»-toggle: bytter mellom hjul og flatt rutenett
+  var listBtn = document.getElementById('wheelListBtn');
+  if (listBtn) listBtn.onclick = function(){
+    var asList = wrap.classList.toggle('as-list');
+    listBtn.textContent = asList ? 'Vis som hjul' : 'Vis alle som liste';
+    listBtn.setAttribute('aria-pressed', asList ? 'true' : 'false');
+    if (!asList){ place(); }
+  };
+
+  // resize → reposisjoner (rydd opp forrige lytter)
+  if (TOOLWHEEL && TOOLWHEEL._onResize) window.removeEventListener('resize', TOOLWHEEL._onResize);
+  var onResize = function(){ if (!wrap.classList.contains('as-list')) place(); };
+  window.addEventListener('resize', onResize);
+
+  TOOLWHEEL = { moduleId:moduleId, place:place, _onResize:onResize };
+  place(); swapDetail(0);
+}
+function openTool(moduleId, toolId, histMode){
+  var tool = findTool(moduleId, toolId), view = document.getElementById(moduleId + '-view');
+  if (!tool || !view) return;
+  if (histMode !== 'none'){
+    try { history.pushState({ portalView: moduleId, tool: toolId }, '', '#' + moduleId + '/' + toolId); } catch(e){}
+  }
+  stopFocusTimer();
+  var html = '<button class="tool-back" onclick="portalToolBack(\'' + moduleId + '\')">← Alle ' + escapeHtml(TOOLS[moduleId].label).toLowerCase() + '</button>';
+  html += '<div class="tool-head"><span class="th-ico">' + ic(tool.icon) + '</span><h2 class="serif">' + escapeHtml(tool.title) + '</h2></div>';
+  if (tool.intro) html += '<div class="tool-intro">' + escapeHtml(tool.intro) + '</div>';
+  html += '<div class="card"><div id="toolBody"></div>' + toolToolbar(moduleId, tool) + '</div>';
+  view.innerHTML = html;
+  var body = document.getElementById('toolBody'), data = loadTool(toolId);
+  if (tool.type === 'list') renderListTool(body, moduleId, tool, data);
+  else if (tool.type === 'multilist') renderMultiListTool(body, moduleId, tool, data);
+  else if (tool.type === 'form') renderFormTool(body, moduleId, tool, data);
+  else if (tool.type === 'planner') renderPlannerTool(body, moduleId, tool, data);
+  else if (tool.type === 'log') renderLogTool(body, moduleId, tool, data);
+  else if (tool.type === 'timer') renderTimerTool(body, moduleId, tool, data);
+}
+function toolToolbar(moduleId, tool){
+  var html = '<div class="tool-toolbar">';
+  if (tool.share) html += '<button class="btn small subtle" onclick="shareTool(\'' + moduleId + '\',\'' + tool.id + '\')">Del med behandler</button>';
+  if (tool.type !== 'timer'){
+    html += '<button class="btn small ghost" onclick="printTool(\'' + moduleId + '\',\'' + tool.id + '\')">Skriv ut / ta med</button>';
+    html += '<button class="btn small ghost" onclick="deleteToolData(\'' + moduleId + '\',\'' + tool.id + '\')">Slett mine data</button>';
+  }
+  html += '<span class="save-hint" id="saveHint">Lagret ✓</span></div>';
+  return html;
+}
+function deleteToolData(moduleId, toolId){
+  if (!confirm('Slette alt du har lagret i dette verktøyet? Dette kan ikke angres.')) return;
+  clearToolStore(toolId);
+  openTool(moduleId, toolId, 'none');
+}
+function printTool(moduleId, toolId){
+  var tool = findTool(moduleId, toolId);
+  var summary = buildToolSummary(tool, loadTool(toolId));
+  if (!summary){ alert('Det er ingenting å skrive ut ennå. Fyll ut verktøyet først.'); return; }
+  var w = window.open('', '_blank');
+  if (!w){ alert('Kunne ikke åpne utskriftsvindu. Sjekk om nettleseren blokkerer popup-vinduer.'); return; }
+  var safe = escapeHtml(summary).replace(/\n/g, '<br>');
+  w.document.write('<html><head><title>' + escapeHtml(tool.title) + '</title>' +
+    '<style>body{font-family:Inter,Arial,sans-serif;color:#2A241C;line-height:1.6;max-width:640px;margin:40px auto;padding:0 20px;}' +
+    'h1{font-size:22px;}small{color:#8A8279;}hr{border:none;border-top:1px solid #E8E4DE;margin:16px 0;}</style></head><body>' +
+    '<h1>' + escapeHtml(tool.title) + '</h1>' +
+    '<small>Oslo Psykologkontor — Klientportalen</small><hr>' +
+    '<div>' + safe + '</div></body></html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 250);
+}
+function clearAllToolData(){
+  var cid = (state.user && state.user.clientId) ? state.user.clientId : 'anon';
+  var prefix = 'opk_tool_' + cid + '_';
+  var toRemove = [];
+  for (var i = 0; i < localStorage.length; i++){
+    var k = localStorage.key(i);
+    if (k && k.indexOf(prefix) === 0) toRemove.push(k);
+  }
+  toRemove.forEach(function(k){ localStorage.removeItem(k); });
+  return toRemove.length;
+}
+function confirmClearAllToolData(moduleId){
+  if (!confirm('Slette ALLE verktøydata lagret på denne enheten? Dette gjelder alle verktøy og kan ikke angres.')) return;
+  var n = clearAllToolData();
+  alert(n + ' lagrede element' + (n === 1 ? '' : 'er') + ' slettet.');
+  renderToolLauncher(moduleId);
+}
+
+// ---------- LISTE-VERKTØY ----------
+function renderListTool(body, moduleId, tool, data){
+  data = data || { header:'', items:[] };
+  var html = '';
+  if (tool.header){
+    html += '<div class="field"><label>' + escapeHtml(tool.header.label) + '</label>' +
+      '<input type="text" id="listHeader" placeholder="' + escapeHtml(tool.header.placeholder) + '" value="' + escapeHtml(data.header) + '" onchange="listSaveHeader(\'' + moduleId + '\',\'' + tool.id + '\')"></div>';
+  }
+  html += '<div class="list-rows" id="listRows"></div>';
+  html += '<div class="add-row"><input type="text" id="listNew" placeholder="' + escapeHtml(tool.addLabel || 'Legg til') + '" onkeydown="if(event.key===\'Enter\'){event.preventDefault();listAdd(\'' + moduleId + '\',\'' + tool.id + '\')}">' +
+    '<button class="btn small" onclick="listAdd(\'' + moduleId + '\',\'' + tool.id + '\')">Legg til</button></div>';
+  if (tool.resettable) html += '<div style="margin-top:14px"><button class="btn small ghost" onclick="listReset(\'' + moduleId + '\',\'' + tool.id + '\')">Nullstill avkryssing</button></div>';
+  body.innerHTML = html;
+  renderListItems(moduleId, tool, data);
+}
+function renderListItems(moduleId, tool, data){
+  var el = document.getElementById('listRows');
+  if (!el) return;
+  if (!data.items.length){
+    el.innerHTML = '<p style="font-size:13.5px;color:var(--ink-faint);padding:8px 0">Ingen steg ennå — legg til det første under.</p>';
+    return;
+  }
+  var html = '';
+  if (tool.checkable && data.items.length > 1){
+    var doneN = data.items.filter(function(x){ return x.done; }).length;
+    var pct = Math.round(doneN / data.items.length * 100);
+    html += '<div class="t-progress"><div class="bar"><i style="width:' + pct + '%"></i></div><span>' + doneN + ' av ' + data.items.length + '</span></div>';
+  }
+  html += data.items.map(function(item, i){
+    return '<div class="list-row' + (item.done ? ' done' : '') + '" style="animation-delay:' + (i * 35) + 'ms">' +
+      (tool.checkable ? '<div class="check-box" onclick="listToggle(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + ic('tick') + '</div>' : '<span style="color:var(--ink-faint);font-size:12.5px;width:20px;text-align:center;font-weight:600">' + (i+1) + '</span>') +
+      '<span class="txt">' + escapeHtml(item.text) + '</span>' +
+      '<div class="ops">' +
+      '<button title="Flytt opp" onclick="listMove(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ',-1)">' + ic('arrowup') + '</button>' +
+      '<button title="Flytt ned" onclick="listMove(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ',1)">' + ic('arrowdn') + '</button>' +
+      '<button title="Slett" onclick="listDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + ic('x') + '</button></div></div>';
+  }).join('');
+  if (tool.checkable && data.items.length > 1 && data.items.every(function(x){ return x.done; })){
+    html += '<div class="t-done-msg">' + ic('tick') + ' Hele lista fullført — godt jobbet.</div>';
+  }
+  el.innerHTML = html;
+}
+function listData(toolId){ return loadTool(toolId) || { header:'', items:[] }; }
+function listAdd(moduleId, toolId){
+  var inp = document.getElementById('listNew'), txt = inp.value.trim();
+  if (!txt) return;
+  var data = listData(toolId);
+  data.items.push({ text: txt, done:false });
+  persistTool(toolId, data); inp.value = '';
+  renderListItems(moduleId, findTool(moduleId, toolId), data);
+  inp.focus();
+}
+function listSaveHeader(moduleId, toolId){
+  var data = listData(toolId);
+  data.header = document.getElementById('listHeader').value;
+  persistTool(toolId, data);
+}
+function listToggle(moduleId, toolId, i){
+  var data = listData(toolId);
+  data.items[i].done = !data.items[i].done;
+  persistTool(toolId, data);
+  renderListItems(moduleId, findTool(moduleId, toolId), data);
+}
+function listDelete(moduleId, toolId, i){
+  var data = listData(toolId);
+  data.items.splice(i, 1);
+  persistTool(toolId, data);
+  renderListItems(moduleId, findTool(moduleId, toolId), data);
+}
+function listMove(moduleId, toolId, i, dir){
+  var data = listData(toolId), j = i + dir;
+  if (j < 0 || j >= data.items.length) return;
+  var t = data.items[i]; data.items[i] = data.items[j]; data.items[j] = t;
+  persistTool(toolId, data);
+  renderListItems(moduleId, findTool(moduleId, toolId), data);
+}
+function listReset(moduleId, toolId){
+  var data = listData(toolId);
+  data.items.forEach(function(it){ it.done = false; });
+  persistTool(toolId, data);
+  renderListItems(moduleId, findTool(moduleId, toolId), data);
+}
+
+// ---------- MULTILISTE (kanban) ----------
+function renderMultiListTool(body, moduleId, tool, data){
+  data = data || {};
+  tool.buckets.forEach(function(b){ if (!data[b.id]) data[b.id] = []; });
+  body.innerHTML = '<div class="add-row" style="margin-top:0"><input type="text" id="mlNew" placeholder="Skriv en oppgave eller aktivitet…" onkeydown="if(event.key===\'Enter\'){event.preventDefault();mlAdd(\'' + moduleId + '\',\'' + tool.id + '\')}">' +
+    '<select id="mlBucket" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;background:var(--card)">' +
+    tool.buckets.map(function(b){ return '<option value="' + b.id + '">' + escapeHtml(b.label) + '</option>'; }).join('') +
+    '</select><button class="btn small" onclick="mlAdd(\'' + moduleId + '\',\'' + tool.id + '\')">Legg til</button></div>' +
+    '<div class="kanban" id="kanban"></div>';
+  renderKanban(moduleId, tool, data);
+}
+function energyBattery(data){
+  var gir = (data.gir || []).length, tar = (data.tar || []).length;
+  if (!gir && !tar) return '';
+  var ratio = gir + tar ? gir / (gir + tar) : .5;
+  var col = ratio >= .5 ? 'var(--good)' : (ratio >= .35 ? 'var(--warn)' : 'var(--bad)');
+  var msg = ratio >= .5 ? 'Fin balanse — du har flere ting som lader enn som tapper.'
+          : (ratio >= .35 ? 'Litt mer tapping enn lading. Får du plass til én ting fra «Gir energi» i morgen?'
+          : 'Mye tapper deg om dagen. Det er ikke en svakhet — men et signal om å verne om det som lader.');
+  return '<div style="display:flex;align-items:center;gap:18px;background:var(--bg-warm);border-radius:16px;padding:16px 20px;margin:14px 0 4px">' +
+    '<svg width="58" height="30" viewBox="0 0 58 30"><rect x="1" y="3" width="50" height="24" rx="7" fill="none" stroke="var(--ink-faint)" stroke-width="2"/>' +
+    '<rect x="53" y="11" width="4" height="8" rx="2" fill="var(--ink-faint)"/>' +
+    '<rect x="5" y="7" width="' + Math.max(4, 42 * ratio).toFixed(0) + '" height="16" rx="4" fill="' + col + '"/></svg>' +
+    '<div style="font-size:13.5px;color:var(--ink-soft)"><b style="color:var(--ink)">' + gir + ' lader · ' + tar + ' tapper.</b> ' + msg + '</div></div>';
+}
+function renderKanban(moduleId, tool, data){
+  var el = document.getElementById('kanban');
+  if (!el) return;
+  var summary = document.getElementById('kbSummary');
+  if (tool.id === 'aut_energi'){
+    if (!summary){
+      summary = document.createElement('div');
+      summary.id = 'kbSummary';
+      el.parentNode.insertBefore(summary, el);
+    }
+    summary.innerHTML = energyBattery(data);
+  }
+  var KB_DOTS = ['var(--sage)', '#5C7099', 'var(--accent)', 'var(--teal, #4F7A66)'];
+  el.innerHTML = tool.buckets.map(function(b, bi){
+    var items = data[b.id] || [];
+    return '<div class="kb-col"><h4><span class="dot" style="background:' + KB_DOTS[bi % 4] + '"></span>' + escapeHtml(b.label) + '<span class="cnt">' + items.length + '</span></h4><div class="hint">' + escapeHtml(b.hint) + '</div>' +
+      items.map(function(item, i){
+        var moves = tool.buckets.filter(function(x){ return x.id !== b.id; }).map(function(x){
+          return '<button onclick="mlMove(\'' + moduleId + '\',\'' + tool.id + '\',\'' + b.id + '\',' + i + ',\'' + x.id + '\')">→ ' + escapeHtml(x.label) + '</button>';
+        }).join('');
+        return '<div class="kb-item" style="animation-delay:' + (i * 40) + 'ms">' + escapeHtml(item) + '<div class="kb-act">' + moves +
+          '<button onclick="mlDelete(\'' + moduleId + '\',\'' + tool.id + '\',\'' + b.id + '\',' + i + ')">✕</button></div></div>';
+      }).join('') + '</div>';
+  }).join('');
+}
+function mlData(tool){
+  var data = loadTool(tool.id) || {};
+  tool.buckets.forEach(function(b){ if (!data[b.id]) data[b.id] = []; });
+  return data;
+}
+function mlAdd(moduleId, toolId){
+  var tool = findTool(moduleId, toolId);
+  var inp = document.getElementById('mlNew'), txt = inp.value.trim();
+  if (!txt) return;
+  var data = mlData(tool);
+  data[document.getElementById('mlBucket').value].push(txt);
+  persistTool(toolId, data); inp.value = '';
+  renderKanban(moduleId, tool, data); inp.focus();
+}
+function mlMove(moduleId, toolId, fromB, i, toB){
+  var tool = findTool(moduleId, toolId), data = mlData(tool);
+  var item = data[fromB].splice(i, 1)[0];
+  data[toB].push(item);
+  persistTool(toolId, data);
+  renderKanban(moduleId, tool, data);
+}
+function mlDelete(moduleId, toolId, b, i){
+  var tool = findTool(moduleId, toolId), data = mlData(tool);
+  data[b].splice(i, 1);
+  persistTool(toolId, data);
+  renderKanban(moduleId, tool, data);
+}
+
+// ---------- SKJEMA-VERKTØY ----------
+function renderFormTool(body, moduleId, tool, data){
+  data = data || {};
+  var html = '';
+  if (tool.presets){
+    html += '<div class="field"><label>Forslag å starte fra</label><div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      tool.presets.map(function(p, i){
+        return '<button type="button" class="btn small ghost" onclick="formPreset(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + escapeHtml(p.label) + '</button>';
+      }).join('') + '</div></div>';
+  }
+  var fillable = tool.fields.filter(function(f){ return !f.section; });
+  var filledN = fillable.filter(function(f){ return (data[f.id] || '').trim(); }).length;
+  html += '<div class="t-progress" id="formProg"><div class="bar"><i style="width:' + Math.round(filledN / Math.max(1, fillable.length) * 100) + '%"></i></div><span>' + filledN + ' av ' + fillable.length + ' utfylt</span></div>';
+  tool.fields.forEach(function(f){
+    if (f.section){
+      html += '<div class="form-section"><div class="fs-label">' + escapeHtml(f.section) + '</div></div>';
+      return;
+    }
+    var val = escapeHtml(data[f.id] || '');
+    html += '<div class="field"><label>' + escapeHtml(f.label) + '</label>' +
+      (f.hint ? '<div style="font-size:12.5px;color:var(--ink-faint);margin:-3px 0 7px">' + escapeHtml(f.hint) + '</div>' : '') +
+      (f.type === 'textarea'
+        ? '<textarea data-fid="' + f.id + '" rows="3" placeholder="' + escapeHtml(f.placeholder || '') + '" oninput="formAutoSave(\'' + moduleId + '\',\'' + tool.id + '\')">' + val + '</textarea>'
+        : '<input type="text" data-fid="' + f.id + '" placeholder="' + escapeHtml(f.placeholder || '') + '" value="' + val + '" oninput="formAutoSave(\'' + moduleId + '\',\'' + tool.id + '\')">') +
+      '</div>';
+  });
+  html += '<p style="font-size:12.5px;color:var(--ink-faint)">Lagres automatisk på denne enheten mens du skriver.</p>';
+  body.innerHTML = html;
+}
+var formSaveT = null;
+function formAutoSave(moduleId, toolId){
+  clearTimeout(formSaveT);
+  formSaveT = setTimeout(function(){
+    var data = {};
+    document.querySelectorAll('#toolBody [data-fid]').forEach(function(el){ data[el.getAttribute('data-fid')] = el.value; });
+    persistTool(toolId, data);
+    // oppdater fremdriftslinjen
+    var prog = document.getElementById('formProg');
+    if (prog){
+      var fields = document.querySelectorAll('#toolBody [data-fid]');
+      var filled = 0;
+      fields.forEach(function(el){ if (el.value.trim()) filled++; });
+      prog.querySelector('.bar i').style.width = Math.round(filled / Math.max(1, fields.length) * 100) + '%';
+      prog.querySelector('span').textContent = filled + ' av ' + fields.length + ' utfylt';
+    }
+  }, 600);
+}
+function formPreset(moduleId, toolId, pi){
+  var tool = findTool(moduleId, toolId), p = tool.presets[pi];
+  document.querySelectorAll('#toolBody [data-fid]').forEach(function(el){
+    var v = p.values[el.getAttribute('data-fid')];
+    if (v !== undefined) el.value = v;
+  });
+  formAutoSave(moduleId, toolId);
+}
+
+// ---------- DAGSPLAN (visuell tidslinje, Tiimo-inspirert) ----------
+var PLAN_CATS = [
+  { id:'rutine', label:'Rutine', cls:'cat-rutine' },
+  { id:'fokus', label:'Fokus', cls:'cat-fokus' },
+  { id:'pause', label:'Pause / hvile', cls:'cat-pause' },
+  { id:'sosialt', label:'Sosialt', cls:'cat-sosialt' },
+  { id:'anna', label:'Annet', cls:'cat-anna' }
+];
+var PL = { cat:'rutine', nowIv:null };
+var PL_SUGG = [
+  { text:'Frokost', from:'08:00', to:'08:30', cat:'rutine' },
+  { text:'Fokusøkt', from:'10:00', to:'10:45', cat:'fokus' },
+  { text:'Pause — ut en tur', from:'12:00', to:'12:30', cat:'pause' },
+  { text:'Middag', from:'17:00', to:'17:45', cat:'rutine' },
+  { text:'Ro ned før kvelden', from:'21:30', to:'22:00', cat:'pause' }
+];
+function renderPlannerTool(body, moduleId, tool, data){
+  data = data || { blocks:[] };
+  PL.cat = PL.cat || 'rutine';
+  body.innerHTML =
+    '<div class="pl-comp"><div class="row1">' +
+    '<input type="time" id="plFrom" value="09:00"><span style="color:var(--ink-faint)">–</span><input type="time" id="plTo" value="10:00">' +
+    '<input type="text" id="plText" placeholder="Hva skjer? F.eks. svare på e-post" onkeydown="if(event.key===\'Enter\'){event.preventDefault();plAdd(\'' + moduleId + '\',\'' + tool.id + '\')}">' +
+    '<button class="btn small btn-add" onclick="plAdd(\'' + moduleId + '\',\'' + tool.id + '\')">' + ic('plus') + 'Legg til</button></div>' +
+    '<div class="pl-chips" id="plChips">' + PLAN_CATS.map(function(c){
+      return '<button type="button" class="pl-chip ' + c.cls + (c.id === PL.cat ? ' sel' : '') + '" onclick="plPickCat(this,\'' + c.id + '\')"><i style="background:currentColor"></i>' + c.label + '</button>';
+    }).join('') + '</div></div>' +
+    '<div id="plDay"></div>';
+  renderPlannerDay(moduleId, tool, data);
+}
+function plPickCat(btn, id){
+  PL.cat = id;
+  document.querySelectorAll('#plChips .pl-chip').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+}
+function plMin(hm){ var p = (hm || '00:00').split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
+function renderPlannerDay(moduleId, tool, data){
+  var el = document.getElementById('plDay');
+  if (!el) return;
+  if (PL.nowIv){ clearInterval(PL.nowIv); PL.nowIv = null; }
+  var blocks = (data.blocks || []).slice().sort(function(a,b){ return plMin(a.from) - plMin(b.from); });
+  if (!blocks.length){
+    el.innerHTML = '<div class="pl-empty"><p>Dagen er tom. Start med et forslag — eller skriv ditt eget over.</p><div class="pl-sugg">' +
+      PL_SUGG.map(function(s, i){
+        return '<button onclick="plAddSugg(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">+ ' + escapeHtml(s.text) + ' · ' + s.from + '</button>';
+      }).join('') + '</div></div>';
+    return;
+  }
+  var PX = 1.0; // piksler per minutt
+  var startH = Math.min(7, Math.floor(plMin(blocks[0].from) / 60));
+  var endH = Math.max(22, Math.ceil(plMin(blocks[blocks.length-1].to || blocks[blocks.length-1].from) / 60) + 1);
+  var top0 = startH * 60;
+  var height = (endH - startH) * 60 * PX;
+  var now = new Date(); var nowM = now.getHours() * 60 + now.getMinutes();
+  var html = '<div class="pl-tlwrap"><div class="pl-tl" style="height:' + height + 'px">';
+  for (var h = startH; h <= endH; h++){
+    html += '<div class="pl-hr" style="top:' + ((h * 60 - top0) * PX) + 'px">' + (h < 10 ? '0' : '') + h + ':00</div>';
+  }
+  // enkel lane-håndtering for overlapp
+  var laneEnd = [];
+  blocks.forEach(function(b, bi){
+    var f = plMin(b.from), t = Math.max(plMin(b.to || b.from), f + 20);
+    var lane = 0;
+    while (lane < laneEnd.length && laneEnd[lane] > f) lane++;
+    laneEnd[lane] = t;
+    var cat = PLAN_CATS.find(function(c){ return c.id === b.cat; }) || PLAN_CATS[4];
+    var idx = data.blocks.indexOf(b);
+    var cls = 'pl-blk ' + cat.cls + (t <= nowM ? ' past' : (f <= nowM && nowM < t ? ' now' : ''));
+    html += '<div class="' + cls + '" style="top:' + ((f - top0) * PX) + 'px;height:' + Math.max(30, (t - f) * PX - 4) + 'px;margin-left:' + (lane * 26) + 'px;animation-delay:' + (bi * 45) + 'ms">' +
+      '<b>' + escapeHtml(b.text) + '</b><span class="tm">' + b.from + '–' + (b.to || '') + '</span>' +
+      '<button class="del" title="Fjern" onclick="plDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + idx + ')">' + ic('x') + '</button></div>';
+  });
+  // nå-linje
+  if (nowM >= top0 && nowM <= endH * 60){
+    html += '<div class="pl-nowline" id="plNow" style="top:' + ((nowM - top0) * PX) + 'px"><span class="lbl">NÅ</span></div>';
+  }
+  html += '</div></div>';
+  el.innerHTML = html;
+  // flytt nå-linjen hvert minutt
+  PL.nowIv = setInterval(function(){
+    var ln = document.getElementById('plNow');
+    if (!ln){ clearInterval(PL.nowIv); PL.nowIv = null; return; }
+    var n = new Date(); var m = n.getHours() * 60 + n.getMinutes();
+    if (m < top0 || m > endH * 60){ ln.style.display = 'none'; return; }
+    ln.style.top = ((m - top0) * PX) + 'px';
+  }, 60000);
+}
+function plAdd(moduleId, toolId){
+  var txt = document.getElementById('plText').value.trim();
+  if (!txt) return;
+  var data = loadTool(toolId) || { blocks:[] };
+  data.blocks.push({
+    from: document.getElementById('plFrom').value || '09:00',
+    to: document.getElementById('plTo').value || '10:00',
+    text: txt,
+    cat: PL.cat || 'rutine'
+  });
+  persistTool(toolId, data);
+  document.getElementById('plText').value = '';
+  renderPlannerDay(moduleId, findTool(moduleId, toolId), data);
+}
+function plAddSugg(moduleId, toolId, i){
+  var s = PL_SUGG[i];
+  var data = loadTool(toolId) || { blocks:[] };
+  data.blocks.push({ from: s.from, to: s.to, text: s.text, cat: s.cat });
+  persistTool(toolId, data);
+  renderPlannerDay(moduleId, findTool(moduleId, toolId), data);
+}
+function plDelete(moduleId, toolId, idx){
+  var data = loadTool(toolId) || { blocks:[] };
+  data.blocks.splice(idx, 1);
+  persistTool(toolId, data);
+  renderPlannerDay(moduleId, findTool(moduleId, toolId), data);
+}
+
+// ---------- EMOSJONSKORT (log) ----------
+var EMO_ICONS = { 'Glad':'😊','Rolig':'😌','Trist':'😢','Sint':'😠','Redd':'😨','Frustrert':'😤','Overveldet':'🥴','Skuffet':'😞','Ensom':'🫥','Stolt':'🌱','Sliten':'🥱','Nøytral':'😐' };
+var EMO_VAL = { 'Glad':'v-pos','Rolig':'v-pos','Stolt':'v-pos','Trist':'v-neg','Sint':'v-neg','Redd':'v-neg','Frustrert':'v-neg','Overveldet':'v-neg','Skuffet':'v-neg','Ensom':'v-neg','Sliten':'v-mid','Nøytral':'v-mid' };
+var logSel = { emo:null, int:null };
+function renderLogTool(body, moduleId, tool, data){
+  data = data || { entries:[] };
+  logSel = { emo:null, int:null };
+  body.innerHTML =
+    '<div class="field"><label>Hva kjenner du nå?</label><div class="emo-grid">' +
+    tool.emotions.map(function(e){
+      return '<button type="button" class="emo ' + (EMO_VAL[e] || 'v-mid') + '" onclick="logPickEmo(this,\'' + e + '\')"><span>' + (EMO_ICONS[e] || '·') + '</span>' + e + '</button>';
+    }).join('') + '</div></div>' +
+    '<div class="field"><label>Hvor sterkt kjennes det?</label><div class="int-bars" id="intBars">' +
+    [1,2,3,4,5].map(function(n){ return '<button type="button" aria-label="' + n + ' av 5" onclick="logPickInt(this,' + n + ')"></button>'; }).join('') + '</div>' +
+    '<div class="int-lbl"><span>Så vidt</span><span>Veldig sterkt</span></div></div>' +
+    '<div class="field"><label>Hva skjedde? Hva kan følelsen prøve å fortelle deg? <span style="font-weight:400;color:var(--ink-faint)">(valgfritt)</span></label>' +
+    '<textarea id="logNote" rows="3" placeholder="Noen stikkord holder"></textarea></div>' +
+    '<button class="btn small" onclick="logAdd(\'' + moduleId + '\',\'' + tool.id + '\')">Lagre kortet</button>' +
+    '<div id="logEntries" style="margin-top:24px"></div>';
+  renderLogEntries(moduleId, tool, data);
+}
+function logPickEmo(btn, emo){
+  btn.parentNode.querySelectorAll('.emo').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel'); logSel.emo = emo;
+}
+function logPickInt(btn, n){
+  var btns = btn.parentNode.querySelectorAll('button');
+  btns.forEach(function(b, i){
+    b.classList.remove('sel'); b.classList.remove('fill');
+    if (i < n - 1) b.classList.add('fill');
+    if (i === n - 1) b.classList.add('sel');
+  });
+  logSel.int = n;
+}
+function logAdd(moduleId, toolId){
+  if (!logSel.emo){ alert('Velg en følelse først — det nærmeste holder.'); return; }
+  var data = loadTool(toolId) || { entries:[] };
+  data.entries.unshift({
+    emo: logSel.emo, intensity: logSel.int || 3,
+    note: document.getElementById('logNote').value.trim(),
+    ts: new Date().toISOString()
+  });
+  persistTool(toolId, data);
+  openTool(moduleId, toolId, 'none');
+}
+function renderLogEntries(moduleId, tool, data){
+  var el = document.getElementById('logEntries');
+  if (!el) return;
+  if (!data.entries || !data.entries.length){ el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="eyebrow" style="margin-bottom:12px">Dine kort</div>' + data.entries.map(function(e, i){
+    var d = new Date(e.ts);
+    var vCls = EMO_VAL[e.emo] || 'v-mid';
+    var dotBg = vCls === 'v-pos' ? 'var(--sage-mist)' : (vCls === 'v-neg' ? 'var(--blue-soft)' : 'var(--bg-warm)');
+    return '<div class="log-entry" style="animation-delay:' + (i * 40) + 'ms"><div class="head" style="align-items:flex-start"><div style="display:flex;gap:11px;align-items:center"><span class="emo-dot" style="background:' + dotBg + '">' + (EMO_ICONS[e.emo] || '') + '</span><b style="color:var(--ink)">' + escapeHtml(e.emo) + ' · ' + e.intensity + '/5</b></div>' +
+      '<span class="when">' + d.toLocaleDateString('no-NO', { day:'numeric', month:'short' }) + ' ' + d.toLocaleTimeString('no-NO', { hour:'2-digit', minute:'2-digit' }) +
+      ' <button style="background:none;border:none;color:var(--ink-faint);margin-left:6px" onclick="logDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">✕</button></span></div>' +
+      (e.note ? '<div class="body">' + escapeHtml(e.note) + '</div>' : '') + '</div>';
+  }).join('');
+}
+function logDelete(moduleId, toolId, i){
+  var data = loadTool(toolId) || { entries:[] };
+  data.entries.splice(i, 1);
+  persistTool(toolId, data);
+  openTool(moduleId, toolId, 'none');
+}
+
+// ---------- FOKUSØKT (NY — timer) ----------
+var FT = { total:25*60, left:25*60, running:false, mode:'fokus', iv:null };
+function renderTimerTool(body, moduleId, tool, data){
+  body.innerHTML =
+    '<div class="focus-wrap">' +
+    '<div class="focus-presets" id="ftPresets">' +
+    '<button class="sel" onclick="ftPreset(this,10)">10 min</button>' +
+    '<button onclick="ftPreset(this,15)">15 min</button>' +
+    '<button onclick="ftPreset(this,25)">25 min</button>' +
+    '<button onclick="ftPreset(this,45)">45 min</button></div>' +
+    '<div class="focus-ring"><svg width="210" height="210" id="ftSvg" class="idle"><circle class="fr-bg" cx="105" cy="105" r="92" fill="none" stroke-width="11"/>' +
+    '<circle class="fr-fg" id="ftRing" cx="105" cy="105" r="92" fill="none" stroke-width="11" stroke-dasharray="578" stroke-dashoffset="0"/></svg>' +
+    '<div class="focus-center"><b id="ftTime">10:00</b><span id="ftMode">Klar til å starte</span></div></div>' +
+    '<div style="display:flex;gap:10px"><button class="btn" id="ftStart" onclick="ftToggle()">Start</button>' +
+    '<button class="btn ghost" onclick="ftReset()">Nullstill</button></div>' +
+    '<p style="font-size:13px;color:var(--ink-faint);margin-top:18px;max-width:380px;text-align:center">Når økten er ferdig får du beskjed om å ta 5 minutter pause. Ingen lyd, ingen stress — bare en rolig påminnelse.</p></div>';
+  FT.total = FT.left = 10*60; FT.running = false; FT.mode = 'fokus';
+  ftPaint();
+}
+function ftPreset(btn, min){
+  if (FT.running) return;
+  document.querySelectorAll('#ftPresets button').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  FT.total = FT.left = min*60; FT.mode = 'fokus';
+  ftPaint();
+}
+function ftToggle(){
+  if (FT.running){ stopFocusTimer(); document.getElementById('ftStart').textContent = 'Fortsett'; return; }
+  FT.running = true;
+  document.getElementById('ftStart').textContent = 'Pause';
+  FT.iv = setInterval(function(){
+    FT.left--;
+    if (FT.left <= 0){
+      if (FT.mode === 'fokus'){
+        FT.mode = 'pause'; FT.total = FT.left = 5*60;
+        var m = document.getElementById('ftMode');
+        if (m) m.textContent = 'Fint jobbet — pause nå';
+      } else {
+        FT.mode = 'fokus'; stopFocusTimer();
+        FT.total = FT.left = 10*60;
+        var s = document.getElementById('ftStart');
+        if (s) s.textContent = 'Start ny økt';
+      }
+    }
+    ftPaint();
+  }, 1000);
+  ftPaint();
+}
+function stopFocusTimer(){
+  FT.running = false;
+  if (FT.iv){ clearInterval(FT.iv); FT.iv = null; }
+}
+function ftReset(){
+  stopFocusTimer();
+  FT.left = FT.total; FT.mode = 'fokus';
+  var s = document.getElementById('ftStart');
+  if (s) s.textContent = 'Start';
+  ftPaint();
+}
+function ftPaint(){
+  var t = document.getElementById('ftTime'), ring = document.getElementById('ftRing'), m = document.getElementById('ftMode');
+  if (!t || !ring) return;
+  var svg = document.getElementById('ftSvg');
+  if (svg) svg.classList.toggle('idle', !FT.running);
+  var mm = Math.floor(FT.left/60), ss = FT.left % 60;
+  t.textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
+  var C = 578;
+  ring.style.strokeDashoffset = (C * (1 - FT.left / FT.total)).toFixed(1);
+  ring.style.stroke = FT.mode === 'pause' ? 'var(--teal)' : 'var(--sage)';
+  if (m){
+    if (FT.mode === 'pause') m.textContent = 'Pause — strekk på deg';
+    else if (FT.running) m.textContent = 'Fokus — du er i gang';
+  }
+}
+
+// ---------- deling (til meldinger) ----------
+function buildToolSummary(tool, data){
+  if (!data) return null;
+  var lines = ['[' + tool.title + ']'];
+  if (tool.type === 'form'){
+    tool.fields.forEach(function(f){
+      if (f.section || !data[f.id]) return;
+      lines.push(f.label + ':\n' + data[f.id]);
+    });
+  } else if (tool.type === 'list'){
+    if (data.header) lines.push(data.header);
+    (data.items || []).forEach(function(it){ lines.push((it.done ? '[x] ' : '[ ] ') + it.text); });
+  } else if (tool.type === 'multilist'){
+    tool.buckets.forEach(function(b){
+      if ((data[b.id] || []).length) lines.push(b.label + ': ' + data[b.id].join(', '));
+    });
+  } else if (tool.type === 'log'){
+    (data.entries || []).slice(0,5).forEach(function(e){
+      lines.push(e.emo + ' (' + e.intensity + '/5)' + (e.note ? ': ' + e.note : ''));
+    });
+  } else if (tool.type === 'planner'){
+    (data.blocks || []).forEach(function(b){ lines.push(b.from + '–' + b.to + ' ' + b.text); });
+  }
+  return lines.length > 1 ? lines.join('\n') : null;
+}
+function shareTool(moduleId, toolId){
+  var tool = findTool(moduleId, toolId);
+  var summary = buildToolSummary(tool, loadTool(toolId));
+  if (!summary){ alert('Det er ingenting å dele ennå. Fyll ut verktøyet først.'); return; }
+  if (!confirm('Dette sender innholdet til din behandler som en melding. Bare det du ser her blir delt. Vil du fortsette?')) return;
+  var message = '[Delt fra verktøy: ' + tool.title + ']\n\n' + summary;
+  state.messages.push({ sender:'klient', name:'Klient', timestamp:new Date().toISOString(), text:message });
+  apiCall('sendMessage', { message: message });
+  alert('Sendt til behandler. Du finner det igjen under «Meldinger».');
+}
+
+// ---------- MELDINGER ----------
+function renderMessages(){
+  var html = '<div class="card"><div class="msg-list" id="msgList">' +
+    state.messages.map(function(m){
+      var mine = m.sender === 'klient';
+      return '<div class="msg ' + (mine ? 'out' : 'in') + '"><div class="who">' + escapeHtml(mine ? 'Du' : (m.name || 'Din behandler')) + '</div>' + escapeHtml(m.text).replace(/\n/g,'<br>') + '</div>';
+    }).join('') + '</div>' +
+    '<div class="msg-compose"><textarea id="msgInput" placeholder="Skriv din melding her…"></textarea>' +
+    '<button class="btn" onclick="sendMsg()">Send</button></div>' +
+    '<div class="msg-foot">Svar innen 1–2 virkedager. Ved akutte behov, ring legevakt <b>116 117</b>.</div></div>';
+  document.getElementById('messages-view').innerHTML = html;
+  if (state.pendingShare){
+    document.getElementById('msgInput').value = state.pendingShare;
+    state.pendingShare = null;
+  }
+  var list = document.getElementById('msgList');
+  list.scrollTop = list.scrollHeight;
+}
+function sendMsg(){
+  var inp = document.getElementById('msgInput'), txt = inp.value.trim();
+  if (!txt) return;
+  state.messages.push({ sender:'klient', name:'Klient', timestamp:new Date().toISOString(), text:txt });
+  apiCall('sendMessage', { message: txt });
+  renderMessages();
+}
+
+// ---------- RO-MODUS ----------
+function toggleCalm(){
+  document.body.classList.toggle('calm');
+  var on = document.body.classList.contains('calm');
+  document.getElementById('calmLabel').textContent = on ? 'Ro-modus: på' : 'Ro-modus';
+  try { localStorage.setItem('opk_proto2_calm', on ? '1' : '0'); } catch(e){}
+}
+function restoreCalm(){
+  try {
+    if (localStorage.getItem('opk_proto2_calm') === '1'){
+      document.body.classList.add('calm');
+      document.getElementById('calmLabel').textContent = 'Ro-modus: på';
+    }
+  } catch(e){}
+}
+
+// ---------- Nettleserens Tilbake/Frem: naviger inne i portalen ----------
+function portalToolBack(moduleId){
+  try {
+    if (history.state && history.state.tool){ history.back(); return; }
+  } catch(e){}
+  renderToolLauncher(moduleId);
+}
+window.addEventListener('popstate', function(e){
+  if (!state.user) return; // ikke innlogget — la nettleseren håndtere normalt
+  var s = e.state || {};
+  var view = s.portalView || (location.hash ? location.hash.slice(1).split('/')[0] : 'dashboard');
+  if (!document.getElementById(view + '-view')) return;
+  switchView(view, 'none');
+  if (s.tool) openTool(view, s.tool, 'none');
+});
+
+// ---------- PWA: service worker + intro-animasjon ved app-åpning ----------
+// Kun i prod — i preview/mock unngår vi service worker så host-oppdateringer
+// alltid vises ferskt (ingen gammel cache).
+if (!PREVIEW && 'serviceWorker' in navigator) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('/min-side/sw.js').catch(function(){}); });
+}
+var INTRO = { played:false };
+function playIntro(){
+  try {
+    if (INTRO.played) return;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var calm = false;
+    try { calm = localStorage.getItem('opk_proto2_calm') === '1'; } catch(e){}
+    var el = document.getElementById('introSplash');
+    var v = document.getElementById('introVideo');
+    if (reduced || calm || !el || !v) return;
+    INTRO.played = true;
+    // Velg variant etter skjermretning — portrettversjonen er komponert for mobil
+    var portrett = window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
+    v.src = portrett ? '/min-side/intro-portrett.mp4' : '/min-side/intro.mp4';
+    el.classList.add('vis');
+    var done = false;
+    function slutt(){
+      if (done) return;
+      done = true;
+      el.classList.add('ut');                      // fader over i portalen under
+      setTimeout(function(){ el.remove(); }, 1250);
+    }
+    v.addEventListener('ended', slutt);
+    v.addEventListener('error', slutt);            // videolast feilet → rett til portal
+    el.addEventListener('click', slutt);           // trykk for å hoppe over
+    setTimeout(slutt, 11000);                      // failsafe
+    // Hvis videoen ikke har begynt å spille innen 4 s, dropp introen
+    setTimeout(function(){ if (!done && (!v.currentTime || v.currentTime === 0)) slutt(); }, 4000);
+    var p = v.play();
+    if (p && p.catch) p.catch(slutt);              // autoplay blokkert → rett til portal
+  } catch(e){}
+}
+// Ved app-åpning fra hjemskjerm spilles introen med en gang
+(function(){
+  try {
+    var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    if (standalone) playIntro();
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
