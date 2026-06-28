@@ -30,7 +30,7 @@
   --sage:#5C6B4A; --sage-dark:#3E4A33; --sage-deep:#2E3726;
   --sage-light:#A8B49A; --sage-pale:#C5CEBA; --sage-mist:#EDF0E8;
   --bg:#FAF8F5; --bg-warm:#F2EDE4; --card:#FFFFFF; --border:#ECE6DC;
-  --ink:#2A2A28; --ink-soft:#5C5C58; --ink-faint:#8A857C;
+  --ink:#2A2A28; --ink-soft:#5C5C58; --ink-faint:#746E62;
   --accent:#C8956D; --accent-soft:#F6EADC;        /* ADHD   */
   --blue:#5E7290;  --blue-soft:#E9EDF3;           /* Søvn   */
   --teal:#5F8575;  --teal-soft:#E4EDE8;           /* Autisme*/
@@ -157,7 +157,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:30px;flex-wrap:wrap}
 .topbar .date{font-size:13.5px;color:var(--ink-faint);margin-bottom:4px}
 .topbar h1{font-size:clamp(30px,3.4vw,40px);line-height:1.08}
-.view{display:none;animation:fadeUp .45s var(--ease)}
+.view{display:none}
 .view.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* Romlig navigasjon: glidende, dybde-baserte overganger — føles som å bevege seg
@@ -484,7 +484,7 @@ body.dark .breath-orb{box-shadow:0 14px 44px rgba(0,0,0,.45)}
 .sc-stmt:last-child{border-bottom:none}
 .sc-q{font-size:14.5px;color:var(--ink);margin-bottom:9px;line-height:1.4}
 .sc-opts{display:flex;gap:6px}
-.sc-opt{flex:1;min-width:0;padding:8px 4px;border:1.5px solid var(--border);border-radius:11px;background:var(--card);color:var(--ink-faint);font-size:11.5px;font-weight:600;cursor:pointer;transition:border-color .12s,background .12s,color .12s;text-align:center;line-height:1.2}
+.sc-opt{flex:1;min-width:0;min-height:44px;display:flex;align-items:center;justify-content:center;padding:8px 4px;border:1.5px solid var(--border);border-radius:11px;background:var(--card);color:var(--ink-soft);font-size:11.5px;font-weight:600;cursor:pointer;transition:border-color .12s,background .12s,color .12s;text-align:center;line-height:1.2}
 .sc-opt:hover{border-color:var(--sage-light)}
 .sc-opt.sel{background:var(--sage);border-color:var(--sage);color:#fff}
 .sc-actbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
@@ -821,7 +821,7 @@ body.calm .app-bg .ab,body.calm .app-bg .smoke{animation:none}
 .dial-hint kbd{font:inherit;font-size:11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:2px 7px;color:#E9EDE0}
 /* Verktøyhjul-grupper (filter-chips) */
 .wheel-groups{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:2px 0 18px}
-.wg-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.wg-chip{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:7px 15px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
 .wg-chip:hover{border-color:var(--sage-light)}
 .wg-chip.sel{background:var(--sage-mist);border-color:var(--sage-light);color:var(--sage-dark)}
 .wg-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bg-warm);font-size:11px;font-weight:700;color:var(--ink-faint)}
@@ -1100,7 +1100,14 @@ function playGlide(el, cls){
   el.classList.remove('glide-right','glide-left','glide-fwd','glide-back');
   void el.offsetWidth; // tving reflow så animasjonen kan restarte
   el.classList.add(cls);
-  var done = function(){ el.classList.remove(cls); el.removeEventListener('animationend', done); };
+  var t;
+  var done = function(e){
+    if (e && e.target !== el) return; // ignorer animationend som bobler opp fra barn-elementer
+    el.classList.remove(cls);
+    el.removeEventListener('animationend', done);
+    clearTimeout(t);
+  };
+  t = setTimeout(done, 800); // sikkerhetsnett om self-animationend ikke fyrer (f.eks. display:none)
   el.addEventListener('animationend', done);
 }
 
