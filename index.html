@@ -259,9 +259,25 @@ body.dark .nb-badge.ok{color:var(--good)}
 .acc-accent .ico{background:var(--accent-soft)}
 .acc-teal .ico{background:var(--teal-soft)}
 .tool-intro{
-  background:var(--bg-warm);border-radius:16px;padding:16px 20px;font-size:14px;color:var(--ink-soft);
+  background:linear-gradient(90deg,var(--bg-warm),rgba(242,237,228,0) 92%);border-radius:0 16px 16px 0;
+  padding:15px 22px 15px 20px;font-size:14px;color:var(--ink-soft);
   margin:0 0 22px;border-left:3px solid var(--sage-light);
 }
+body.dark .tool-intro{background:linear-gradient(90deg,rgba(168,180,154,.12),transparent 92%)}
+/* Callout / note — high-end alternativ til «ren boks»: venstre-aksent-regel +
+   myk salvie-toning som fader ut, ingen harde kanter. Koder som taktile keycaps. */
+.callout{display:flex;gap:11px;align-items:flex-start;margin:14px 0;padding:11px 16px 11px 15px;
+  background:linear-gradient(90deg,var(--sage-mist),rgba(237,240,232,0) 94%);
+  border-left:3px solid var(--sage-light);border-radius:0 13px 13px 0;
+  font-size:12.5px;line-height:1.55;color:var(--ink-soft)}
+.callout .co-ico{flex:none;width:17px;height:17px;color:var(--sage);margin-top:1px}
+.callout .co-ico svg{width:17px;height:17px;display:block}
+.callout b{color:var(--sage-dark);font-weight:700}
+.callout kbd{display:inline-block;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.02em;
+  padding:1px 7px;margin:0 1px;border-radius:7px;background:var(--card);color:var(--sage-dark);
+  border:1px solid var(--sage-light);box-shadow:0 1px 0 rgba(92,107,74,.18),inset 0 1px 0 rgba(255,255,255,.7)}
+body.dark .callout{background:linear-gradient(90deg,rgba(168,180,154,.14),transparent 94%)}
+body.dark .callout kbd{background:rgba(40,44,33,.7);border-color:rgba(168,180,154,.35);color:#C9D2BD;box-shadow:none}
 .tool-back{background:none;border:none;color:var(--sage);font-size:13.5px;font-weight:600;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px}
 .tool-back:hover{text-decoration:underline;text-underline-offset:3px}
 .tool-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
@@ -1051,7 +1067,8 @@ var ICONS = {
   leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-7 5-12 14-13 0 9-5 14-12 14a6 6 0 01-2-1z"/><path d="M5 19c2-5 5-8 9-9.5"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5l5-5M8 11l-2 2a3.5 3.5 0 005 5l2-2M16 13l2-2a3.5 3.5 0 00-5-5l-2 2"/></svg>',
   sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="3.4"/><path d="M12 4v2.2M5.4 13H3.5M20.5 13h-1.9M6.6 7.6L5.3 6.3M17.4 7.6l1.3-1.3M2.5 18h19"/></svg>',
-  battery_half:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="16" height="9" rx="2.5"/><path d="M21.5 11v3"/><rect x="5" y="10.5" width="5" height="4" rx="1" fill="currentColor" stroke="none"/></svg>'
+  battery_half:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="16" height="9" rx="2.5"/><path d="M21.5 11v3"/><rect x="5" y="10.5" width="5" height="4" rx="1" fill="currentColor" stroke="none"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.4-6.5 9.5-6.5S21.5 12 21.5 12 18.1 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>'
 };
 function ic(name){ return ICONS[name] || ''; }
 function escapeHtml(s){
@@ -1409,8 +1426,10 @@ function toggleDark(){var d=document.body.classList.toggle('dark');var l=documen
     var sub = document.querySelector('#loginScreen .sub');
     if (sub && sub.parentNode){
       var hint = document.createElement('div');
-      hint.style.cssText = 'margin-top:10px;font-size:12.5px;line-height:1.5;color:#8A8578;background:rgba(200,149,109,.10);border:1px solid rgba(200,149,109,.28);border-radius:12px;padding:9px 12px';
-      hint.innerHTML = '<b style="color:#9A7A53">Forhåndsvisning</b> — prøv kode <b>OPK1</b> (søvn), <b>OPK2</b> (adhd) eller <b>OPK3</b> (utbrenthet).';
+      hint.className = 'callout';
+      hint.style.marginTop = '14px';
+      hint.innerHTML = '<span class="co-ico">' + ic('eye') + '</span>' +
+        '<span><b>Forhåndsvisning</b> — prøv en kode: <kbd>OPK1</kbd> søvn · <kbd>OPK2</kbd> adhd · <kbd>OPK3</kbd> utbrenthet</span>';
       sub.parentNode.insertBefore(hint, sub.nextSibling);
     }
   }
