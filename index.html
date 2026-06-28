@@ -437,6 +437,23 @@ body.dark .breath-orb{box-shadow:0 14px 44px rgba(0,0,0,.45)}
 .pmr-bar span.tense{background:#C8956D}
 .pmr-bar span.release{background:var(--sage)}
 .pmr-count{font-family:'DM Serif Display',serif;font-size:34px;color:var(--ink);font-variant-numeric:tabular-nums;min-height:42px}
+/* Tidsestimat-trener */
+.est-card{display:flex;flex-direction:column;gap:6px}
+.est-live,.est-done{align-items:center;text-align:center;padding:8px 0}
+.est-task{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);margin-bottom:4px}
+.est-guess{font-size:14px;color:var(--ink-faint);margin-bottom:10px}
+.est-clock{font-family:'DM Serif Display',serif;font-size:54px;color:var(--ink);font-variant-numeric:tabular-nums;margin:8px 0 18px}
+.est-compare{display:flex;align-items:center;justify-content:center;gap:18px;margin:8px 0 14px}
+.est-col{display:flex;flex-direction:column;gap:3px;min-width:96px}
+.est-col span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.est-col b{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;color:var(--ink)}
+.est-vs{font-size:20px;color:var(--ink-faint)}
+.est-msg{font-size:14px;color:var(--ink-soft);max-width:340px;margin:0 auto 18px;line-height:1.5}
+.est-loglist{border-top:1px solid var(--border);padding-top:4px}
+.est-logrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+.est-logrow:last-child{border-bottom:none}
+.est-logtask{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.est-logval{color:var(--ink-faint);flex:none;font-variant-numeric:tabular-nums}
 
 /* meldinger */
 .msg-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;max-height:430px;overflow-y:auto;padding:4px}
@@ -966,7 +983,8 @@ var ICONS = {
   anchor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5.5" r="2.5"/><path d="M12 8V21M5 13a7 7 0 0014 0M5 13H8M19 13h-3"/></svg>',
   gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1116 0"/><path d="M12 19l4-5"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>',
   waves:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 14c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>',
-  spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18.5 16l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/></svg>'
+  spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18.5 16l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>'
 };
 function ic(name){ return ICONS[name] || ''; }
 function escapeHtml(s){
@@ -1972,6 +1990,18 @@ var TOOLS = {
           { key:'kos', label:'Kos og pause', sub:'Noe godt for deg', icon:'heart',
             items:[ { title:'Lag en varm drikk' }, { title:'Tre dype pust mot vinduet' }, { title:'Se på noe morsomt i to minutter' }, { title:'Sett deg riktig godt til rette' } ] }
         ] },
+      { id:'adhd_komigang', title:'Kom-i-gang-timer', icon:'hour', type:'timer', ephemeral:true, isNew:true,
+        presets:[2,5,10], simple:true,
+        note:'Bare det å starte er ofte det vanskeligste. Velg en kort tid og gjør det første lille steget — du kan alltid stoppe når timeren er ute.',
+        desc:'En kort timer med lav terskel — bare for å komme i gang.',
+        intro:'Målet er ikke å bli ferdig, bare å begynne. Velg en liten tidsbit, start, og gjør det aller første steget. Når tiden er ute har du allerede gjort det vanskeligste.' },
+      { id:'adhd_estimat', title:'Tidsestimat-trener', icon:'target', type:'estimate', ephemeral:true, isNew:true,
+        desc:'Gjett tiden, mål den faktiske — tren opp tidsfølelsen.',
+        intro:'Tidsblindhet er vanlig med ADHD. Her gjetter du hvor lang tid noe tar, måler det faktiske, og ser forskjellen. Over tid blir gjettene dine skarpere — helt uten dom.' },
+      { id:'adhd_idebank', title:'Idébank', icon:'note', type:'list', checkable:true,
+        desc:'Fang idéer raskt nå — sorter dem senere.',
+        intro:'Idéer dukker opp til ulagelige tider og forsvinner like fort. Kast dem inn her med en gang, så slipper hodet å holde på dem. Kryss av når du har tatt tak i noe.',
+        addLabel:'Skriv ned en idé' },
       { id:'adhd_sortering', title:'Nå / Snart / Senere / En dag', icon:'cols', type:'multilist',
         desc:'Sorter oppgaver etter når de faktisk haster.',
         intro:'Alt kjennes ofte like presserende med ADHD. Her får hver oppgave én plass, så hjernen slipper å holde alt på én gang.',
@@ -2101,7 +2131,8 @@ TOOLS.adhd.groups = [
   var g = {
     adhd_pust:'ro', adhd_333:'ro', adhd_regulering:'ro', adhd_vindu:'ro', adhd_pmr:'ro',
     adhd_fokus:'igang', adhd_dopamin:'igang', adhd_dekomponer:'igang',
-    adhd_dagsplan:'struktur', adhd_sortering:'struktur', adhd_rutine:'struktur',
+    adhd_komigang:'igang', adhd_estimat:'igang',
+    adhd_dagsplan:'struktur', adhd_sortering:'struktur', adhd_rutine:'struktur', adhd_idebank:'struktur',
     adhd_emosjon:'folelser', adhd_terapi:'folelser'
   };
   TOOLS.adhd.tools.forEach(function(t){ if (g[t.id]) t.group = g[t.id]; });
@@ -2300,6 +2331,7 @@ function openTool(moduleId, toolId, histMode){
   stopFocusTimer();
   stopBreath();
   stopPmr();
+  stopEstimate();
   var html = '<button class="tool-back" onclick="portalToolBack(\'' + moduleId + '\')">← Alle ' + escapeHtml(TOOLS[moduleId].label).toLowerCase() + '</button>';
   html += '<div class="tool-head"><span class="th-ico">' + ic(tool.icon) + '</span><h2 class="serif">' + escapeHtml(tool.title) + '</h2></div>';
   if (tool.intro) html += '<div class="tool-intro">' + escapeHtml(tool.intro) + '</div>';
@@ -2316,6 +2348,7 @@ function openTool(moduleId, toolId, histMode){
   else if (tool.type === 'grounding') renderGroundingTool(body, moduleId, tool, data);
   else if (tool.type === 'chooser') renderChooserTool(body, moduleId, tool);
   else if (tool.type === 'pmr') renderPmrTool(body, moduleId, tool);
+  else if (tool.type === 'estimate') renderEstimateTool(body, moduleId, tool);
 }
 function toolToolbar(moduleId, tool){
   var html = '<div class="tool-toolbar">';
@@ -2766,21 +2799,25 @@ function logDelete(moduleId, toolId, i){
 
 // ---------- FOKUSØKT (NY — timer) ----------
 var FT = { total:25*60, left:25*60, running:false, mode:'fokus', iv:null };
-function renderTimerTool(body, moduleId, tool, data){
+function renderTimerTool(body, moduleId, tool){
+  var presets = (tool && tool.presets) || [10, 15, 25, 45];
+  FT.simple = !!(tool && tool.simple);
+  FT.breakMin = (tool && tool.breakMin) || 5;
+  FT.base = presets[0] * 60;
+  var btns = presets.map(function(m, i){
+    return '<button class="' + (i === 0 ? 'sel' : '') + '" onclick="ftPreset(this,' + m + ')">' + m + ' min</button>';
+  }).join('');
+  var note = (tool && tool.note) || ('Når økten er ferdig får du beskjed om å ta ' + FT.breakMin + ' minutter pause. Ingen lyd, ingen stress — bare en rolig påminnelse.');
   body.innerHTML =
     '<div class="focus-wrap">' +
-    '<div class="focus-presets" id="ftPresets">' +
-    '<button class="sel" onclick="ftPreset(this,10)">10 min</button>' +
-    '<button onclick="ftPreset(this,15)">15 min</button>' +
-    '<button onclick="ftPreset(this,25)">25 min</button>' +
-    '<button onclick="ftPreset(this,45)">45 min</button></div>' +
+    '<div class="focus-presets" id="ftPresets">' + btns + '</div>' +
     '<div class="focus-ring"><svg width="210" height="210" id="ftSvg" class="idle"><circle class="fr-bg" cx="105" cy="105" r="92" fill="none" stroke-width="11"/>' +
     '<circle class="fr-fg" id="ftRing" cx="105" cy="105" r="92" fill="none" stroke-width="11" stroke-dasharray="578" stroke-dashoffset="0"/></svg>' +
-    '<div class="focus-center"><b id="ftTime">10:00</b><span id="ftMode">Klar til å starte</span></div></div>' +
+    '<div class="focus-center"><b id="ftTime">0:00</b><span id="ftMode">Klar til å starte</span></div></div>' +
     '<div style="display:flex;gap:10px"><button class="btn" id="ftStart" onclick="ftToggle()">Start</button>' +
     '<button class="btn ghost" onclick="ftReset()">Nullstill</button></div>' +
-    '<p style="font-size:13px;color:var(--ink-faint);margin-top:18px;max-width:380px;text-align:center">Når økten er ferdig får du beskjed om å ta 5 minutter pause. Ingen lyd, ingen stress — bare en rolig påminnelse.</p></div>';
-  FT.total = FT.left = 10*60; FT.running = false; FT.mode = 'fokus';
+    '<p style="font-size:13px;color:var(--ink-faint);margin-top:18px;max-width:380px;text-align:center">' + escapeHtml(note) + '</p></div>';
+  FT.total = FT.left = FT.base; FT.running = false; FT.mode = 'fokus';
   ftPaint();
 }
 function ftPreset(btn, min){
@@ -2798,12 +2835,18 @@ function ftToggle(){
     FT.left--;
     if (FT.left <= 0){
       if (FT.mode === 'fokus'){
-        FT.mode = 'pause'; FT.total = FT.left = 5*60;
-        var m = document.getElementById('ftMode');
-        if (m) m.textContent = 'Fint jobbet — pause nå';
-      } else {
+        if (FT.simple){
+          FT.mode = 'done'; FT.left = 0; stopFocusTimer();
+          var sd = document.getElementById('ftStart'); if (sd) sd.textContent = 'Start på nytt';
+          var md = document.getElementById('ftMode'); if (md) md.textContent = 'Du kom i gang 🎉';
+        } else {
+          FT.mode = 'pause'; FT.total = FT.left = FT.breakMin * 60;
+          var m = document.getElementById('ftMode');
+          if (m) m.textContent = 'Fint jobbet — pause nå';
+        }
+      } else if (FT.mode === 'pause') {
         FT.mode = 'fokus'; stopFocusTimer();
-        FT.total = FT.left = 10*60;
+        FT.total = FT.left = FT.base;
         var s = document.getElementById('ftStart');
         if (s) s.textContent = 'Start ny økt';
       }
@@ -2831,11 +2874,12 @@ function ftPaint(){
   var mm = Math.floor(FT.left/60), ss = FT.left % 60;
   t.textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
   var C = 578;
-  ring.style.strokeDashoffset = (C * (1 - FT.left / FT.total)).toFixed(1);
+  var frac = FT.mode === 'done' ? 1 : (FT.left / FT.total);
+  ring.style.strokeDashoffset = (C * (1 - frac)).toFixed(1);
   ring.style.stroke = FT.mode === 'pause' ? 'var(--teal)' : 'var(--sage)';
   if (m){
     if (FT.mode === 'pause') m.textContent = 'Pause — strekk på deg';
-    else if (FT.running) m.textContent = 'Fokus — du er i gang';
+    else if (FT.running) m.textContent = FT.simple ? 'I gang — bare begynn' : 'Fokus — du er i gang';
   }
 }
 
@@ -3071,6 +3115,77 @@ function pmrDone(){
   if (fill){ fill.style.width = '100%'; fill.className = 'release'; }
   if (ct) ct.textContent = '';
   if (s) s.textContent = 'Start på nytt';
+}
+
+// ---------- TIDSESTIMAT-TRENER ----------
+// Gjett tid → mål faktisk → kalibrer. Ephemeral (logg kun for denne økten).
+var ES = { phase:'input', task:'', guessMin:0, startT:0, iv:null, elapsed:0, log:[] };
+function renderEstimateTool(body){
+  ES = { phase:'input', task:'', guessMin:0, startT:0, iv:null, elapsed:0, log:[] };
+  body.innerHTML = '<div class="est-wrap" id="estWrap"></div>';
+  estimatePaint();
+}
+function stopEstimate(){ if (ES.iv){ clearInterval(ES.iv); ES.iv = null; } }
+function estFmt(sec){ var m = Math.floor(sec/60), s = sec % 60; return m + ' min ' + (s < 10 ? '0' : '') + s + ' s'; }
+function estimateLog(){
+  if (!ES.log.length) return '';
+  return '<div class="est-loglist"><div class="eyebrow" style="margin:20px 0 8px">Denne økten</div>' +
+    ES.log.map(function(e){
+      return '<div class="est-logrow"><span class="est-logtask">' + escapeHtml(e.task || 'Oppgave') + '</span><span class="est-logval">' + escapeHtml(e.guess) + ' → ' + escapeHtml(e.actual) + '</span></div>';
+    }).join('') + '</div>';
+}
+function estimatePaint(){
+  var w = document.getElementById('estWrap'); if (!w) return;
+  if (ES.phase === 'input'){
+    w.innerHTML = '<div class="est-card">' +
+      '<div class="field"><label for="estTask">Hva skal du gjøre?</label><input type="text" id="estTask" placeholder="F.eks. svare på e-poster" value="' + escapeHtml(ES.task) + '"></div>' +
+      '<div class="field"><label for="estGuess">Hvor lang tid tror du det tar? (minutter)</label><input type="number" id="estGuess" min="1" inputmode="numeric" placeholder="F.eks. 15" value="' + (ES.guessMin || '') + '"></div>' +
+      '<button class="btn" style="width:100%" onclick="estimateStart()">Start måling</button></div>' + estimateLog();
+    return;
+  }
+  if (ES.phase === 'running'){
+    w.innerHTML = '<div class="est-card est-live"><div class="est-task">' + escapeHtml(ES.task || 'Oppgave') + '</div>' +
+      '<div class="est-guess">Du gjettet ' + ES.guessMin + ' min</div>' +
+      '<div class="est-clock" id="estClock">0:00</div>' +
+      '<button class="btn" style="width:100%" onclick="estimateStop()">Ferdig</button></div>';
+    estimateTick();
+    return;
+  }
+  // done
+  var actualMin = ES.elapsed / 60, diff = actualMin - ES.guessMin, absMin = Math.abs(diff);
+  var rounded = absMin < 1 ? 'mindre enn ett minutt' : (Math.round(absMin) + ' min');
+  var msg;
+  if (absMin < Math.max(1, ES.guessMin * 0.15)) msg = 'Veldig nært! Tidsfølelsen din traff godt her.';
+  else if (diff > 0) msg = 'Det tok ' + rounded + ' lenger enn du trodde. Helt vanlig — mange undervurderer tid.';
+  else msg = 'Det gikk ' + rounded + ' raskere enn du trodde. Fint å ta med til neste gang.';
+  w.innerHTML = '<div class="est-card est-done"><div class="est-task">' + escapeHtml(ES.task || 'Oppgave') + '</div>' +
+    '<div class="est-compare"><div class="est-col"><span>Gjettet</span><b>' + ES.guessMin + ' min</b></div>' +
+    '<div class="est-vs">→</div><div class="est-col"><span>Faktisk</span><b>' + estFmt(ES.elapsed) + '</b></div></div>' +
+    '<p class="est-msg">' + msg + '</p>' +
+    '<button class="btn" style="width:100%" onclick="estimateReset()">Ny måling</button></div>' + estimateLog();
+}
+function estimateStart(){
+  var t = document.getElementById('estTask'), g = document.getElementById('estGuess');
+  ES.task = (t && t.value || '').trim();
+  ES.guessMin = Math.max(0, parseInt(g && g.value, 10) || 0);
+  if (!ES.guessMin){ if (g) g.focus(); return; }
+  ES.phase = 'running'; ES.startT = Date.now(); ES.elapsed = 0;
+  estimatePaint();
+  ES.iv = setInterval(estimateTick, 500);
+}
+function estimateTick(){
+  ES.elapsed = Math.floor((Date.now() - ES.startT) / 1000);
+  var c = document.getElementById('estClock');
+  if (c){ var m = Math.floor(ES.elapsed/60), s = ES.elapsed % 60; c.textContent = m + ':' + (s < 10 ? '0' : '') + s; }
+}
+function estimateStop(){
+  stopEstimate(); ES.elapsed = Math.floor((Date.now() - ES.startT) / 1000);
+  ES.log.unshift({ task:ES.task, guess:ES.guessMin + ' min', actual:estFmt(ES.elapsed) });
+  if (ES.log.length > 8) ES.log.length = 8;
+  ES.phase = 'done'; estimatePaint();
+}
+function estimateReset(){
+  stopEstimate(); ES.phase = 'input'; ES.task = ''; ES.guessMin = 0; ES.elapsed = 0; estimatePaint();
 }
 
 // ---------- deling (til meldinger) ----------
