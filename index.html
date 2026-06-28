@@ -234,6 +234,13 @@ body.dark .tool-empty .te-ico{background:rgba(168,180,154,.18)}
 .today-focus{margin:15px 0 0;padding:12px 16px 12px 15px;border-left:3px solid var(--sage-light);background:linear-gradient(90deg,var(--sage-mist),rgba(237,240,232,0) 94%);border-radius:0 13px 13px 0}
 .tf-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-dark)}
 .today-focus p{font-family:'DM Serif Display',serif;font-size:16px;letter-spacing:-.01em;color:var(--ink);margin:5px 0 0;line-height:1.3}
+.stuck-btn{display:block;width:100%;margin:16px 0 0;padding:13px 18px;border:none;border-radius:14px;background:linear-gradient(180deg,#6A7A5A,var(--sage));color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -12px rgba(92,107,74,.65),inset 0 1px 0 rgba(255,255,255,.16);transition:transform .2s var(--ease),filter .2s var(--ease)}
+.stuck-btn:hover{transform:translateY(-1px)}
+.stuck-btn:active{transform:translateY(0);filter:brightness(.97)}
+.today-resume{font-size:13px;color:var(--ink-faint);margin-top:13px}
+.today-resume button{background:none;border:none;color:var(--sage);font-weight:600;font-size:13px;cursor:pointer;padding:0}
+.today-resume button:hover{text-decoration:underline;text-underline-offset:2px}
+body.dark .today-resume button{color:var(--sage-pale)}
 .today-tools-lbl{font-size:12.5px;color:var(--ink-faint);margin:16px 0 9px}
 .today-tools{display:flex;gap:9px;flex-wrap:wrap}
 .tt-chip{padding:9px 16px;border-radius:var(--r-pill);border:1.5px solid var(--sage-light);background:var(--card);color:var(--sage-dark);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s var(--ease);min-height:40px}
@@ -1545,6 +1552,12 @@ var TODAY_TOOLS = {
   utbrenthet: [['utb_stress','Ro ned kroppen'], ['utb_restitusjon','Restitusjonsplan'], ['utb_energi','Energiregnskap']],
   autism:     [['aut_sekvens','Aktivitetssekvens'], ['aut_energi','Energibudsjett'], ['aut_endring','Endringshåndtering']]
 };
+// Lav-terskel «Jeg står fast»-inngang per modul (charter-prinsipp 3.4)
+var STUCK = {
+  adhd:       { t:'adhd_regulering', label:'Jeg står fast — vis meg en vei' },
+  utbrenthet: { t:'utb_stress',      label:'Det er for mye nå — hjelp meg å lande' },
+  autism:     { t:'aut_energi',      label:'Jeg er overveldet — la meg sortere' }
+};
 var TODAY_FOCUS = {
   adhd:       ['Ett lite steg er nok i dag.', 'Du trenger ikke gjøre alt — velg én ting.', 'Pauser er en del av jobben, ikke en svikt.', 'Det vanskeligste er å begynne. Gjør det aller første steget.', 'Vær like snill med deg selv som du ville vært med en venn.'],
   utbrenthet: ['Hvile er ikke latskap — det er medisin i dag.', 'Du trenger ikke yte for å være nok.', 'Senk skuldrene. Ett pust om gangen.', 'Mindre i dag kan bety mer i morgen.', 'Legg merke til én ting som lader deg.'],
@@ -1579,6 +1592,14 @@ function renderTodayCard(moduleId){
   html += '<div class="ti-block"><span class="ti-label">Energi</span><div class="ti-opts">' +
     energies.map(function(e){ return '<button class="ti-en' + (d.energy === e[0] ? ' sel' : '') + '" onclick="todaySet(\'energy\',\'' + e[0] + '\',\'' + moduleId + '\')">' + e[1] + '</button>'; }).join('') + '</div></div>';
   html += '<div class="today-focus"><span class="tf-eyebrow">Dagens lille fokus</span><p>' + escapeHtml(focus) + '</p></div>';
+  var stuck = STUCK[moduleId];
+  if (stuck){
+    html += '<button class="stuck-btn" onclick="openFromHome(\'' + moduleId + '\',\'' + stuck.t + '\')">' + escapeHtml(stuck.label) + '</button>';
+  }
+  var last = loadTool('sist');
+  if (last && last.m === moduleId && (!stuck || last.t !== stuck.t)){
+    html += '<div class="today-resume">Fortsett der du slapp: <button onclick="openFromHome(\'' + last.m + '\',\'' + last.t + '\')">' + escapeHtml(last.title || 'Forrige verktøy') + ' →</button></div>';
+  }
   if (tools.length){
     html += '<div class="today-tools-lbl">' + (checked && d.energy === '1' ? 'Når energien er lav, kan disse hjelpe:' : 'Her-og-nå-verktøy:') + '</div>';
     html += '<div class="today-tools">' + tools.map(function(t){ return '<button class="tt-chip" onclick="openFromHome(\'' + moduleId + '\',\'' + t[0] + '\')">' + escapeHtml(t[1]) + ' →</button>'; }).join('') + '</div>';
@@ -2693,6 +2714,7 @@ function initToolWheel(moduleId, mod, n){
 function openTool(moduleId, toolId, histMode){
   var tool = findTool(moduleId, toolId), view = document.getElementById(moduleId + '-view');
   if (!tool || !view) return;
+  try { persistTool('sist', { m:moduleId, t:toolId, title:tool.title, ts:Date.now() }); } catch(e){}
   if (histMode !== 'none'){
     try { history.pushState({ portalView: moduleId, tool: toolId }, '', '#' + moduleId + '/' + toolId); } catch(e){}
   }
