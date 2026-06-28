@@ -748,6 +748,15 @@ body.calm .app-bg .ab,body.calm .app-bg .smoke{animation:none}
 .detail.swapping .fade{opacity:0;transform:translateY(6px)}
 .dial-hint{margin-top:14px;font-size:12.5px;color:rgba(205,213,194,.74);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dial-hint kbd{font:inherit;font-size:11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:2px 7px;color:#E9EDE0}
+/* Verktøyhjul-grupper (filter-chips) */
+.wheel-groups{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:2px 0 18px}
+.wg-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.wg-chip:hover{border-color:var(--sage-light)}
+.wg-chip.sel{background:var(--sage-mist);border-color:var(--sage-light);color:var(--sage-dark)}
+.wg-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bg-warm);font-size:11px;font-weight:700;color:var(--ink-faint)}
+.wg-chip.sel .wg-n{background:var(--sage-light);color:#fff}
+body.dark .wg-chip{background:rgba(40,44,33,.6);border-color:rgba(255,255,255,.12);color:var(--ink-soft)}
+body.dark .wg-chip.sel{background:rgba(168,180,154,.2);color:#E7EBDF}
 /* «Vis alle som liste»-toggle: faller tilbake til flatt rutenett */
 .wheel-listtoggle{margin:10px 0 0;text-align:center}
 .wheel-listtoggle button{background:none;border:none;color:var(--sage);font-weight:600;font-size:13px;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
@@ -2080,6 +2089,24 @@ var TOOLS = {
     ]
   }
 };
+// Verktøy-grupper for ADHD-hjulet (filter-chips). Additivt — autisme-hjulet er uendret.
+TOOLS.adhd.groups = [
+  { key:'all',      label:'Alle' },
+  { key:'ro',       label:'Ro ned' },
+  { key:'igang',    label:'Kom i gang' },
+  { key:'struktur', label:'Struktur' },
+  { key:'folelser', label:'Følelser' }
+];
+(function(){
+  var g = {
+    adhd_pust:'ro', adhd_333:'ro', adhd_regulering:'ro', adhd_vindu:'ro', adhd_pmr:'ro',
+    adhd_fokus:'igang', adhd_dopamin:'igang', adhd_dekomponer:'igang',
+    adhd_dagsplan:'struktur', adhd_sortering:'struktur', adhd_rutine:'struktur',
+    adhd_emosjon:'folelser', adhd_terapi:'folelser'
+  };
+  TOOLS.adhd.tools.forEach(function(t){ if (g[t.id]) t.group = g[t.id]; });
+})();
+var WHEEL_GROUP = {};
 function findTool(moduleId, toolId){
   var mod = TOOLS[moduleId];
   if (!mod) return null;
@@ -2100,9 +2127,25 @@ function renderToolLauncher(moduleId){
   if (!mod || !view) return;
   var acc = TOOL_ACCENTS[moduleId] || 'acc-sage';
 
+  // 0) Aktiv gruppe (filter-chips). Kun moduler med mod.groups filtreres; ellers vis alt.
+  var activeGroup = WHEEL_GROUP[moduleId] || 'all';
+  var tools = (mod.groups && activeGroup !== 'all')
+    ? mod.tools.filter(function(t){ return t.group === activeGroup; })
+    : mod.tools;
+  if (!tools.length){ tools = mod.tools; activeGroup = 'all'; WHEEL_GROUP[moduleId] = 'all'; }
+  var viewMod = { label:mod.label, intro:mod.intro, tools:tools };
+  var chips = '';
+  if (mod.groups){
+    chips = '<div class="wheel-groups" role="tablist">' + mod.groups.map(function(gr){
+      var cnt = gr.key === 'all' ? mod.tools.length : mod.tools.filter(function(t){ return t.group === gr.key; }).length;
+      return '<button class="wg-chip' + (gr.key === activeGroup ? ' sel' : '') + '" role="tab" aria-selected="' + (gr.key === activeGroup) + '" onclick="setWheelGroup(\'' + moduleId + '\',\'' + gr.key + '\')">' +
+        escapeHtml(gr.label) + ' <span class="wg-n">' + cnt + '</span></button>';
+    }).join('') + '</div>';
+  }
+
   // 1) Flatt rutenett (uendret) — gjenbrukes som «Vis alle som liste»-fallback
   var grid = '<div class="module-grid">';
-  mod.tools.forEach(function(t, ti){
+  tools.forEach(function(t, ti){
     var hasData = !!loadTool(t.id);
     grid += '<div class="tool-card ' + acc + ' ico-t' + (ti % 4) + '" style="animation-delay:' + (ti * 55) + 'ms" onclick="openTool(\'' + moduleId + '\',\'' + t.id + '\')">' +
       '<div class="ico">' + ic(t.icon) + '</div>' +
@@ -2113,7 +2156,7 @@ function renderToolLauncher(moduleId){
   grid += '</div>';
 
   // 2) Verktøyhjul (radial dial) + mørkegrønt detalj-panel
-  var n = mod.tools.length;
+  var n = tools.length;
   var bubbles = '<div class="adhd-bubbles" aria-hidden="true">' +
     '<span class="bub" style="left:16%;--size:13px;--d:8s;--delay:-4s;--sd:2.7s"><i></i></span>' +
     '<span class="bub" style="left:37%;--size:20px;--d:12s;--delay:-8.5s;--sd:3.6s"><i></i></span>' +
@@ -2142,14 +2185,18 @@ function renderToolLauncher(moduleId){
 
   var html = '<div class="tool-wheel">' +
     '<div class="tool-intro">' + escapeHtml(mod.intro) + '</div>' +
-    bubbles + stage + grid +
+    chips + bubbles + stage + grid +
     '<div class="wheel-listtoggle"><button id="wheelListBtn" type="button" aria-pressed="false">Vis alle som liste</button></div>' +
     '<p style="margin-top:22px;font-size:12.5px;color:var(--ink-faint)">Alt du skriver i verktøyene lagres kun på denne enheten — ikke i skyen. ' +
       '<button style="background:none;border:none;color:var(--sage);font-weight:600;font-size:12.5px;text-decoration:underline;text-underline-offset:2px" onclick="confirmClearAllToolData(\'' + moduleId + '\')">Slett alle mine verktøydata</button></p>' +
     '</div>';
   view.innerHTML = html;
 
-  initToolWheel(moduleId, mod, n);
+  initToolWheel(moduleId, viewMod, n);
+}
+function setWheelGroup(moduleId, key){
+  WHEEL_GROUP[moduleId] = key;
+  renderToolLauncher(moduleId);
 }
 
 // Bygger og kobler opp hjul-mekanikken for gjeldende launcher
