@@ -984,7 +984,9 @@ var ICONS = {
   gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1116 0"/><path d="M12 19l4-5"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>',
   waves:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 14c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>',
   spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5 13.8 11.3 12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18.5 16l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/></svg>',
-  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>'
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>',
+  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-7 5-12 14-13 0 9-5 14-12 14a6 6 0 01-2-1z"/><path d="M5 19c2-5 5-8 9-9.5"/></svg>',
+  link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5l5-5M8 11l-2 2a3.5 3.5 0 005 5l2-2M16 13l2-2a3.5 3.5 0 00-5-5l-2 2"/></svg>'
 };
 function ic(name){ return ICONS[name] || ''; }
 function escapeHtml(s){
@@ -2002,6 +2004,31 @@ var TOOLS = {
         desc:'Fang idéer raskt nå — sorter dem senere.',
         intro:'Idéer dukker opp til ulagelige tider og forsvinner like fort. Kast dem inn her med en gang, så slipper hodet å holde på dem. Kryss av når du har tatt tak i noe.',
         addLabel:'Skriv ned en idé' },
+      { id:'adhd_vanekobling', title:'Vanekobling', icon:'link', type:'list', checkable:true,
+        desc:'Heng en ny liten vane på noe du allerede gjør (ankervane).',
+        intro:'Den enkleste måten å få til en ny vane er å koble den til noe du allerede gjør automatisk. Skriv ankervanen øverst, og legg til de små nye vanene du vil henge på — «etter at jeg …, skal jeg …».',
+        header:{ label:'Hvilken vane gjør du allerede? (ankeret)', placeholder:'F.eks. pusser tennene om morgenen' },
+        addLabel:'Etter det, skal jeg … (ny liten vane)' },
+      { id:'adhd_styrke', title:'Styrkedagbok', icon:'leaf', type:'list',
+        desc:'Logg det som gikk bra og styrker du viste — mot den indre kritikeren.',
+        intro:'Den indre kritikeren husker feilene og glemmer alt som går bra. Her samler du det motsatte: små seire, styrker du viste, ting du er litt stolt av. Les tilbake når dagen er tung.',
+        addLabel:'Skriv noe som gikk bra, eller en styrke du viste' },
+      { id:'adhd_kommunikasjon', title:'Kommunikasjonsverktøy', icon:'chat', type:'form', share:true,
+        desc:'Forbered hvordan du kan be om eller si det du trenger.',
+        intro:'Det kan være vanskelig å be om ting eller sette grenser. Velg et utgangspunkt under, eller skriv ditt eget — så har du ordene klare når det gjelder.',
+        presets:[
+          { label:'Be om hjelp', values:{ situasjon:'Jeg trenger hjelp med noe', behov:'Konkret hjelp med [det konkrete]', hvorfor:'Det blir lettere og mindre stressende', slik:'Hei, har du mulighet til å hjelpe meg med [X]? Det ville betydd mye.', hvisNei:'Helt greit — vet du om noen andre jeg kan spørre?' } },
+          { label:'Be om mer tid', values:{ situasjon:'En frist jeg ikke rekker', behov:'Litt mer tid på [oppgave]', hvorfor:'Jeg vil levere noe ordentlig, ikke noe forhastet', slik:'Jeg jobber med [X], men trenger litt mer tid for å gjøre det skikkelig. Går det an med [ny frist]?', hvisNei:'Forstår. Hva er viktigst å prioritere innen fristen?' } },
+          { label:'Si nei / sette en grense', values:{ situasjon:'Noe jeg ikke har kapasitet til', behov:'Si nei uten dårlig samvittighet', hvorfor:'Jeg må ta vare på energien min', slik:'Takk for at du spør, men det passer dessverre ikke for meg nå.', hvisNei:'Jeg blir stående på det — men lykke til.' } },
+          { label:'Gi en tilbakemelding', values:{ situasjon:'Noe jeg vil si fra om', behov:'Bli hørt uten at det blir en konflikt', hvorfor:'Det påvirker meg, og jeg vil at det skal bli bedre', slik:'Jeg vil gjerne si fra om noe. Når [situasjon], opplever jeg [følelse]. Kunne vi [ønske]?', hvisNei:'Takk for at du hørte på. Kan vi komme tilbake til det senere?' } }
+        ],
+        fields:[
+          { id:'situasjon', label:'Hva gjelder det?', placeholder:'Kort om situasjonen', type:'text' },
+          { id:'behov', label:'Hva trenger eller ønsker jeg?', placeholder:'Vær så konkret du kan', type:'textarea' },
+          { id:'hvorfor', label:'Hvorfor er det viktig for meg?', placeholder:'Hjelper deg å stå i det', type:'textarea' },
+          { id:'slik', label:'Slik kan jeg si det', placeholder:'Skriv en setning du kan bruke', type:'textarea' },
+          { id:'hvisNei', label:'Hvis det blir nei eller vanskelig', placeholder:'Noe å si videre', type:'textarea' }
+        ] },
       { id:'adhd_sortering', title:'Nå / Snart / Senere / En dag', icon:'cols', type:'multilist',
         desc:'Sorter oppgaver etter når de faktisk haster.',
         intro:'Alt kjennes ofte like presserende med ADHD. Her får hver oppgave én plass, så hjernen slipper å holde alt på én gang.',
@@ -2125,15 +2152,17 @@ TOOLS.adhd.groups = [
   { key:'ro',       label:'Ro ned' },
   { key:'igang',    label:'Kom i gang' },
   { key:'struktur', label:'Struktur' },
-  { key:'folelser', label:'Følelser' }
+  { key:'folelser', label:'Følelser' },
+  { key:'meg',      label:'Meg & andre' }
 ];
 (function(){
   var g = {
     adhd_pust:'ro', adhd_333:'ro', adhd_regulering:'ro', adhd_vindu:'ro', adhd_pmr:'ro',
     adhd_fokus:'igang', adhd_dopamin:'igang', adhd_dekomponer:'igang',
     adhd_komigang:'igang', adhd_estimat:'igang',
-    adhd_dagsplan:'struktur', adhd_sortering:'struktur', adhd_rutine:'struktur', adhd_idebank:'struktur',
-    adhd_emosjon:'folelser', adhd_terapi:'folelser'
+    adhd_dagsplan:'struktur', adhd_sortering:'struktur', adhd_rutine:'struktur', adhd_idebank:'struktur', adhd_vanekobling:'struktur',
+    adhd_emosjon:'folelser', adhd_terapi:'folelser',
+    adhd_styrke:'meg', adhd_kommunikasjon:'meg'
   };
   TOOLS.adhd.tools.forEach(function(t){ if (g[t.id]) t.group = g[t.id]; });
 })();
