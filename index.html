@@ -50,6 +50,8 @@ body{
 h1,h2,.serif{font-family:'DM Serif Display',serif;font-weight:400;color:var(--ink);letter-spacing:-.015em;text-wrap:balance;font-feature-settings:"kern" 1,"liga" 1}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
+input::placeholder,textarea::placeholder{color:var(--ink-faint);opacity:.8}
+textarea{line-height:1.55}
 ::selection{background:var(--sage-pale)}
 
 /* ---------- felles småting ---------- */
@@ -106,10 +108,14 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .field{margin-bottom:18px}
 .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}
 .field input[type=password],.field input[type=text],.field input[type=date],.field input[type=time],.field input[type=number],.field select,.field textarea{
-  width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--card);
-  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+  width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg);
+  box-shadow:inset 0 1px 2px rgba(60,74,51,.05);
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease),background .25s var(--ease);
 }
-.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--sage-light);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
+.field textarea{min-height:88px;line-height:1.55;resize:vertical}
+.field select{appearance:none;-webkit-appearance:none;padding-right:42px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238A857C' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--sage-light);background-color:var(--card);box-shadow:0 0 0 4px rgba(92,107,74,.10),inset 0 1px 2px rgba(60,74,51,.04)}
 .login-row{display:flex;align-items:center;gap:9px;margin:4px 0 22px;font-size:13.5px;color:var(--ink-soft)}
 .login-row input{accent-color:var(--sage)}
 .login-foot{font-size:13px;color:var(--ink-faint);margin-top:26px;line-height:1.6}
@@ -154,6 +160,18 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .view{display:none;animation:fadeUp .45s var(--ease)}
 .view.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* Romlig navigasjon: glidende, dybde-baserte overganger — føles som å bevege seg
+   fra sone til sone i et rom. Sidelengs glid mellom soner, «inn/ut» ved verktøy.
+   Auto-av i Ro-modus + reduced-motion (global animation:none). */
+#views{position:relative;perspective:1600px}
+.view.glide-right{animation:glideRight .52s var(--ease) both}
+.view.glide-left {animation:glideLeft .52s var(--ease) both}
+.view.glide-fwd  {animation:glideFwd .5s var(--ease) both}
+.view.glide-back {animation:glideBack .5s var(--ease) both}
+@keyframes glideRight{0%{opacity:0;transform:translateX(48px) translateZ(-70px) scale(.972);filter:blur(2px)}55%{filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes glideLeft {0%{opacity:0;transform:translateX(-48px) translateZ(-70px) scale(.972);filter:blur(2px)}55%{filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes glideFwd  {0%{opacity:0;transform:translateZ(-150px) scale(.94);filter:blur(3px)}55%{filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes glideBack {0%{opacity:0;transform:translateZ(110px) scale(1.06);filter:blur(3px)}55%{filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
 
 /* ---------- kort & grid ---------- */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:26px 28px;box-shadow:var(--shadow)}
@@ -353,7 +371,7 @@ body.dark .nb-badge.ok{color:var(--good)}
 .list-row .ops button{background:none;border:none;color:var(--ink-faint);font-size:14px;padding:4px 6px;border-radius:8px}
 .list-row .ops button:hover{background:var(--bg-warm);color:var(--ink)}
 .add-row{display:flex;gap:10px;margin-top:16px}
-.add-row input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px}
+.add-row input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg);box-shadow:inset 0 1px 2px rgba(60,74,51,.05)}
 .add-row input:focus{outline:none;border-color:var(--sage-light);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
 
 /* emosjonskort */
@@ -400,8 +418,8 @@ body.dark .breath-orb{box-shadow:0 14px 44px rgba(0,0,0,.45)}
 .gs-head{text-align:center;margin-bottom:18px}
 .gs-num{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
 .gs-head h3{font-size:21px;margin-top:5px}
-.ground-in{display:block;width:100%;padding:12px 14px;margin-bottom:10px;border:1.5px solid var(--border);border-radius:13px;font-size:15px;background:var(--card);color:var(--ink)}
-.ground-in:focus{outline:none;border-color:var(--sage-light)}
+.ground-in{display:block;width:100%;padding:12px 14px;margin-bottom:10px;border:1.5px solid var(--border);border-radius:13px;font-size:15px;background:var(--bg);box-shadow:inset 0 1px 2px rgba(60,74,51,.05);color:var(--ink)}
+.ground-in:focus{outline:none;border-color:var(--sage-light);background:var(--card);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
 .ground-done{text-align:center;padding:24px 0}
 .gd-ico{width:54px;height:54px;margin:0 auto 14px;color:var(--sage)}
 .gd-ico svg{width:54px;height:54px}
@@ -495,7 +513,7 @@ body.dark .sc-badge{background:rgba(40,44,33,.5)}
 .msg.out{align-self:flex-end;background:var(--sage);color:#fff;border-bottom-right-radius:6px}
 .msg .who{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin-bottom:3px}
 .msg-compose{display:flex;gap:10px;align-items:flex-end}
-.msg-compose textarea{flex:1;padding:13px 16px;border:1.5px solid var(--border);border-radius:16px;resize:vertical;min-height:52px}
+.msg-compose textarea{flex:1;padding:13px 16px;border:1.5px solid var(--border);border-radius:16px;resize:vertical;min-height:52px;background:var(--bg);box-shadow:inset 0 1px 2px rgba(60,74,51,.05)}
 .msg-compose textarea:focus{outline:none;border-color:var(--sage-light);box-shadow:0 0 0 4px rgba(92,107,74,.10)}
 .msg-foot{font-size:12.5px;color:var(--ink-faint);margin-top:12px}
 
@@ -1064,6 +1082,16 @@ var VIEW_TITLES = {
   dashboard:'', diary:'Søvndagbok', education:'Læringsmoduler', homework:'Ukens oppgaver',
   assessment:'Kartlegging', adhd:'ADHD-verktøy', autism:'Autisme-verktøy', utbrenthet:'Utbrenthet', messages:'Meldinger'
 };
+// Romlig rekkefølge på sonene — styrer glideretning (venstre/høyre) ved navigasjon.
+var VIEW_ORDER = ['dashboard','diary','education','homework','assessment','adhd','autism','utbrenthet','messages'];
+function playGlide(el, cls){
+  if (!el) return;
+  el.classList.remove('glide-right','glide-left','glide-fwd','glide-back');
+  void el.offsetWidth; // tving reflow så animasjonen kan restarte
+  el.classList.add(cls);
+  var done = function(){ el.classList.remove(cls); el.removeEventListener('animationend', done); };
+  el.addEventListener('animationend', done);
+}
 
 function hasModule(id){ return !!(state.user && state.user.modules && state.user.modules.indexOf(id) !== -1); }
 
@@ -1119,6 +1147,7 @@ function buildViews(){
     '<div class="view" id="messages-view"></div>';
 }
 function switchView(name, histMode){
+  var fromView = state.currentView;
   state.currentView = name;
   // Nettleserens Tilbake/Frem skal navigere inne i portalen (som i behandlerportalen)
   if (histMode !== 'none'){
@@ -1146,6 +1175,10 @@ function switchView(name, histMode){
   if (name === 'autism') renderToolLauncher('autism');
   if (name === 'utbrenthet') renderToolLauncher('utbrenthet');
   if (name === 'messages') renderMessages();
+  if (el){
+    var oi = VIEW_ORDER.indexOf(fromView), ni = VIEW_ORDER.indexOf(name);
+    playGlide(el, (oi >= 0 && ni >= 0 && oi > ni) ? 'glide-left' : 'glide-right');
+  }
   window.scrollTo({ top:0, behavior:'auto' });
 }
 function greeting(){
@@ -2550,6 +2583,7 @@ function openTool(moduleId, toolId, histMode){
   else if (tool.type === 'pmr') renderPmrTool(body, moduleId, tool);
   else if (tool.type === 'estimate') renderEstimateTool(body, moduleId, tool);
   else if (tool.type === 'scale') renderScaleTool(body, moduleId, tool);
+  playGlide(view, 'glide-fwd');
 }
 function toolToolbar(moduleId, tool){
   var html = '<div class="tool-toolbar">';
@@ -3533,6 +3567,7 @@ function portalToolBack(moduleId){
     if (history.state && history.state.tool){ history.back(); return; }
   } catch(e){}
   renderToolLauncher(moduleId);
+  playGlide(document.getElementById(moduleId + '-view'), 'glide-back');
 }
 window.addEventListener('popstate', function(e){
   if (!state.user) return; // ikke innlogget — la nettleseren håndtere normalt
