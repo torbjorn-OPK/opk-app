@@ -98,8 +98,8 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .login-brand .org{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--sage-pale)}
 .login-brand h2{color:#fff;font-size:clamp(34px,3.6vw,52px);line-height:1.08;max-width:420px}
 .login-brand p{color:#C9D1BE;max-width:380px;font-size:15px;margin-top:14px}
-.login-brand .leaf{position:absolute;right:-90px;bottom:-110px;width:380px;height:380px;border-radius:46% 54% 60% 40%/50% 42% 58% 50%;background:rgba(197,206,186,.12)}
-.login-brand .leaf.l2{right:60px;bottom:-180px;width:300px;height:300px;background:rgba(200,149,109,.12)}
+.login-brand .leaf{position:absolute;right:-90px;bottom:-110px;width:380px;height:380px;border-radius:46% 54% 60% 40%/50% 42% 58% 50%;background:rgba(197,206,186,.14);filter:blur(48px)}
+.login-brand .leaf.l2{right:60px;bottom:-180px;width:300px;height:300px;background:rgba(200,149,109,.12);filter:blur(48px)}
 .login-side{flex:1;display:flex;align-items:center;justify-content:center;padding:32px}
 .login-card{width:100%;max-width:400px}
 .login-card .org-mobile{font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
@@ -227,6 +227,9 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .check-item.done .check-box{background:var(--sage);border-color:var(--sage)}
 .check-box svg{width:13px;height:13px;stroke:#fff;opacity:0;transform:scale(.5);transition:all .3s var(--ease)}
 .check-item.done .check-box svg{opacity:1;transform:scale(1)}
+.check-item.done .check-box svg,.list-row.done .check-box svg{animation:tickPop .38s var(--ease)}
+.check-box:active{transform:scale(.9)}
+@keyframes tickPop{0%{opacity:0;transform:scale(.2)}55%{opacity:1;transform:scale(1.28)}100%{opacity:1;transform:scale(1)}}
 .check-item.done .check-text{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--sage-light)}
 .check-text{font-size:14.5px;color:var(--ink)}
 .check-sub{font-size:12.5px;color:var(--ink-faint)}
@@ -281,8 +284,9 @@ body.dark .callout kbd{background:rgba(40,44,33,.7);border-color:rgba(168,180,15
 .tool-back{background:none;border:none;color:var(--sage);font-size:13.5px;font-weight:600;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px}
 .tool-back:hover{text-decoration:underline;text-underline-offset:3px}
 .tool-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
-.save-hint{font-size:12.5px;color:var(--good);font-weight:600;opacity:0;transition:opacity .4s var(--ease)}
-.save-hint.show{opacity:1}
+.save-hint{font-size:12.5px;color:var(--good);font-weight:600;opacity:0;transition:opacity .4s var(--ease);display:inline-flex;align-items:center;gap:5px}
+.save-hint.show{opacity:1;animation:savePop .5s var(--ease)}
+@keyframes savePop{0%{opacity:0;transform:translateY(5px) scale(.95)}60%{transform:translateY(0) scale(1.05)}100%{opacity:1;transform:none}}
 
 /* ---------- dagbok / skjema ---------- */
 .tabs{display:inline-flex;background:var(--bg-warm);border-radius:var(--r-pill);padding:4px;margin-bottom:22px;flex-wrap:wrap}
