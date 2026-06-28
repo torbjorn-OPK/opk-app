@@ -213,6 +213,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 
 .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 @media(max-width:980px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
+/* tomtilstand — myk, ikke bare ren tekst */
+.tool-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:22px 12px;color:var(--ink-faint)}
+.tool-empty .te-ico{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--sage-mist);color:var(--sage)}
+.tool-empty .te-ico svg{width:20px;height:20px}
+.tool-empty p{font-size:13.5px;margin:0;max-width:30ch}
+body.dark .tool-empty .te-ico{background:rgba(168,180,154,.18)}
 /* «I dag»-flate */
 .today-card{margin-bottom:18px}
 .today-greet{font-size:23px;margin:3px 0 16px;color:var(--ink)}
@@ -2782,7 +2788,7 @@ function renderListItems(moduleId, tool, data){
   var el = document.getElementById('listRows');
   if (!el) return;
   if (!data.items.length){
-    el.innerHTML = '<p style="font-size:13.5px;color:var(--ink-faint);padding:8px 0">Ingen steg ennå — legg til det første under.</p>';
+    el.innerHTML = '<div class="tool-empty"><span class="te-ico">' + ic('plus') + '</span><p>Ingen steg ennå — legg til det første under.</p></div>';
     return;
   }
   var html = '';
