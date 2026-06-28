@@ -47,7 +47,7 @@ body{
   color:var(--ink-soft);background:var(--bg);
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,.serif{font-family:'DM Serif Display',serif;font-weight:400;color:var(--ink);letter-spacing:-.01em}
+h1,h2,.serif{font-family:'DM Serif Display',serif;font-weight:400;color:var(--ink);letter-spacing:-.015em;text-wrap:balance;font-feature-settings:"kern" 1,"liga" 1}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
 ::selection{background:var(--sage-pale)}
@@ -64,17 +64,22 @@ input,select,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
 /* ---------- knapper ---------- */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  background:var(--sage);color:#fff;border:none;border-radius:var(--r-pill);
+  background:linear-gradient(180deg,#6A7A5A,var(--sage));color:#fff;border:none;border-radius:var(--r-pill);
   padding:12px 26px;font-size:14.5px;font-weight:600;
-  transition:background .35s var(--ease),transform .35s var(--ease),box-shadow .35s var(--ease);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16);
+  transition:background .35s var(--ease),transform .25s var(--ease),box-shadow .35s var(--ease),filter .2s var(--ease);
 }
-.btn:hover{background:var(--sage-dark);transform:translateY(-1px);box-shadow:var(--shadow)}
-.btn.ghost{background:transparent;color:var(--sage-dark);border:1px solid var(--sage-light)}
+.btn:hover{background:linear-gradient(180deg,var(--sage),var(--sage-dark));transform:translateY(-1px);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.16)}
+.btn:active{transform:translateY(0);box-shadow:inset 0 2px 6px rgba(0,0,0,.20);filter:brightness(.98)}
+.btn.ghost{background:transparent;color:var(--sage-dark);border:1px solid var(--sage-light);box-shadow:none}
 .btn.ghost:hover{background:var(--sage-mist);box-shadow:none}
 .btn.subtle{background:var(--sage-mist);color:var(--sage-dark)}
 .btn.subtle:hover{background:var(--sage-pale)}
 .btn.small{padding:8px 18px;font-size:13px}
 .btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+/* tastatur-fokusring (a11y) — kun synlig ved tastaturnavigasjon */
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible,.node:focus-visible,.sc-opt:focus-visible,.wg-chip:focus-visible{outline:2.5px solid var(--sage);outline-offset:2px;border-radius:10px}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 
 /* ============================================================
    LOGIN
@@ -722,6 +727,9 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;back
 /* hero-kort: rikere lagdelt skygge + topp-highlight + film-korn-overlay */
 .hero-card{box-shadow:0 2px 6px rgba(62,74,51,.06),0 14px 30px -10px rgba(62,74,51,.14),0 34px 80px -26px rgba(40,48,30,.4),inset 0 1px 0 rgba(255,255,255,.12)}
 .hero-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(700px 400px at 88% -20%, rgba(197,206,186,.16), transparent 60%)}
+/* fin, statisk film-grain bak innholdet (taktil dybde) — adskilt fra den myke røyken */
+.app-bg::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");background-size:140px 140px;opacity:.05;mix-blend-mode:multiply}
+body.calm .app-bg::after{display:none}
 body.calm .app-bg .ab,body.calm .app-bg .smoke{animation:none}
 @media(prefers-reduced-motion:reduce){.app-bg .ab,.app-bg .smoke{animation:none}}
 /* søvnvindu-klokke */
