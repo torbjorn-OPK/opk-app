@@ -90,8 +90,8 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .login-brand{
   flex:1.1;display:none;flex-direction:column;justify-content:space-between;
   padding:56px 60px;background:
-    radial-gradient(1200px 700px at 85% -10%, rgba(197,206,186,.45), transparent 60%),
-    linear-gradient(160deg, var(--sage-deep), var(--sage-dark) 55%, #46543A);
+    radial-gradient(1200px 700px at 85% -10%, rgba(197,206,186,.28), transparent 60%),
+    linear-gradient(160deg, #1F2715, #2A331F 55%, #36422C);
   color:#F1F3EC;position:relative;overflow:hidden;
 }
 @media(min-width:880px){.login-brand{display:flex}}
@@ -695,9 +695,9 @@ body.calm .hero-card{background:var(--sage-dark)}
    ============================================================ */
 .login-brand{position:relative;overflow:hidden}
 .login-atmos{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.login-atmos .orb{position:absolute;border-radius:50%;filter:blur(34px);background:radial-gradient(circle,rgba(168,180,154,.55),rgba(92,107,74,.16) 64%,transparent 76%);animation:orbBlink 7s ease-in-out infinite;will-change:opacity,transform}
-.login-atmos .orb.o2{background:radial-gradient(circle,rgba(200,149,109,.4),rgba(160,116,70,.12) 64%,transparent 76%)}
-.login-atmos .lbub{position:absolute;bottom:-30px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(210,218,198,.7),rgba(120,135,98,.42) 66%,transparent);box-shadow:inset 0 1px 2px rgba(255,255,255,.4);animation:loginBubRise var(--d,12s) linear infinite;will-change:transform,opacity}
+.login-atmos .orb{position:absolute;border-radius:50%;filter:blur(22px);background:radial-gradient(circle at 38% 32%,rgba(216,224,202,.62),rgba(120,138,96,.18) 62%,transparent 76%);animation:orbBlink 4.9s ease-in-out infinite;will-change:opacity,transform}
+.login-atmos .orb.o2{background:radial-gradient(circle at 38% 32%,rgba(226,182,132,.5),rgba(170,120,72,.14) 62%,transparent 76%)}
+.login-atmos .lbub{position:absolute;bottom:-30px;border-radius:50%;background:radial-gradient(circle at 32% 26%,rgba(233,239,223,.94),rgba(150,166,124,.5) 56%,rgba(82,96,62,.34) 100%);box-shadow:inset 1px 2px 3px rgba(255,255,255,.55),inset 0 -2px 4px rgba(36,48,24,.4),0 3px 9px rgba(18,26,10,.3);animation:loginBubRise var(--d,12s) linear infinite;will-change:transform,opacity}
 @keyframes orbBlink{0%,100%{opacity:.4;transform:scale(.88)}50%{opacity:.92;transform:scale(1.2)}}
 @keyframes loginBubRise{0%{transform:translateY(0);opacity:0}12%{opacity:.7}86%{opacity:.45}100%{transform:translateY(-108vh);opacity:0}}
 /* hold tekst/logo over atmos i brand-panelet */
@@ -910,21 +910,20 @@ body.dark .pl-sugg button{background:rgba(40,44,33,.6);color:#C9D2BD}
 <div class="login-screen" id="loginScreen">
   <div class="login-brand">
     <div class="login-atmos" aria-hidden="true">
-      <span class="orb" style="left:8%;top:16%;width:140px;height:140px"></span>
-      <span class="orb o2" style="left:58%;top:50%;width:110px;height:110px;animation-delay:-2.4s"></span>
-      <span class="orb" style="left:26%;top:66%;width:84px;height:84px;animation-delay:-4s"></span>
-      <span class="orb o2" style="left:72%;top:14%;width:66px;height:66px;animation-delay:-1.2s"></span>
-      <span class="lbub" style="left:16%;width:20px;height:20px;--d:11s;animation-delay:-2s"></span>
-      <span class="lbub" style="left:34%;width:13px;height:13px;--d:8.5s;animation-delay:-5s"></span>
-      <span class="lbub" style="left:52%;width:24px;height:24px;--d:13s;animation-delay:-7s"></span>
-      <span class="lbub" style="left:67%;width:15px;height:15px;--d:9.5s;animation-delay:-1s"></span>
-      <span class="lbub" style="left:80%;width:18px;height:18px;--d:12s;animation-delay:-4.5s"></span>
-      <span class="lbub" style="left:44%;width:11px;height:11px;--d:7.5s;animation-delay:-3s"></span>
+      <span class="orb" style="left:8%;top:16%;width:84px;height:84px"></span>
+      <span class="orb o2" style="left:58%;top:50%;width:66px;height:66px;animation-delay:-2.4s"></span>
+      <span class="orb" style="left:26%;top:66%;width:50px;height:50px;animation-delay:-4s"></span>
+      <span class="orb o2" style="left:72%;top:14%;width:40px;height:40px;animation-delay:-1.2s"></span>
+      <span class="lbub" style="left:16%;width:12px;height:12px;--d:7.7s;animation-delay:-2s"></span>
+      <span class="lbub" style="left:34%;width:8px;height:8px;--d:6s;animation-delay:-5s"></span>
+      <span class="lbub" style="left:52%;width:14px;height:14px;--d:9s;animation-delay:-7s"></span>
+      <span class="lbub" style="left:67%;width:9px;height:9px;--d:6.7s;animation-delay:-1s"></span>
+      <span class="lbub" style="left:80%;width:11px;height:11px;--d:8.4s;animation-delay:-4.5s"></span>
+      <span class="lbub" style="left:44%;width:7px;height:7px;--d:5.3s;animation-delay:-3s"></span>
     </div>
-    <div class="org">Oslo Psykologkontor</div>
     <div>
-      <div class="logo-anim" aria-hidden="true">
-        <img src="/img/enso-hvit.svg" alt="" width="104" height="104" style="height:auto">
+      <div class="logo-anim">
+        <img src="/img/opk-logo-hvit.svg" alt="Oslo Psykologkontor" width="232" style="height:auto">
       </div>
       <h2>Et rolig sted å jobbe med det som er vanskelig.</h2>
       <p>Verktøyene her er dine. Bruk det som hjelper, hopp over resten — og ta det i ditt tempo.</p>
@@ -934,10 +933,9 @@ body.dark .pl-sugg button{background:rgba(40,44,33,.6);color:#C9D2BD}
   </div>
   <div class="login-side">
     <div class="login-card">
-      <div class="logo-anim" aria-hidden="true" style="margin-bottom:12px">
-        <img src="/img/enso-sage.svg" alt="" width="76" height="76" style="height:auto;margin:0 auto">
+      <div class="logo-anim" style="margin-bottom:16px">
+        <img src="/img/opk-logo.svg" alt="Oslo Psykologkontor" width="184" style="height:auto;margin:0 auto">
       </div>
-      <div class="org-mobile">Oslo Psykologkontor</div>
       <h1>Klientportalen</h1>
       <p class="sub">Logg inn med din personlige tilgangskode</p>
       <div class="error-msg" id="loginError"></div>
