@@ -219,6 +219,19 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .tool-empty .te-ico svg{width:20px;height:20px}
 .tool-empty p{font-size:13.5px;margin:0;max-width:30ch}
 body.dark .tool-empty .te-ico{background:rgba(168,180,154,.18)}
+/* Onboarding-glimt (engangs velkomst) */
+.onbo-overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(30,38,22,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s var(--ease)}
+.onbo-overlay.show{opacity:1}
+.onbo-card{max-width:380px;width:100%;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px 30px 26px;text-align:center;box-shadow:0 30px 80px -24px rgba(20,28,12,.55),inset 0 1px 0 rgba(255,255,255,.6);transform:translateY(16px) scale(.96);transition:transform .42s var(--ease)}
+.onbo-overlay.show .onbo-card{transform:none}
+.onbo-mark{display:flex;justify-content:center;margin-bottom:4px}
+.onbo-card h2{font-size:27px;margin:7px 0 12px;color:var(--ink)}
+.onbo-card p{font-size:14.5px;color:var(--ink-soft);line-height:1.6;margin:0 auto 13px;max-width:33ch}
+.onbo-card .onbo-sub{font-size:12.5px;color:var(--ink-faint)}
+.onbo-card .btn{width:100%;margin-top:9px}
+body.dark .onbo-card{background:#23261C;border-color:rgba(255,255,255,.1)}
+body.dark .onbo-overlay{background:rgba(0,0,0,.58)}
+body.calm .onbo-overlay,body.calm .onbo-card{transition:none}
 /* «I dag»-flate */
 .today-card{margin-bottom:18px}
 .today-greet{font-size:23px;margin:3px 0 16px;color:var(--ink)}
@@ -248,6 +261,9 @@ body.dark .today-resume button{color:var(--sage-pale)}
 body.dark .ti-mood,body.dark .ti-en,body.dark .tt-chip{background:rgba(40,44,33,.5);border-color:rgba(255,255,255,.12);color:var(--ink-soft)}
 body.dark .ti-mood.sel,body.dark .ti-en.sel{background:rgba(168,180,154,.25);color:#E7EBDF;border-color:var(--sage-light)}
 body.dark .tt-chip{color:#C9D2BD}
+/* mørk modus: sage-dark mikro-etiketter blir for svake → lysere */
+body.dark .tf-eyebrow,body.dark .sc-glabel{color:var(--sage-pale)}
+body.dark .callout b{color:#C9D2BD}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow)}
 .stat .lbl{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
 .stat .val{font-family:'DM Serif Display',serif;font-size:30px;color:var(--ink);line-height:1.15;margin-top:4px}
@@ -1390,6 +1406,36 @@ function loginSuccess(response){
   switchView('dashboard', 'replace');
   loadPortalData();
   playIntro(); // intro-animasjon ved innlogging (alle flater), fader over i portalen
+  setTimeout(maybeOnboard, 650); // engangs velkomst-glimt etter at hjem har satt seg
+}
+// ---------- ONBOARDING-GLIMT (engangs, setter tonen) ----------
+function maybeOnboard(){
+  if (!state.user) return;
+  if (loadTool('onbo')) return;            // allerede vist for denne brukeren på denne enheten
+  if (document.getElementById('onboOverlay')) return;
+  var ensoMark = '<svg viewBox="0 0 100 100" width="58" height="58" fill="none" stroke="var(--sage)" stroke-width="7" stroke-linecap="round" aria-hidden="true"><path d="M74 28 A33 33 0 1 0 80 64"/></svg>';
+  var ov = document.createElement('div');
+  ov.className = 'onbo-overlay'; ov.id = 'onboOverlay';
+  ov.innerHTML = '<div class="onbo-card" role="dialog" aria-modal="true" aria-label="Velkommen">' +
+    '<div class="onbo-mark">' + ensoMark + '</div>' +
+    '<div class="eyebrow" style="justify-content:center">Velkommen</div>' +
+    '<h2 class="serif">Dette er ditt rom.</h2>' +
+    '<p>Verktøyene her er dine. Bruk det som hjelper, hopp over resten — og ta det i ditt tempo. <b>Ingenting her er en test.</b></p>' +
+    '<p class="onbo-sub">Alt du skriver lagres kun på denne enheten — ikke i skyen.</p>' +
+    '<button class="btn" id="onboBtn">Kom i gang</button></div>';
+  document.body.appendChild(ov);
+  document.getElementById('onboBtn').addEventListener('click', closeOnboarding);
+  ov.addEventListener('click', function(e){ if (e.target === ov) closeOnboarding(); });
+  document.addEventListener('keydown', onboEsc);
+  requestAnimationFrame(function(){ ov.classList.add('show'); });
+}
+function onboEsc(e){ if (e.key === 'Escape') closeOnboarding(); }
+function closeOnboarding(){
+  var ov = document.getElementById('onboOverlay'); if (!ov) return;
+  ov.classList.remove('show');
+  try { persistTool('onbo', { ts: Date.now() }); } catch(e){}
+  document.removeEventListener('keydown', onboEsc);
+  setTimeout(function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }, 350);
 }
 function toMinFromHM(s){
   if (typeof s === 'number') return s;
@@ -3740,6 +3786,18 @@ window.addEventListener('popstate', function(e){
 // alltid vises ferskt (ingen gammel cache).
 if (!PREVIEW && 'serviceWorker' in navigator) {
   window.addEventListener('load', function(){ navigator.serviceWorker.register('/min-side/sw.js').catch(function(){}); });
+}
+// I preview: drep enhver fastlåst service worker + cache fra tidligere besøk,
+// så gammel buffer aldri hindrer innlogging eller skjuler nye deploys (selv-heling).
+if (PREVIEW){
+  try {
+    if ('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(r){ r.unregister(); }); }).catch(function(){});
+    }
+    if (window.caches && caches.keys){
+      caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k); }); }).catch(function(){});
+    }
+  } catch(e){}
 }
 var INTRO = { played:false };
 function playIntro(){
