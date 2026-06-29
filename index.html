@@ -904,15 +904,19 @@ body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
 .gp-score{position:relative;text-align:right;flex-shrink:0;line-height:1.1}
 .gp-score b{font-family:'DM Serif Display',serif;font-size:var(--text-2xl);color:var(--ink);display:block;font-variant-numeric:tabular-nums}
 .gp-score span{font-size:var(--text-2xs);color:var(--ink-faint);letter-spacing:.02em}
-.gp-glimt{position:absolute;right:0;top:-14px;font-size:var(--text-sm);font-weight:700;color:var(--accent);animation:gpGlimt 2.4s var(--ease) forwards;pointer-events:none}
+.gp-glimt{position:absolute;right:0;top:-14px;font-size:var(--text-sm);font-weight:700;color:var(--accent);animation:gpGlimt 2.4s var(--ease) forwards;pointer-events:none;white-space:nowrap}
+.gp-glimt i{font-style:normal;font-weight:600;font-size:var(--text-2xs);opacity:.85;margin-left:3px}
 @keyframes gpGlimt{0%{opacity:0;transform:translateY(6px)}18%{opacity:1;transform:translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.gp-driv-float{position:fixed;top:calc(20px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:120;background:var(--sage);color:var(--cream-0);font-size:var(--text-sm);font-weight:700;padding:7px 16px;border-radius:var(--r-pill);box-shadow:0 10px 26px -8px rgba(60,74,51,.55);pointer-events:none;animation:gpDrivFloat 1.7s var(--ease) forwards}
+.gp-driv-float span{font-weight:600;font-size:var(--text-2xs);opacity:.85;margin-left:1px}
+@keyframes gpDrivFloat{0%{opacity:0;transform:translate(-50%,10px) scale(.92)}14%{opacity:1;transform:translate(-50%,0) scale(1)}74%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-12px)}}
 .gp-spark-wrap{position:relative;margin-top:var(--space-4)}
 .gp-spark{display:block;width:100%;height:42px}
 .gp-node{fill:var(--sage);transition:r .5s var(--ease)}
 .gp-node.mature{filter:drop-shadow(0 0 5px rgba(200,149,109,.65))}
 .gp-node.breath{animation:gpBreath .62s var(--ease)}
 @keyframes gpBreath{0%{transform:scale(1)}45%{transform:scale(1.16)}100%{transform:scale(1)}}
-@media (prefers-reduced-motion: reduce){.gp-glimt{animation:none!important}.gp-node.breath{animation:none!important}}
+@media (prefers-reduced-motion: reduce){.gp-glimt{animation:none!important}.gp-node.breath{animation:none!important}.gp-driv-float{display:none!important}}
 .gp-dir{position:absolute;right:0;bottom:-15px;font-size:var(--text-2xs);font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
 .gp-guide{font-size:var(--text-sm);color:var(--ink-soft);line-height:1.55;margin:var(--space-5) 0 0;max-width:54ch}
 .gp-guide.soft{color:var(--clay-700)}
@@ -3993,7 +3997,8 @@ function gpAward(category, eventKey, basePoints, silent){
   persistTool('poeng_dag', day);
   var gained = day.sum - before;
   gpRefreshHome();
-  if (!silent && gained > 0) gpGlimt(gained);
+  // «+N driv»-belønning ved hver opptjening — ved telleren hvis synlig, ellers flytende midt-øverst (også inne i verktøy)
+  if (gained > 0) gpGlimt(gained);
 }
 function gpDir(t){ var f = t.acute - t.trend; return f > 0.6 ? 'stiger rolig' : (f < -0.6 ? 'roer seg' : 'ligger stødig'); }
 function gpGuidance(t, dpToday){
@@ -4066,17 +4071,23 @@ function gpRefreshHome(){
 }
 function gpGlimt(n){
   if (gpReduced()) return;
-  // Hjem-kortet + ADHD-modulens stripe — vis «+N» der brukeren faktisk er
-  var anchors = [];
-  var sc = document.getElementById('gpScore'); if (sc) anchors.push(sc);
-  var gpts = document.getElementById('gamiPts'); if (gpts && gpts.parentNode){ anchors.push(gpts.parentNode); gpts.classList.add('gami-pulse'); setTimeout(function(){ gpts.classList.remove('gami-pulse'); }, 520); }
-  anchors.forEach(function(a){
-    var g = document.createElement('span'); g.className = 'gp-glimt'; g.textContent = '+' + n;
-    a.appendChild(g);
-    setTimeout(function(){ if (g.parentNode) g.parentNode.removeChild(g); }, 2500);
-  });
+  // Er telleren synlig (Hjem-kortet / ADHD-stripa)? Da viser vi «+N driv» rett ved den.
+  var sc = document.getElementById('gpScore'); var scVis = sc && sc.offsetParent;
+  var gpts = document.getElementById('gamiPts'); var gptsVis = gpts && gpts.offsetParent;
+  if (scVis || gptsVis){
+    var anchor = scVis ? sc : gpts.parentNode;
+    if (gptsVis){ gpts.classList.add('gami-pulse'); setTimeout(function(){ gpts.classList.remove('gami-pulse'); }, 520); }
+    var g = document.createElement('span'); g.className = 'gp-glimt'; g.innerHTML = '+' + n + '<i>driv</i>';
+    anchor.appendChild(g);
+    setTimeout(function(){ if (g.parentNode) g.parentNode.removeChild(g); }, 2400);
+  } else {
+    // Inne i et verktøy: en rolig flytende «+N driv» midt-øverst, synlig uansett hvor du er
+    var f = document.createElement('div'); f.className = 'gp-driv-float'; f.innerHTML = '+' + n + ' <span>driv</span>';
+    document.body.appendChild(f);
+    setTimeout(function(){ if (f.parentNode) f.parentNode.removeChild(f); }, 1700);
+  }
   var node = document.querySelector('#gpHost .gp-node');
-  if (node){ node.classList.add('breath'); setTimeout(function(){ node.classList.remove('breath'); }, 620); }
+  if (node && node.offsetParent){ node.classList.add('breath'); setTimeout(function(){ node.classList.remove('breath'); }, 620); }
 }
 // «Hent fram …»-knappen må peke på et verktøy brukeren faktisk har (ikke ADHD-rutine for alle)
 var GP_COMEBACK = {
