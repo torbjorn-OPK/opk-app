@@ -918,6 +918,29 @@ body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
 .gp-guide.soft{color:var(--clay-700)}
 .gp-info{display:inline-block;margin-top:var(--space-4);background:none;border:none;color:var(--ink-faint);font-size:var(--text-2xs);font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:0}
 .gp-info:hover{color:var(--sage-dark)}
+/* gamification-stripe i toppen av ADHD-modulen */
+.gami-header{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);background:linear-gradient(135deg,var(--sage-mist),var(--card));border:1px solid var(--sage-light);border-radius:var(--r-card);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-5);cursor:pointer;position:relative;box-shadow:var(--shadow-sm);transition:transform .2s var(--ease),box-shadow .25s var(--ease)}
+.gami-header:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.gami-header:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+.gami-eyebrow{font-size:var(--text-2xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-dark);display:block;margin-bottom:var(--space-3)}
+.gami-row{display:flex;align-items:center;gap:var(--space-5)}
+.gami-stat{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
+.gami-stat>span{font-size:var(--text-2xs);color:var(--ink-faint);margin-top:3px}
+.gami-points{position:relative}
+.gami-points b{font-family:'DM Serif Display',serif;font-size:var(--text-2xl);color:var(--sage-dark);font-variant-numeric:tabular-nums;line-height:1}
+.gami-trend b{font-size:var(--text-xl);color:var(--sage);font-weight:700;line-height:1}
+.gami-enso{position:relative;display:inline-flex;width:32px;height:32px;align-items:center;justify-content:center}
+.gami-enso svg{width:32px;height:32px;transform:rotate(-4deg)}
+.gami-enso .ge-track{stroke:var(--border);fill:none}
+.gami-enso .ge-arc{stroke:var(--sage);fill:none;stroke-linecap:round;transition:stroke-dashoffset .5s var(--ease)}
+.gami-enso i{position:absolute;font-size:10px;font-weight:700;font-style:normal;color:var(--sage-dark);font-variant-numeric:tabular-nums}
+.gami-go{flex-shrink:0;font-size:var(--text-2xs);font-weight:600;color:var(--sage);white-space:nowrap}
+.gami-pulse{display:inline-block;animation:gpBreath .52s var(--ease)}
+body.dark .gami-header{background:linear-gradient(135deg,rgba(168,180,154,.16),rgba(255,255,255,.03));border-color:rgba(168,180,154,.22)}
+body.dark .gami-points b,body.dark .gami-enso i{color:var(--sage-pale)}
+@media (prefers-reduced-motion: reduce){.gami-enso .ge-arc{transition:none}.gami-pulse{animation:none!important}}
+@media (max-width:520px){.gami-row{gap:var(--space-4)}}
+@media (max-width:360px){.gami-go{display:none}}
 .gp-card .dp-textbtn{margin-top:var(--space-3)}
 body.dark .gp-guide.soft{color:var(--clay-300)}
 body.dark .gp-node.mature{filter:drop-shadow(0 0 6px rgba(216,167,123,.6))}
@@ -2879,6 +2902,7 @@ function renderToolLauncher(moduleId){
     '</div>';
 
   var html = '<div class="tool-wheel">' +
+    (moduleId === 'adhd' ? gamiHeaderHtml() : '') +
     '<div class="tool-intro">' + escapeHtml(mod.intro) + '</div>' +
     chips + bubbles + stage + grid +
     '<div class="wheel-listtoggle"><button id="wheelListBtn" type="button" aria-pressed="false">Vis alle som liste</button></div>' +
@@ -4028,15 +4052,23 @@ function gpExplain(){
   el.style.display = 'flex';
   try { var f = el.querySelector('.btn'); if (f) f.focus(); } catch(e){}
 }
-function gpRefreshHome(){ var host = document.getElementById('gpHost'); if (host) host.innerHTML = renderGrokvelden(dpPrimaryMod()); }
+function gpRefreshHome(){
+  var host = document.getElementById('gpHost'); if (host) host.innerHTML = renderGrokvelden(dpPrimaryMod());
+  var gh = document.getElementById('gamiHeader'); if (gh) gh.innerHTML = gamiHeaderInner();   // ADHD-modulens stripe
+}
 function gpGlimt(n){
   if (gpReduced()) return;
-  var sc = document.getElementById('gpScore'); if (!sc) return;
-  var g = document.createElement('span'); g.className = 'gp-glimt'; g.textContent = '+' + n;
-  sc.appendChild(g);
+  // Hjem-kortet + ADHD-modulens stripe — vis «+N» der brukeren faktisk er
+  var anchors = [];
+  var sc = document.getElementById('gpScore'); if (sc) anchors.push(sc);
+  var gpts = document.getElementById('gamiPts'); if (gpts && gpts.parentNode){ anchors.push(gpts.parentNode); gpts.classList.add('gami-pulse'); setTimeout(function(){ gpts.classList.remove('gami-pulse'); }, 520); }
+  anchors.forEach(function(a){
+    var g = document.createElement('span'); g.className = 'gp-glimt'; g.textContent = '+' + n;
+    a.appendChild(g);
+    setTimeout(function(){ if (g.parentNode) g.parentNode.removeChild(g); }, 2500);
+  });
   var node = document.querySelector('#gpHost .gp-node');
   if (node){ node.classList.add('breath'); setTimeout(function(){ node.classList.remove('breath'); }, 620); }
-  setTimeout(function(){ if (g.parentNode) g.parentNode.removeChild(g); }, 2500);
 }
 // «Hent fram …»-knappen må peke på et verktøy brukeren faktisk har (ikke ADHD-rutine for alle)
 var GP_COMEBACK = {
@@ -4046,6 +4078,33 @@ var GP_COMEBACK = {
 };
 function gpComeback(){ var c = GP_COMEBACK[dpPrimaryMod()]; return (c && findTool(c.mod, c.tool)) ? c : GP_COMEBACK.adhd; }
 function gpOpenRoutine(){ var c = gpComeback(); openFromHome(c.mod, c.tool); }
+
+// ----- prominent gamification-stripe i toppen av ADHD-modulen (dopamin + klarhet der det teller mest) -----
+function gamiTrendDir(t){
+  if (!t.hist || t.hist.length < 3) return { a:'·', l:'starter' };
+  var f = t.acute - t.trend;
+  if (f > 0.6) return { a:'↗', l:'stiger' };
+  if (f < -0.6) return { a:'↘', l:'roer seg' };
+  return { a:'→', l:'stødig' };
+}
+function gamiHeaderInner(){
+  var day = loadPoengDag(), t = loadPoengTrend(), plan = loadPlan();
+  var task = (plan.blocks || []).filter(function(b){ return b.cat !== 'pause'; });
+  var done = task.filter(function(b){ return b.done; }).length, total = task.length;
+  var dir = gamiTrendDir(t);
+  var ensoC = 2 * Math.PI * 14, ensoOff = (ensoC * (1 - (total ? done/total : 0))).toFixed(1);
+  var html = '<div class="gami-main"><div class="gami-eyebrow">Din fremdrift</div><div class="gami-row">';
+  html += '<div class="gami-stat gami-points"><b id="gamiPts">' + day.sum + '</b><span>poeng i dag</span></div>';
+  if (total > 0){
+    html += '<div class="gami-stat"><span class="gami-enso"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" class="ge-track" stroke-width="3"/><circle cx="16" cy="16" r="14" class="ge-arc" stroke-width="3" transform="rotate(-90 16 16)" stroke-dasharray="' + ensoC.toFixed(1) + '" stroke-dashoffset="' + ensoOff + '"/></svg><i>' + done + '/' + total + '</i></span><span>plan i dag</span></div>';
+  }
+  html += '<div class="gami-stat gami-trend"><b>' + dir.a + '</b><span>' + dir.l + '</span></div>';
+  html += '</div></div><span class="gami-go">Grokvelden →</span>';
+  return html;
+}
+function gamiHeaderHtml(){
+  return '<div id="gamiHeader" class="gami-header" role="button" tabindex="0" onclick="switchView(\'dashboard\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();switchView(\'dashboard\')}" aria-label="Se hele fremdriften din på Hjem">' + gamiHeaderInner() + '</div>';
+}
 
 // ---------- EMOSJONSKORT (log) ----------
 var EMO_ICONS = { 'Glad':'😊','Rolig':'😌','Trist':'😢','Sint':'😠','Redd':'😨','Frustrert':'😤','Overveldet':'🥴','Skuffet':'😞','Ensom':'🫥','Stolt':'🌱','Sliten':'🥱','Nøytral':'😐' };
