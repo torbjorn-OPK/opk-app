@@ -916,8 +916,11 @@ body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
 .gp-dir{position:absolute;right:0;bottom:-15px;font-size:var(--text-2xs);font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
 .gp-guide{font-size:var(--text-sm);color:var(--ink-soft);line-height:1.55;margin:var(--space-5) 0 0;max-width:54ch}
 .gp-guide.soft{color:var(--clay-700)}
-.gp-info{display:inline-block;margin-top:var(--space-4);background:none;border:none;color:var(--ink-faint);font-size:var(--text-2xs);font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:0}
-.gp-info:hover{color:var(--sage-dark)}
+.gp-title{display:inline-flex;align-items:center;gap:var(--space-2)}
+.gp-q{flex-shrink:0;width:22px;height:22px;border-radius:var(--r-full);border:1.5px solid var(--sage-light);background:var(--sage-mist);color:var(--sage-dark);font:700 12px/1 Inter,sans-serif;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;margin-top:4px;transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease)}
+.gp-q:hover{background:var(--sage);color:var(--cream-0);border-color:var(--sage)}
+.gp-q:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+body.dark .gp-q{background:rgba(168,180,154,.18);color:var(--sage-pale)}
 /* gamification-stripe i toppen av ADHD-modulen */
 .gami-header{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);background:linear-gradient(135deg,var(--sage-mist),var(--card));border:1px solid var(--sage-light);border-radius:var(--r-card);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-5);cursor:pointer;position:relative;box-shadow:var(--shadow-sm);transition:transform .2s var(--ease),box-shadow .25s var(--ease)}
 .gami-header:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
@@ -3930,19 +3933,20 @@ try {
   window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); _dpInstallPrompt = e; });
 } catch(e){}
 
-// ---------- «GROKVELDEN» — dagspoeng + treg, tilgivende trend (TRIMP/Polar-inspirert) ----------
+// ---------- «DRIV» — dagspoeng + treg, tilgivende trend (TRIMP/Polar-inspirert) ----------
+// (Internt heter funksjoner/nøkler fortsatt gp*/Grokvelden — kun synlig tekst er «Driv».)
 // Spillet er å stelle en sakte, tilgivende kurve — ikke en streak, aldri person-ros, aldri rødt/skam.
 // Dagspoeng er ambiente (et flyktig «+N i dag», ingen permanent teller) og mater en synlig kronisk
 // EWMA (alphaC=0.12 → ~32 % klatring på 3 like dager) + en intern akutt EWMA (0.32) kun til
 // tilstands-deteksjon. Veiledning dempes av form-fortegnet så naturlig variasjon aldri utløser advarsel.
 var GP_ALPHA_C = 0.12, GP_ALPHA_A = 0.32, GP_DAGSTAK = 20, GP_MAL = 15;
 var GP_COPY = {
-  oppstart: 'Vi begynner helt rolig. Grokvelden vokser litt etter litt — det viktige er ikke i dag, men over tid.',
-  sprang: 'Det var en innsatsrik dag — fint. Et lite råd fra oss: store hopp er vanskelige å holde over tid. Det som varer, bygges gjerne i små steg du nesten ikke merker. Du trenger ikke gjenta dagens nivå i morgen — la grokvelden vokse i sitt eget tempo.',
-  jevn: 'Jevn kurs. Grokvelden ligger stødig — akkurat slik gode rutiner får feste.',
-  fall: 'Grokvelden har roet seg litt den siste tiden. Er det andre ting som opptar deg, eller noe som stresser eller belaster deg? Husk at gode rutiner er spesielt viktige nettopp når vi har mye krevende i livene våre.',
+  oppstart: 'Vi begynner helt rolig. Drivet ditt vokser litt etter litt — det viktige er ikke i dag, men over tid.',
+  sprang: 'Det var en innsatsrik dag — fint. Et lite råd fra oss: store hopp er vanskelige å holde over tid. Det som varer, bygges gjerne i små steg du nesten ikke merker. Du trenger ikke gjenta dagens nivå i morgen — la drivet vokse i sitt eget tempo.',
+  jevn: 'Jevn kurs. Drivet ditt ligger stødig — akkurat slik gode rutiner får feste.',
+  fall: 'Drivet ditt har roet seg litt den siste tiden. Er det andre ting som opptar deg, eller noe som stresser eller belaster deg? Husk at gode rutiner er spesielt viktige nettopp når vi har mye krevende i livene våre.',
   reentry: 'Velkommen tilbake. Vi tar opp tråden akkurat der du er — ingen stress.',
-  sparse: 'Trenden din starter her — den vokser sakte når du bruker det som hjelper.'
+  sparse: 'Drivet ditt starter her — det vokser sakte når du bruker det som hjelper.'
 };
 function gpReduced(){ return document.body.classList.contains('calm') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
 // UTC-konsistent med todayKey() (som bruker toISOString) — unngår tidssone-drift i fold-løkka
@@ -4028,7 +4032,7 @@ function renderGrokvelden(moduleId){
   var g = gpGuidance(t, day.sum);
   var dir = (t.hist.length >= 3) ? gpDir(t) : '';
   var html = '<div class="card gp-card">';
-  html += '<div class="gp-head"><div><div class="eyebrow">Over tid</div><h2 class="serif">Grokvelden</h2></div>' +
+  html += '<div class="gp-head"><div><div class="eyebrow">Over tid</div><h2 class="serif gp-title">Driv<button class="gp-q" onclick="event.stopPropagation();gpExplain()" aria-label="Hva er Driv?">?</button></h2></div>' +
     '<div class="gp-score" id="gpScore"><b>' + day.sum + '</b><span>poeng i dag</span></div></div>';
   html += '<div class="gp-spark-wrap">' + gpSparkline(t) + (dir ? '<span class="gp-dir">' + dir + '</span>' : '') + '</div>';
   if (t.hist.length < 3){
@@ -4038,16 +4042,16 @@ function renderGrokvelden(moduleId){
     if (g.state === 'fall' || g.state === 'reentry')
       html += '<button class="dp-textbtn" onclick="gpOpenRoutine()">' + ic('repeat') + escapeHtml(gpComeback().label) + '</button>';
   }
-  html += '<button class="gp-info" onclick="gpExplain()">Hva er dette?</button>';
   html += '</div>';
   return html;
 }
 function gpExplain(){
   var el = dpModalEl();
-  el.innerHTML = '<div class="dp-modal" role="dialog" aria-modal="true" aria-label="Om Grokvelden"><div class="dp-modal-ico">' + ic('leaf') + '</div>' +
-    '<h3 class="serif">Om Grokvelden</h3>' +
-    '<p>Hver gang du fullfører en rutine eller et verktøy, legger Grokvelden til litt — og bygger en rolig trend som vokser sakte over dager og uker.</p>' +
-    '<p>Det handler ikke om å gjøre mest mulig på én dag, men om å la gode vaner få feste litt etter litt. En rolig dag teller ikke som tap. Dette er bare for deg — ingen andre ser det.</p>' +
+  el.innerHTML = '<div class="dp-modal" role="dialog" aria-modal="true" aria-label="Om Driv"><div class="dp-modal-ico">' + ic('leaf') + '</div>' +
+    '<h3 class="serif">Om Driv</h3>' +
+    '<p>«Driv» er din egen, private oversikt over tid. Hver gang du fullfører en rutine eller et verktøy, får du litt driv.</p>' +
+    '<p>Med jevn, dedikert innsats <b>vokser drivet sakte</b> — gjerne over noen dager, ikke på én. Tar du en pause, <b>avtar det like rolig igjen</b> — aldri brått, og en stille dag teller aldri som tap. Det er summen over tid som teller, ikke i dag.</p>' +
+    '<p>Dette er bare for deg — ingen andre ser det.</p>' +
     '<div class="dp-modal-btns"><button class="btn" onclick="dpCloseModal()">Skjønner</button></div></div>';
   el.style.display = 'flex';
   try { var f = el.querySelector('.btn'); if (f) f.focus(); } catch(e){}
@@ -4099,7 +4103,7 @@ function gamiHeaderInner(){
     html += '<div class="gami-stat"><span class="gami-enso"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" class="ge-track" stroke-width="3"/><circle cx="16" cy="16" r="14" class="ge-arc" stroke-width="3" transform="rotate(-90 16 16)" stroke-dasharray="' + ensoC.toFixed(1) + '" stroke-dashoffset="' + ensoOff + '"/></svg><i>' + done + '/' + total + '</i></span><span>plan i dag</span></div>';
   }
   html += '<div class="gami-stat gami-trend"><b>' + dir.a + '</b><span>' + dir.l + '</span></div>';
-  html += '</div></div><span class="gami-go">Grokvelden →</span>';
+  html += '</div></div><span class="gami-go">Driv →</span>';
   return html;
 }
 function gamiHeaderHtml(){
