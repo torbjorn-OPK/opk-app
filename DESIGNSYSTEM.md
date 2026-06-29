@@ -10,16 +10,30 @@
 > Tall er hentet med programmatisk uttrekking og adversarisk verifisert mot fila
 > (fler-agent-analyse, 2026-06-28). Linjenumre kan flytte seg ved redigering.
 >
-> **Implementeringsstatus (2026-06-28):**
-> - ✅ **Steg 1** — token-fundamentet implementert: primitiver (`--sage-600` osv.),
->   alias re-uttrykt via primitiver (identiske verdier), alle nye skalaer
->   (type/spacing/radius/elevation/glass/states) i `:root`. Null visuell endring.
+> **Implementeringsstatus (2026-06-29 — FULL RETROFIT FULLFØRT):**
+> - ✅ **Steg 1** — token-fundamentet: primitiver (`--sage-600` osv.), alias re-uttrykt
+>   via primitiver (identiske verdier), alle nye skalaer i `:root`. Null visuell endring.
 > - ✅ **Steg 2** — tokens tatt i bruk der verdien er identisk (`--focus-ring` ×5,
 >   `--shadow-inset` ×6) + umerkelig dedup (skygge-triple, `99/999px`→`--r-pill`).
-> - ⏳ **Steg 3–4 (ikke utført)** — full farge-konsolidering, type-/spacing-retrofit på
->   eksisterende komponenter, og mørk-komplettering av dobbeltrolle-tokens. Stor diff /
->   kontrast-koblinger → anbefales kirurgisk + separat-verifisert. Tokenene finnes nå,
->   så ny kode bruker dem og retrofit kan skje inkrementelt.
+> - ✅ **Steg 3 — farge-konsolidering** (commit `a6c13dd`): 37 hardkodede hex som
+>   duplikerte et token rutet til `var(--token)` (eksakt + 2× Δ2), property-aware i
+>   `<style>`. Gradienter/skygger/SVG-attr/JS-canvas urørt. De øvrige ~80 hex er
+>   *legitimt distinkte* designfarger (gradient-stopp, mørk-flater, kategori-aksenter,
+>   state) — bevart med vilje. Ingen visuell endring.
+> - ✅ **Steg 4a — type + radius** (commit `f8826fd`): 194 `font-size` → 9 `--text`-tokens
+>   (UI-bånd 10.5–24+30px, alle skift ≤1px; store overskrifter/clamps urørt).
+>   `border-radius` enkeltverdier kollapset til `{--r-xs/sm/md/card}`, `50%`→`--r-full`.
+> - ✅ **Steg 4b — spacing** (commit `3698475`): `--space`-skalaen redefinert til 8-trinns
+>   4px-rutenett (4/8/12/16/20/24/28/32). 470 padding/margin/gap-verdier snappet til
+>   tokens (~180 uendret, ~86 ≤1px, ~204 ±2px blandet retning). inset/positsjon, negative
+>   marginer, 1–3px hårfine og >32px strukturelle urørt.
+>
+> Alle steg property-aware (matcher CSS-egenskap, ikke blind find-replace) og verifisert
+> i preview på 3 moduler (søvn/adhd), lys + mørk, dashboard + verktøy + modal. Live.
+>
+> **Gjenstår (valgfritt, ikke nødvendig for målet):** mørk-komplettering av dobbeltrolle-
+> tokens (mørk modus fungerer allerede; dette ville bare gjort den mer token-drevet
+> internt). Egen, separat-verifisert jobb om ønskelig.
 
 ---
 
