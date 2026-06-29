@@ -1913,7 +1913,7 @@ function renderDashboard(){
   html += '<div class="hero-row">';
   html += '<div class="hero-card"><div class="deco"></div>';
   html += '<div class="eyebrow" style="color:var(--sage-pale)">Ditt program</div>';
-  html += '<h2>' + escapeHtml(u.program) + '</h2><div class="sub">Du er i gang med uke ' + u.week + ' av ' + u.totalWeeks + ' — godt jobbet så langt.</div>';
+  html += '<h2>' + escapeHtml(u.program) + '</h2><div class="sub">Du er i gang med uke ' + u.week + ' av ' + u.totalWeeks + ' — ett steg av gangen.</div>';
   html += '<div class="hero-flex">';
   html += '<div class="ring-wrap"><svg width="104" height="104" viewBox="0 0 104 104"><circle class="ring-bg" cx="52" cy="52" r="44" fill="none" stroke-width="9"/><circle class="ring-fg" cx="52" cy="52" r="44" fill="none" stroke-width="9" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct/100)).toFixed(1) + '"/></svg><div class="ring-center"><b>' + pct + '%</b><span>Uke ' + u.week + '/' + u.totalWeeks + '</span></div></div>';
   html += '<div class="hero-meta">';
@@ -2320,7 +2320,7 @@ function renderHomework(){
   var html = '<div class="card"><div class="card-title">Uke ' + state.user.week + ' — dine oppgaver</div><div class="checklist" id="hwList"></div>' +
     '<div style="display:flex;align-items:center;gap:var(--space-4);margin-top:var(--space-4)"><div style="flex:1;height:8px;border-radius:var(--r-sm);background:var(--bg-warm);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--sage),var(--sage-light));border-radius:var(--r-sm);transition:width .6s var(--ease)"></div></div>' +
     '<span style="font-size:var(--text-sm);color:var(--ink-faint);white-space:nowrap">' + doneN + ' av ' + HOMEWORK.length + '</span></div>' +
-    (doneN === HOMEWORK.length ? '<p style="margin-top:var(--space-4);font-size:var(--text-base);color:var(--good);font-weight:600">Alt fullført — imponerende innsats denne uken.</p>' : '') +
+    (doneN === HOMEWORK.length ? '<p style="margin-top:var(--space-4);font-size:var(--text-base);color:var(--good);font-weight:600">Alt fullført denne uken — fint å ha det unna.</p>' : '') +
     '</div>';
   document.getElementById('homework-view').innerHTML = html;
   document.getElementById('hwList').innerHTML = HOMEWORK.map(function(h, i){
