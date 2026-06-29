@@ -219,6 +219,40 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .tool-empty .te-ico svg{width:20px;height:20px}
 .tool-empty p{font-size:13.5px;margin:0;max-width:30ch}
 body.dark .tool-empty .te-ico{background:rgba(168,180,154,.18)}
+/* Rutinebygger (builder + tidsstyrt runner) */
+.rt-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.rt-row:last-child{border-bottom:none}
+.rt-num{flex:none;width:22px;text-align:center;font-size:12.5px;font-weight:700;color:var(--ink-faint)}
+.rt-task{flex:1;min-width:0;padding:9px 12px;border:1.5px solid var(--border);border-radius:11px;background:var(--bg);box-shadow:inset 0 1px 2px rgba(60,74,51,.05);font-size:14.5px;color:var(--ink)}
+.rt-min{flex:none;display:flex;align-items:center;gap:5px}
+.rt-min input{width:52px;padding:9px 6px;border:1.5px solid var(--border);border-radius:11px;background:var(--bg);text-align:center;font-variant-numeric:tabular-nums;color:var(--ink)}
+.rt-min span{font-size:12px;color:var(--ink-faint)}
+.rt-ops{flex:none;display:flex;gap:1px}
+.rt-ops button{background:none;border:none;color:var(--ink-faint);padding:4px;border-radius:8px;cursor:pointer}
+.rt-ops button svg{width:16px;height:16px}
+.rt-ops button:hover{background:var(--bg-warm);color:var(--ink)}
+.rt-startbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;flex-wrap:wrap}
+.rt-total{font-size:13px;color:var(--ink-faint)}
+.rt-run{text-align:center;padding:10px 0}
+.rt-dots{display:flex;gap:7px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.rt-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:background .25s,transform .25s}
+.rt-dot.done{background:var(--sage-light)}
+.rt-dot.on{background:var(--sage);transform:scale(1.4)}
+.rt-stepno{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.rt-task-name{font-family:'DM Serif Display',serif;font-size:30px;color:var(--ink);margin:6px 0 10px;line-height:1.15}
+.rt-clock{font-family:'DM Serif Display',serif;font-size:64px;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1;margin:6px 0 20px}
+.rt-manual{font-size:14px;color:var(--ink-soft);margin:4px 0 18px}
+.rt-run-ctrls{display:flex;gap:10px;justify-content:center}
+.rt-bigbtn{min-width:210px}
+.rt-next{font-size:13px;color:var(--ink-faint);margin-top:20px}
+.rt-stop{display:block;margin:18px auto 0;background:none;border:none;color:var(--ink-faint);font-size:13px;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.rt-done{text-align:center;padding:24px 0}
+.rt-done-ico{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;background:var(--sage-mist);color:var(--sage);display:flex;align-items:center;justify-content:center}
+.rt-done-ico svg{width:30px;height:30px;stroke-width:3}
+.rt-done h3{font-size:24px;margin-bottom:8px}
+.rt-done p{color:var(--ink-soft);max-width:340px;margin:0 auto 18px}
+body.dark .rt-task,body.dark .rt-min input{background:rgba(40,44,33,.5);border-color:rgba(255,255,255,.12)}
+body.dark .rt-done-ico{background:rgba(168,180,154,.18)}
 /* Belønning ved gjennomføring — rask visuell hit, ingen person-ros */
 .cele-chip{position:fixed;transform:translate(-50%,-50%);z-index:131;display:inline-flex;align-items:center;gap:7px;background:linear-gradient(180deg,#6A7A5A,var(--sage));color:#fff;padding:9px 17px;border-radius:var(--r-pill);font-size:14px;font-weight:700;letter-spacing:-.005em;box-shadow:0 14px 32px -10px rgba(92,107,74,.6),inset 0 1px 0 rgba(255,255,255,.2);pointer-events:none;animation:celeChip 1.3s var(--ease) forwards}
 .cele-chip svg{width:17px;height:17px;stroke:#fff;stroke-width:3}
@@ -1178,8 +1212,8 @@ var NAV = [
   { id:'adhd', label:'ADHD-verktøy', icon:'bolt', module:'adhd' },
   { id:'autism', label:'Autisme-verktøy', icon:'puzzle', module:'autism' },
   { id:'utbrenthet', label:'Utbrenthet', icon:'sun', module:'utbrenthet' },
-  { group:'Kontakt' },
-  { id:'messages', label:'Meldinger', icon:'chat', module:'core' }
+  { group:'Kontakt', followup:true },
+  { id:'messages', label:'Meldinger', icon:'chat', module:'core', followup:true }
 ];
 var VIEW_TITLES = {
   dashboard:'', diary:'Søvndagbok', education:'Læringsmoduler', homework:'Ukens oppgaver',
@@ -1204,6 +1238,13 @@ function playGlide(el, cls){
 }
 
 function hasModule(id){ return !!(state.user && state.user.modules && state.user.modules.indexOf(id) !== -1); }
+// Meldinger/behandler-kontakt er KUN for klienter med reell oppfølging gjennom OPK
+// (f.eks. Søvn-bootcamp). Frittstående app-brukere (ADHD/utbrenthet) har det ikke —
+// vi kan ikke følge opp alle som bruker appen.
+function hasFollowup(){
+  var u = state.user;
+  return !!(u && (u.followup || (u.modules && u.modules.indexOf('sleep') !== -1)));
+}
 
 // Modul-roadmap (vises i «Flere moduler» på Hjem).
 //  built:true  = modulen finnes, men brukeren har den ikke → «Be om tilgang»
@@ -1221,6 +1262,7 @@ var FUTURE_MODULES = [
 function buildNav(){
   var html = '';
   NAV.forEach(function(n){
+    if (n.followup && !hasFollowup()) return;
     if (n.group){
       if (n.module && !hasModule(n.module)) return;
       html += '<div class="nav-label">' + n.group + '</div>';
@@ -1232,6 +1274,7 @@ function buildNav(){
   document.getElementById('mainNav').innerHTML = html;
   // bunn-nav (mobil): de fem viktigste
   var bottom = ['dashboard','diary','adhd','autism','utbrenthet','messages'].filter(function(v){
+    if (v === 'messages' && !hasFollowup()) return false;
     var n = NAV.find(function(x){ return x.id===v; });
     return n && (n.module==='core' || hasModule(n.module));
   });
@@ -1257,6 +1300,7 @@ function buildViews(){
     '<div class="view" id="messages-view"></div>';
 }
 function switchView(name, histMode){
+  if (name === 'messages' && !hasFollowup()) name = 'dashboard'; // meldinger kun for oppfølgings-klienter
   var fromView = state.currentView;
   state.currentView = name;
   // Nettleserens Tilbake/Frem skal navigere inne i portalen (som i behandlerportalen)
@@ -1321,7 +1365,7 @@ var DEMO_USERS = {
     valid: true, clientId: 'OPK1', program: 'Søvn-bootcamp',
     week: 3, totalWeeks: 8, startDate: '2026-03-16', expiresDate: '2026-05-25',
     therapist: 'Torbjørn', sleepWindowStart: '23:30', sleepWindowEnd: '06:30',
-    modules: ['sleep']
+    modules: ['sleep'], followup: true
   },
   OPK2: {
     valid: true, clientId: 'OPK2', program: 'ADHD-verktøy',
@@ -2330,10 +2374,9 @@ var TOOLS = {
           { id:'senere', label:'Senere', hint:'Haster ikke' },
           { id:'endag', label:'En dag', hint:'Idéer og ønsker' }
         ] },
-      { id:'adhd_rutine', title:'Rutinebygger', icon:'repeat', type:'list', resettable:true, checkable:true,
-        desc:'Bygg en rutine du kan krysse av — og nullstille hver dag.',
-        intro:'Rutiner avlaster hukommelsen. Bygg den i den rekkefølgen som gir mening for deg. Du kan nullstille avkryssingene når du starter på nytt.',
-        header:{ label:'Hva heter rutinen?', placeholder:'F.eks. Morgenrutine' }, addLabel:'Legg til et steg' },
+      { id:'adhd_rutine', title:'Rutinebygger', icon:'repeat', type:'routine',
+        desc:'Bygg en rutine av oppgaver med valgfri timer — og kjør den med ett trykk.',
+        intro:'Sett sammen rutinen din (f.eks. morgenrutinen): tannpuss 2 min, dusj 7 min, rydding 5 min. Trykk Start, så teller appen ned hver oppgave og gir et lite pling når det er på tide å bytte. En morgen mange ting på kort tid — uten å holde alt i hodet.' },
       { id:'adhd_dekomponer', title:'Oppgave-dekomponerer', icon:'puzzle', type:'list', checkable:true,
         desc:'Del en stor oppgave i små, gjørbare steg.',
         intro:'En oppgave som kjennes umulig er ofte bare uoppdelt. Skriv det aller første lille steget — så det neste. Det første steget kan være latterlig lite. Det er meningen.',
@@ -2775,6 +2818,7 @@ function openTool(moduleId, toolId, histMode){
   stopBreath();
   stopPmr();
   stopEstimate();
+  stopRoutine();
   var html = '<button class="tool-back" onclick="portalToolBack(\'' + moduleId + '\')">← Alle ' + escapeHtml(TOOLS[moduleId].label).toLowerCase() + '</button>';
   html += '<div class="tool-head"><span class="th-ico">' + ic(tool.icon) + '</span><h2 class="serif">' + escapeHtml(tool.title) + '</h2></div>';
   if (tool.intro) html += '<div class="tool-intro">' + escapeHtml(tool.intro) + '</div>';
@@ -2793,11 +2837,12 @@ function openTool(moduleId, toolId, histMode){
   else if (tool.type === 'pmr') renderPmrTool(body, moduleId, tool);
   else if (tool.type === 'estimate') renderEstimateTool(body, moduleId, tool);
   else if (tool.type === 'scale') renderScaleTool(body, moduleId, tool);
+  else if (tool.type === 'routine') renderRoutineTool(body, moduleId, tool);
   playGlide(view, 'glide-fwd');
 }
 function toolToolbar(moduleId, tool){
   var html = '<div class="tool-toolbar">';
-  if (tool.share) html += '<button class="btn small subtle" onclick="shareTool(\'' + moduleId + '\',\'' + tool.id + '\')">Del med behandler</button>';
+  if (tool.share && hasFollowup()) html += '<button class="btn small subtle" onclick="shareTool(\'' + moduleId + '\',\'' + tool.id + '\')">Del med behandler</button>';
   if (tool.type !== 'timer' && !tool.ephemeral){
     html += '<button class="btn small ghost" onclick="printTool(\'' + moduleId + '\',\'' + tool.id + '\')">Skriv ut / ta med</button>';
     html += '<button class="btn small ghost" onclick="deleteToolData(\'' + moduleId + '\',\'' + tool.id + '\')">Slett mine data</button>';
@@ -3281,6 +3326,201 @@ function logDelete(moduleId, toolId, i){
 }
 
 // ---------- FOKUSØKT (NY — timer) ----------
+// ---------- RUTINEBYGGER (tidsstyrt rutine-runner) ----------
+// Bygg en rutine av oppgaver m/ valgfri varighet → kjør sekvensielt med
+// nedtelling, behagelig pling ved oppgaveskifte, auto-avansering, og
+// (best-effort) timer på lås-skjerm via Media Session + dokument-tittel.
+var RT = { iv:null, idx:0, left:0, running:false, items:[], header:'', toolId:null, moduleId:null, mode:'edit' };
+var _routineAudioCtx = null, _routineKeepalive = null, _routineOrigTitle = null;
+function routineData(toolId){
+  var d = loadTool(toolId) || { header:'', items:[] };
+  d.items = (d.items || []).map(function(it){
+    return { text: it.text || '', min: (typeof it.min === 'number' ? it.min : (it.min ? parseInt(it.min,10) : 0)) };
+  });
+  return d;
+}
+function renderRoutineTool(body, moduleId, tool){
+  var d = routineData(tool.id);
+  RT.toolId = tool.id; RT.moduleId = moduleId; RT.header = d.header || ''; RT.items = d.items; RT.mode = 'edit';
+  body.innerHTML = '<div id="routineWrap"></div>';
+  routinePaintEdit();
+}
+function routineSave(){
+  persistTool(RT.toolId, { header: RT.header, items: RT.items });
+}
+function routinePaintEdit(){
+  var w = document.getElementById('routineWrap'); if (!w) return;
+  var total = RT.items.reduce(function(s,it){ return s + (it.min||0); }, 0);
+  var html = '<div class="field"><label>Hva heter rutinen?</label>' +
+    '<input type="text" id="rtHeader" placeholder="F.eks. Morgenrutine" value="' + escapeHtml(RT.header) + '" oninput="RT.header=this.value;routineSave()"></div>';
+  html += '<div class="rt-list">';
+  if (!RT.items.length){
+    html += '<div class="tool-empty"><span class="te-ico">' + ic('repeat') + '</span><p>Ingen oppgaver ennå — legg til den første under.</p></div>';
+  }
+  RT.items.forEach(function(it, i){
+    html += '<div class="rt-row">' +
+      '<span class="rt-num">' + (i+1) + '</span>' +
+      '<input type="text" class="rt-task" value="' + escapeHtml(it.text) + '" placeholder="Oppgave" oninput="routineEditTask(' + i + ',\'text\',this.value)">' +
+      '<div class="rt-min"><input type="number" min="0" inputmode="numeric" value="' + (it.min || '') + '" placeholder="0" oninput="routineEditTask(' + i + ',\'min\',this.value)"><span>min</span></div>' +
+      '<div class="rt-ops"><button title="Flytt opp" onclick="routineMove(' + i + ',-1)">' + ic('arrowup') + '</button>' +
+      '<button title="Flytt ned" onclick="routineMove(' + i + ',1)">' + ic('arrowdn') + '</button>' +
+      '<button title="Slett" onclick="routineDel(' + i + ')">' + ic('x') + '</button></div></div>';
+  });
+  html += '</div>';
+  html += '<div class="add-row"><input type="text" id="rtNew" placeholder="Ny oppgave (f.eks. Tannpuss)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();routineAdd()}">' +
+    '<input type="number" id="rtNewMin" min="0" inputmode="numeric" placeholder="min" style="width:74px;flex:none">' +
+    '<button class="btn small" onclick="routineAdd()">Legg til</button></div>';
+  if (RT.items.length){
+    html += '<div class="rt-startbar"><div class="rt-total">' + RT.items.length + ' oppgaver · ' + (total ? '~' + total + ' min' : 'ingen timere satt') + '</div>' +
+      '<button class="btn rt-start" onclick="routineStart()">Start rutine ▶</button></div>';
+    html += '<p style="font-size:12.5px;color:var(--ink-faint);margin-top:12px">Oppgaver uten minutter blir manuelle steg (du trykker «Ferdig» selv). Du får et lite pling ved hvert bytte.</p>';
+  }
+  w.innerHTML = html;
+}
+function routineEditTask(i, field, val){
+  if (!RT.items[i]) return;
+  RT.items[i][field] = (field === 'min') ? (parseInt(val,10) || 0) : val;
+  routineSave();
+  // oppdater bare total-teksten uten full re-render (behold fokus i feltet)
+  var tot = RT.items.reduce(function(s,it){ return s + (it.min||0); }, 0);
+  var el = document.querySelector('.rt-total'); if (el) el.textContent = RT.items.length + ' oppgaver · ' + (tot ? '~' + tot + ' min' : 'ingen timere satt');
+}
+function routineAdd(){
+  var t = document.getElementById('rtNew'), m = document.getElementById('rtNewMin');
+  var txt = (t.value || '').trim(); if (!txt) return;
+  RT.items.push({ text: txt, min: parseInt(m.value,10) || 0 });
+  routineSave(); routinePaintEdit();
+  var n = document.getElementById('rtNew'); if (n) n.focus();
+}
+function routineDel(i){ RT.items.splice(i,1); routineSave(); routinePaintEdit(); }
+function routineMove(i, d){
+  var j = i + d; if (j < 0 || j >= RT.items.length) return;
+  var tmp = RT.items[i]; RT.items[i] = RT.items[j]; RT.items[j] = tmp;
+  routineSave(); routinePaintEdit();
+}
+// ----- kjøremodus -----
+function routineStart(){
+  if (!RT.items.length) return;
+  RT.mode = 'run'; RT.idx = 0; RT.running = true;
+  routineBeginTask();
+  routineMedia(true);
+}
+function routineBeginTask(){
+  var it = RT.items[RT.idx];
+  RT.left = (it.min || 0) * 60;
+  routinePaintRun();
+  if (RT.iv){ clearInterval(RT.iv); RT.iv = null; }
+  if (RT.left > 0 && RT.running){
+    RT.iv = setInterval(routineTick, 1000);
+  }
+}
+function routineTick(){
+  if (!RT.running) return;
+  RT.left--;
+  if (RT.left <= 0){ clearInterval(RT.iv); RT.iv = null; playPling(); routineAdvance(); return; }
+  routineUpdateRun();
+}
+function routineAdvance(){
+  if (RT.idx >= RT.items.length - 1){ routineFinish(); return; }
+  RT.idx++; routineBeginTask();
+}
+function routineSkip(){ if (RT.iv){ clearInterval(RT.iv); RT.iv = null; } playPling(); routineAdvance(); }
+function routinePauseToggle(){
+  if (!RT.running) return;
+  if (RT.iv){ clearInterval(RT.iv); RT.iv = null; RT.paused = true; }
+  else if (RT.left > 0){ RT.iv = setInterval(routineTick, 1000); RT.paused = false; }
+  routinePaintRun();
+}
+function routineFinish(){
+  RT.running = false; if (RT.iv){ clearInterval(RT.iv); RT.iv = null; }
+  routineMedia(false);
+  var w = document.getElementById('routineWrap');
+  if (w) w.innerHTML = '<div class="rt-done"><div class="rt-done-ico">' + ic('tick') + '</div>' +
+    '<h3 class="serif">Rutinen er fullført.</h3><p>' + escapeHtml(RT.header || 'Rutinen') + ' er gjort unna. Fint å ha det av veien.</p>' +
+    '<button class="btn" onclick="routineStart()">Kjør på nytt</button> <button class="btn ghost" onclick="routinePaintEdit2()">Rediger rutinen</button></div>';
+  celebrate(w, 'Rutine fullført');
+}
+function routinePaintEdit2(){ RT.mode='edit'; routinePaintEdit(); }
+function stopRoutine(){
+  RT.running = false; RT.paused = false;
+  if (RT.iv){ clearInterval(RT.iv); RT.iv = null; }
+  routineMedia(false);
+}
+function fmtClock(sec){ var m = Math.floor(sec/60), s = sec % 60; return m + ':' + (s<10?'0':'') + s; }
+function routinePaintRun(){
+  var w = document.getElementById('routineWrap'); if (!w) return;
+  var it = RT.items[RT.idx], n = RT.items.length, next = RT.items[RT.idx+1];
+  var dots = ''; for (var i=0;i<n;i++){ dots += '<span class="rt-dot' + (i<RT.idx?' done':'') + (i===RT.idx?' on':'') + '"></span>'; }
+  var manual = !(it.min > 0);
+  var html = '<div class="rt-run">' +
+    '<div class="rt-dots">' + dots + '</div>' +
+    '<div class="rt-stepno">Oppgave ' + (RT.idx+1) + ' av ' + n + '</div>' +
+    '<div class="rt-task-name" id="rtTaskName">' + escapeHtml(it.text || 'Oppgave') + '</div>' +
+    (manual
+      ? '<div class="rt-manual">Ta den tiden du trenger</div><button class="btn rt-bigbtn" onclick="routineSkip()">Ferdig — neste →</button>'
+      : '<div class="rt-clock" id="rtClock">' + fmtClock(RT.left) + '</div>' +
+        '<div class="rt-run-ctrls"><button class="btn ghost" onclick="routinePauseToggle()" id="rtPause">' + (RT.paused?'Fortsett':'Pause') + '</button>' +
+        '<button class="btn" onclick="routineSkip()">Neste →</button></div>') +
+    (next ? '<div class="rt-next">Neste: ' + escapeHtml(next.text || '') + (next.min? ' · ' + next.min + ' min':'') + '</div>' : '<div class="rt-next">Siste oppgave</div>') +
+    '<button class="rt-stop" onclick="routineStopToEdit()">Avslutt rutinen</button>' +
+    '</div>';
+  w.innerHTML = html;
+}
+function routineUpdateRun(){
+  var c = document.getElementById('rtClock'); if (c) c.textContent = fmtClock(RT.left);
+  routineMedia(true); // oppdater lås-skjerm-metadata
+}
+function routineStopToEdit(){ stopRoutine(); RT.mode='edit'; routinePaintEdit(); }
+// ----- pling (Web Audio, mykt todelt klokkespill) -----
+function playPling(){
+  try {
+    _routineAudioCtx = _routineAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    var ctx = _routineAudioCtx; if (ctx.state === 'suspended') ctx.resume();
+    var t = ctx.currentTime;
+    [880, 1318.5].forEach(function(f, i){
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+      var st = t + i * 0.13;
+      g.gain.setValueAtTime(0.0001, st);
+      g.gain.linearRampToValueAtTime(0.16, st + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, st + 0.95);
+      o.start(st); o.stop(st + 1);
+    });
+  } catch(e){}
+}
+// ----- lås-skjerm / status-bar (best-effort: Media Session + tittel) -----
+function routineMedia(on){
+  try {
+    if (on && RT.running){
+      var it = RT.items[RT.idx] || {};
+      var rem = it.min > 0 ? fmtClock(RT.left) + ' igjen' : 'pågår';
+      document.title = (it.min > 0 ? fmtClock(RT.left) + ' · ' : '') + (it.text || 'Rutine');
+      if ('mediaSession' in navigator){
+        if (!_routineKeepalive){
+          // stille lyd-loop holder media-session aktiv så lås-skjermen viser timeren
+          _routineKeepalive = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=');
+          _routineKeepalive.loop = true; _routineKeepalive.volume = 0;
+          _routineKeepalive.play().catch(function(){});
+        }
+        try {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: (it.text || 'Rutine') + (it.min > 0 ? ' — ' + rem : ''),
+            artist: RT.header || 'Rutine',
+            album: 'Oslo Psykologkontor'
+          });
+          navigator.mediaSession.setActionHandler('nexttrack', function(){ routineSkip(); });
+          navigator.mediaSession.setActionHandler('pause', function(){ routinePauseToggle(); });
+          navigator.mediaSession.setActionHandler('play', function(){ routinePauseToggle(); });
+        } catch(e){}
+      }
+    } else {
+      if (_routineOrigTitle == null) _routineOrigTitle = 'Klientportalen — Oslo Psykologkontor';
+      document.title = _routineOrigTitle;
+      if (_routineKeepalive){ try { _routineKeepalive.pause(); } catch(e){} _routineKeepalive = null; }
+      if ('mediaSession' in navigator){ try { navigator.mediaSession.metadata = null; } catch(e){} }
+    }
+  } catch(e){}
+}
 var FT = { total:25*60, left:25*60, running:false, mode:'fokus', iv:null };
 function renderTimerTool(body, moduleId, tool){
   var presets = (tool && tool.presets) || [10, 15, 25, 45];
