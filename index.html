@@ -219,6 +219,13 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .tool-empty .te-ico svg{width:20px;height:20px}
 .tool-empty p{font-size:13.5px;margin:0;max-width:30ch}
 body.dark .tool-empty .te-ico{background:rgba(168,180,154,.18)}
+/* Belønning ved gjennomføring — rask visuell hit, ingen person-ros */
+.cele-chip{position:fixed;transform:translate(-50%,-50%);z-index:131;display:inline-flex;align-items:center;gap:7px;background:linear-gradient(180deg,#6A7A5A,var(--sage));color:#fff;padding:9px 17px;border-radius:var(--r-pill);font-size:14px;font-weight:700;letter-spacing:-.005em;box-shadow:0 14px 32px -10px rgba(92,107,74,.6),inset 0 1px 0 rgba(255,255,255,.2);pointer-events:none;animation:celeChip 1.3s var(--ease) forwards}
+.cele-chip svg{width:17px;height:17px;stroke:#fff;stroke-width:3}
+@keyframes celeChip{0%{opacity:0;transform:translate(-50%,-42%) scale(.8)}16%{opacity:1;transform:translate(-50%,-50%) scale(1.07)}30%{transform:translate(-50%,-50%) scale(1)}76%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1)}}
+.cele-burst{position:fixed;width:0;height:0;z-index:130;pointer-events:none}
+.cele-particle{position:absolute;left:0;top:0;border-radius:50%;will-change:transform,opacity;animation:celeFloat var(--t,900ms) cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes celeFloat{0%{transform:translate(0,0) scale(.4);opacity:0}22%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1);opacity:0}}
 /* Onboarding-glimt (engangs velkomst) */
 .onbo-overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(30,38,22,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s var(--ease)}
 .onbo-overlay.show{opacity:1}
@@ -2875,7 +2882,7 @@ function renderListItems(moduleId, tool, data){
       '<button title="Slett" onclick="listDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + ic('x') + '</button></div></div>';
   }).join('');
   if (tool.checkable && data.items.length > 1 && data.items.every(function(x){ return x.done; })){
-    html += '<div class="t-done-msg">' + ic('tick') + ' Hele lista fullført — godt jobbet.</div>';
+    html += '<div class="t-done-msg">' + ic('tick') + ' Hele lista er fullført.</div>';
   }
   el.innerHTML = html;
 }
@@ -2894,11 +2901,45 @@ function listSaveHeader(moduleId, toolId){
   data.header = document.getElementById('listHeader').value;
   persistTool(toolId, data);
 }
+// ---------- BELØNNING VED GJENNOMFØRING ----------
+// Rask, visuell dopamin-hit i øyeblikket (ikke streaks/score — jf. calm-tech).
+// Roser aldri personen («flink») — kun nøytral kvittering + partikkel-burst.
+// Av i Ro-modus / reduced-motion (da kun en kort, stille kvittering).
+function celebrate(anchor, label){
+  var reduced = document.body.classList.contains('calm') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var cx = window.innerWidth / 2, cy = window.innerHeight * 0.40;
+  try { if (anchor && anchor.getBoundingClientRect){ var r = anchor.getBoundingClientRect(); if (r.width){ cx = r.left + r.width/2; cy = r.top + Math.min(r.height/2, 150); } } } catch(e){}
+  var chip = document.createElement('div'); chip.className = 'cele-chip';
+  chip.style.left = cx + 'px'; chip.style.top = cy + 'px';
+  chip.innerHTML = ic('tick') + '<span>' + escapeHtml(label || 'Gjort') + '</span>';
+  document.body.appendChild(chip);
+  setTimeout(function(){ if (chip.parentNode) chip.parentNode.removeChild(chip); }, 1350);
+  if (reduced) return;
+  var burst = document.createElement('div'); burst.className = 'cele-burst';
+  burst.style.left = cx + 'px'; burst.style.top = cy + 'px';
+  var colors = ['var(--sage)', 'var(--accent)', '#C5CEBA', '#9C6A3C', 'var(--sage-light)'];
+  for (var k = 0; k < 14; k++){
+    var p = document.createElement('span'); p.className = 'cele-particle';
+    var ang = Math.random() * Math.PI * 2, dist = 42 + Math.random() * 72;
+    p.style.setProperty('--dx', (Math.cos(ang) * dist).toFixed(0) + 'px');
+    p.style.setProperty('--dy', (Math.sin(ang) * dist - 28).toFixed(0) + 'px');
+    p.style.setProperty('--t', (760 + Math.random() * 460).toFixed(0) + 'ms');
+    p.style.background = colors[k % colors.length];
+    var sz = (6 + Math.random() * 7).toFixed(0); p.style.width = sz + 'px'; p.style.height = sz + 'px';
+    if (k % 3 === 0) p.style.borderRadius = '2px';
+    burst.appendChild(p);
+  }
+  document.body.appendChild(burst);
+  setTimeout(function(){ if (burst.parentNode) burst.parentNode.removeChild(burst); }, 1350);
+}
 function listToggle(moduleId, toolId, i){
   var data = listData(toolId);
+  var wasAll = data.items.length > 1 && data.items.every(function(x){ return x.done; });
   data.items[i].done = !data.items[i].done;
   persistTool(toolId, data);
   renderListItems(moduleId, findTool(moduleId, toolId), data);
+  var isAll = data.items.length > 1 && data.items.every(function(x){ return x.done; });
+  if (isAll && !wasAll) celebrate(document.getElementById('toolBody'), 'Fullført');
 }
 function listDelete(moduleId, toolId, i){
   var data = listData(toolId);
@@ -3042,9 +3083,13 @@ function formAutoSave(moduleId, toolId){
       fields.forEach(function(el){ if (el.value.trim()) filled++; });
       prog.querySelector('.bar i').style.width = Math.round(filled / Math.max(1, fields.length) * 100) + '%';
       prog.querySelector('span').textContent = filled + ' av ' + fields.length + ' utfylt';
+      var complete = (fields.length > 1 && filled === fields.length);
+      if (complete && !FORM_COMPLETE[toolId]) celebrate(prog, 'Alt utfylt');
+      FORM_COMPLETE[toolId] = complete;
     }
   }, 600);
 }
+var FORM_COMPLETE = {};
 function formPreset(moduleId, toolId, pi){
   var tool = findTool(moduleId, toolId), p = tool.presets[pi];
   document.querySelectorAll('#toolBody [data-fid]').forEach(function(el){
@@ -3277,10 +3322,12 @@ function ftToggle(){
           FT.mode = 'done'; FT.left = 0; stopFocusTimer();
           var sd = document.getElementById('ftStart'); if (sd) sd.textContent = 'Start på nytt';
           var md = document.getElementById('ftMode'); if (md) md.textContent = 'Du kom i gang 🎉';
+          celebrate(document.getElementById('ftSvg'), 'Du er i gang');
         } else {
           FT.mode = 'pause'; FT.total = FT.left = FT.breakMin * 60;
           var m = document.getElementById('ftMode');
           if (m) m.textContent = 'Fint jobbet — pause nå';
+          celebrate(document.getElementById('ftSvg'), 'Økt fullført');
         }
       } else if (FT.mode === 'pause') {
         FT.mode = 'fokus'; stopFocusTimer();
@@ -3441,7 +3488,7 @@ function groundPaint(){
     '<p style="font-size:12.5px;color:var(--ink-faint);margin-top:12px;text-align:center">Du trenger ikke fylle ut alt — det holder å legge merke til.</p>' +
     '</div>';
 }
-function groundNext(){ GR.step++; groundPaint(); }
+function groundNext(){ GR.step++; groundPaint(); if (GR.step >= GROUND_STEPS.length) celebrate(document.getElementById('groundWrap'), 'Du er her nå'); }
 function groundRestart(){ GR.step = 0; groundPaint(); }
 
 // ---------- VELGER (Reguleringsmeny / Toleransevindu) ----------
@@ -3553,6 +3600,7 @@ function pmrDone(){
   if (fill){ fill.style.width = '100%'; fill.className = 'release'; }
   if (ct) ct.textContent = '';
   if (s) s.textContent = 'Start på nytt';
+  celebrate(document.querySelector('.pmr-stage'), 'Gjennomgått');
 }
 
 // ---------- TIDSESTIMAT-TRENER ----------
@@ -3621,6 +3669,7 @@ function estimateStop(){
   ES.log.unshift({ task:ES.task, guess:ES.guessMin + ' min', actual:estFmt(ES.elapsed) });
   if (ES.log.length > 8) ES.log.length = 8;
   ES.phase = 'done'; estimatePaint();
+  celebrate(document.getElementById('estWrap'), 'Målt');
 }
 function estimateReset(){
   stopEstimate(); ES.phase = 'input'; ES.task = ''; ES.guessMin = 0; ES.elapsed = 0; estimatePaint();
