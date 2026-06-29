@@ -255,6 +255,13 @@ body.dark .tool-empty .te-ico{background:rgba(168,180,154,.18)}
 .rt-ops button:hover{background:var(--bg-warm);color:var(--ink)}
 .rt-startbar{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);margin-top:var(--space-4);flex-wrap:wrap}
 .rt-total{font-size:var(--text-sm);color:var(--ink-faint)}
+.rt-sugg{margin-top:var(--space-5)}
+.rt-sugg-lbl{font-size:var(--text-2xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:var(--space-3)}
+.rt-sugg-chips{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.rt-sugg-chips button{text-align:left;background:var(--bg-warm);border:1.5px solid var(--border);border-radius:var(--r-md);padding:var(--space-2) var(--space-4);cursor:pointer;transition:all .22s var(--ease);display:flex;flex-direction:column;gap:1px;min-width:0}
+.rt-sugg-chips button b{font-size:var(--text-sm);font-weight:600;color:var(--ink)}
+.rt-sugg-chips button span{font-size:var(--text-2xs);color:var(--ink-faint)}
+.rt-sugg-chips button:hover{border-color:var(--sage-light);background:var(--sage-mist);transform:translateY(-1px)}
 .rt-run{text-align:center;padding:var(--space-2) 0}
 .rt-dots{display:flex;gap:var(--space-2);justify-content:center;margin-bottom:var(--space-4);flex-wrap:wrap}
 .rt-dot{width:9px;height:9px;border-radius:var(--r-full);background:var(--border);transition:background .25s,transform .25s}
@@ -889,6 +896,29 @@ body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
 .dp-modal .dp-snooze-chips button{border:1.5px solid var(--border);background:var(--bg);border-radius:var(--r-pill);padding:var(--space-2) var(--space-4);font-size:var(--text-sm);font-weight:600;color:var(--sage-dark);cursor:pointer;transition:all .2s var(--ease)}
 .dp-modal .dp-snooze-chips button:hover{background:var(--sage-mist);border-color:var(--sage-light)}
 .dp-modal .dp-dismiss{background:none;border:none;color:var(--ink-faint);font-size:var(--text-sm);font-weight:600;cursor:pointer;padding:var(--space-2);text-decoration:underline;text-underline-offset:3px}
+
+/* «Grokvelden» — dagspoeng + trend-kurve */
+.gp-card{position:relative;overflow:hidden}
+.gp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4)}
+.gp-head h2{margin:0}
+.gp-score{position:relative;text-align:right;flex-shrink:0;line-height:1.1}
+.gp-score b{font-family:'DM Serif Display',serif;font-size:var(--text-2xl);color:var(--ink);display:block;font-variant-numeric:tabular-nums}
+.gp-score span{font-size:var(--text-2xs);color:var(--ink-faint);letter-spacing:.02em}
+.gp-glimt{position:absolute;right:0;top:-14px;font-size:var(--text-sm);font-weight:700;color:var(--accent);animation:gpGlimt 2.4s var(--ease) forwards;pointer-events:none}
+@keyframes gpGlimt{0%{opacity:0;transform:translateY(6px)}18%{opacity:1;transform:translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.gp-spark-wrap{position:relative;margin-top:var(--space-4)}
+.gp-spark{display:block;width:100%;height:42px}
+.gp-node{fill:var(--sage);transition:r .5s var(--ease)}
+.gp-node.mature{filter:drop-shadow(0 0 5px rgba(200,149,109,.65))}
+.gp-node.breath{animation:gpBreath .62s var(--ease)}
+@keyframes gpBreath{0%{transform:scale(1)}45%{transform:scale(1.16)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion: reduce){.gp-glimt{animation:none!important}.gp-node.breath{animation:none!important}}
+.gp-dir{position:absolute;right:0;bottom:-15px;font-size:var(--text-2xs);font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
+.gp-guide{font-size:var(--text-sm);color:var(--ink-soft);line-height:1.55;margin:var(--space-5) 0 0;max-width:54ch}
+.gp-guide.soft{color:var(--clay-700)}
+.gp-card .dp-textbtn{margin-top:var(--space-3)}
+body.dark .gp-guide.soft{color:var(--clay-300)}
+body.dark .gp-node.mature{filter:drop-shadow(0 0 6px rgba(216,167,123,.6))}
 
 /* emosjonskort */
 .emo{position:relative}
@@ -1805,11 +1835,13 @@ function todayDayIdx(){ var n = new Date(); return Math.floor((n - new Date(n.ge
 function loadToday(){ var d = loadTool('innsjekk') || {}; return (d.date === todayKey()) ? d : { date: todayKey() }; }
 function todaySet(field, val, moduleId){
   var d = loadToday();
+  var wasComplete = !!(d.mood && d.energy);
   if (d[field] === val) delete d[field]; else d[field] = val;
   d.date = todayKey();
   persistTool('innsjekk', d);
   var host = document.getElementById('todayHost');
   if (host) host.innerHTML = renderTodayCard(moduleId);
+  if (!wasComplete && d.mood && d.energy) gpAward('innsjekk', 'innsjekk', 1);   // kun ved overgang til fullført innsjekk
 }
 function openFromHome(moduleId, toolId){ switchView(moduleId); openTool(moduleId, toolId); }
 function renderTodayCard(moduleId){
@@ -1870,6 +1902,10 @@ function renderDashboard(){
   // «Dagen» — den visuelle dagsplanen lever på Hjem (ADHD-modulen)
   if (!sleep && hasModule('adhd')){
     html += '<div id="dpHost">' + renderDayplanCard() + '</div>';
+  }
+  // «Grokvelden» — dagspoeng + treg trend (alle forbruker-moduler, ikke søvn)
+  if (!sleep && primaryMod){
+    html += '<div id="gpHost">' + renderGrokvelden(primaryMod) + '</div>';
   }
   // hero-rad
   html += '<div class="hero-row">';
@@ -3125,7 +3161,7 @@ function listToggle(moduleId, toolId, i){
   persistTool(toolId, data);
   renderListItems(moduleId, findTool(moduleId, toolId), data);
   var isAll = data.items.length > 1 && data.items.every(function(x){ return x.done; });
-  if (isAll && !wasAll) celebrate(document.getElementById('toolBody'), 'Fullført');
+  if (isAll && !wasAll){ celebrate(document.getElementById('toolBody'), 'Fullført'); gpAward('liste', 'liste:' + toolId, 3, true); }
 }
 function listDelete(moduleId, toolId, i){
   var data = listData(toolId);
@@ -3270,7 +3306,7 @@ function formAutoSave(moduleId, toolId){
       prog.querySelector('.bar i').style.width = Math.round(filled / Math.max(1, fields.length) * 100) + '%';
       prog.querySelector('span').textContent = filled + ' av ' + fields.length + ' utfylt';
       var complete = (fields.length > 1 && filled === fields.length);
-      if (complete && !FORM_COMPLETE[toolId]) celebrate(prog, 'Alt utfylt');
+      if (complete && !FORM_COMPLETE[toolId]){ celebrate(prog, 'Alt utfylt'); gpAward('skjema', 'skjema:' + toolId, 3, true); }
       FORM_COMPLETE[toolId] = complete;
     }
   }, 600);
@@ -3579,6 +3615,7 @@ function dpSetDone(id, val){
   dpRepaint();
   if (DP.timer && DP.timer.blockId === id && val) dpStopTopbar();
   var isAll = task.length > 0 && task.every(function(b){ return b.done; });
+  if (val && data.blocks[idx].cat !== 'pause') gpAward('dagsplan', 'dp:' + id, 2, (isAll && !wasAll));
   if (isAll && !wasAll) celebrate(document.getElementById('dpHost') || document.body, 'Dagen er gjort');
 }
 function dpToggleDone(id){
@@ -3867,6 +3904,129 @@ try {
   window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); _dpInstallPrompt = e; });
 } catch(e){}
 
+// ---------- «GROKVELDEN» — dagspoeng + treg, tilgivende trend (TRIMP/Polar-inspirert) ----------
+// Spillet er å stelle en sakte, tilgivende kurve — ikke en streak, aldri person-ros, aldri rødt/skam.
+// Dagspoeng er ambiente (et flyktig «+N i dag», ingen permanent teller) og mater en synlig kronisk
+// EWMA (alphaC=0.12 → ~32 % klatring på 3 like dager) + en intern akutt EWMA (0.32) kun til
+// tilstands-deteksjon. Veiledning dempes av form-fortegnet så naturlig variasjon aldri utløser advarsel.
+var GP_ALPHA_C = 0.12, GP_ALPHA_A = 0.32, GP_DAGSTAK = 20, GP_MAL = 15;
+var GP_COPY = {
+  oppstart: 'Vi begynner helt rolig. Grokvelden vokser litt etter litt — det viktige er ikke i dag, men over tid.',
+  sprang: 'Det var en innsatsrik dag — fint. Et lite råd fra oss: store hopp er vanskelige å holde over tid. Det som varer, bygges gjerne i små steg du nesten ikke merker. Du trenger ikke gjenta dagens nivå i morgen — la grokvelden vokse i sitt eget tempo.',
+  jevn: 'Jevn kurs. Grokvelden ligger stødig — akkurat slik gode rutiner får feste.',
+  fall: 'Grokvelden har roet seg litt den siste tiden. Er det andre ting som opptar deg, eller noe som stresser eller belaster deg? Husk at gode rutiner er spesielt viktige nettopp når vi har mye krevende i livene våre.',
+  reentry: 'Velkommen tilbake. Vi tar opp tråden akkurat der du er — ingen stress.',
+  sparse: 'Trenden din starter her — den vokser sakte når du bruker det som hjelper.'
+};
+function gpReduced(){ return document.body.classList.contains('calm') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
+// UTC-konsistent med todayKey() (som bruker toISOString) — unngår tidssone-drift i fold-løkka
+function gpAddDays(s, n){ var d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); }
+function loadPoengDag(){ var d = loadTool('poeng_dag'); if (!d || !d.date) d = { date: todayKey(), sum:0, scoredKeys:{}, catCount:{} }; if (!d.scoredKeys) d.scoredKeys = {}; if (!d.catCount) d.catCount = {}; return d; }
+function loadPoengTrend(){ var t = loadTool('poeng_trend') || {}; if (typeof t.trend !== 'number') t.trend = 0; if (typeof t.acute !== 'number') t.acute = 0; if (typeof t.days !== 'number') t.days = 0; if (typeof t.lowRun !== 'number') t.lowRun = 0; if (typeof t.absentRun !== 'number') t.absentRun = 0; if (!t.hist) t.hist = []; if (!t.lastDate) t.lastDate = ''; return t; }
+function gpRollover(){
+  var day = loadPoengDag(), today = todayKey();
+  if (day.date === today) return;            // allerede dagsaktuell
+  var t = loadPoengTrend();
+  if (!t.lastDate) t.lastDate = day.date ? gpAddDays(day.date, -1) : gpAddDays(today, -1);
+  var cursor = gpAddDays(t.lastDate, 1), foldEnd = gpAddDays(today, -1), guard = 0;
+  while (cursor <= foldEnd && guard < 60){
+    var p = (cursor === day.date) ? (day.sum || 0) : 0;
+    var prevTrend = t.trend;
+    t.trend += GP_ALPHA_C * (p - t.trend);
+    t.acute += GP_ALPHA_A * (p - t.acute);
+    if (p > 0) t.days++;
+    var ratio = p / Math.max(prevTrend, 1);
+    t.lowRun = (ratio < 0.85) ? (t.lowRun + 1) : 0;
+    t.absentRun = (p === 0) ? ((t.absentRun || 0) + 1) : 0;   // fraværsdager (skiller «var borte» fra «til stede, men avtar»)
+    t.hist.push({ d: cursor, p: p, tr: Math.round(t.trend * 10) / 10 });
+    if (t.hist.length > 14) t.hist.shift();
+    cursor = gpAddDays(cursor, 1); guard++;
+  }
+  t.lastDate = foldEnd;
+  persistTool('poeng_trend', t);
+  persistTool('poeng_dag', { date: today, sum:0, scoredKeys:{}, catCount:{} });
+}
+// ENESTE scoringskrok. silent = en celebrate() har alt fyrt i denne tikken → oppdater tall/kurve uten eget glimt.
+function gpAward(category, eventKey, basePoints, silent){
+  var day = loadPoengDag();
+  if (day.date !== todayKey()){ gpRollover(); day = loadPoengDag(); }
+  if (day.scoredKeys[eventKey]) return;                 // idempotent per dag
+  var c = day.catCount[category] || 0, pts = basePoints;
+  if (c >= 4) pts = 0; else if (c >= 2) pts = Math.max(1, Math.floor(basePoints / 2));  // avtagende
+  var before = day.sum;
+  day.sum = Math.min(day.sum + pts, GP_DAGSTAK);
+  day.scoredKeys[eventKey] = 1; day.catCount[category] = c + 1;
+  persistTool('poeng_dag', day);
+  var gained = day.sum - before;
+  gpRefreshHome();
+  if (!silent && gained > 0) gpGlimt(gained);
+}
+function gpDir(t){ var f = t.acute - t.trend; return f > 0.6 ? 'stiger rolig' : (f < -0.6 ? 'roer seg' : 'ligger stødig'); }
+function gpGuidance(t, dpToday){
+  if (t.days < 4 || t.trend < 3.0) return { state:'oppstart', text: GP_COPY.oppstart };
+  if (t.absentRun >= 2) return { state:'reentry', text: GP_COPY.reentry };   // var borte ≥2 dager → varm velkomst, aldri skjenn
+  var ratio = dpToday / Math.max(t.trend, 1), form = t.acute - t.trend;
+  if (ratio >= 1.8 && form > 0 && dpToday >= 14) return { state:'sprang', text: GP_COPY.sprang };
+  if (t.lowRun >= 2 && form < 0) return { state:'fall', text: GP_COPY.fall };
+  return { state:'jevn', text: GP_COPY.jevn };
+}
+function gpSparkline(t){
+  var hist = t.hist || [], W = 280, H = 42, pad = 4;
+  var nodeMat = Math.max(0, Math.min(1, t.trend / GP_MAL));
+  var nodeR = 3 + 5 * nodeMat, glow = t.trend >= GP_MAL;
+  if (hist.length < 3){
+    // tom/sparsom: ett knopp-frø på en rolig grunnlinje
+    return '<svg class="gp-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<line x1="0" y1="' + (H - pad) + '" x2="' + W + '" y2="' + (H - pad) + '" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="2 5"/>' +
+      '<circle class="gp-node' + (glow ? ' mature' : '') + '" cx="' + (W * 0.5) + '" cy="' + (H - pad) + '" r="' + (3 + 3 * nodeMat) + '"/></svg>';
+  }
+  var vals = hist.map(function(h){ return h.tr; });
+  var maxY = Math.max.apply(null, vals.concat([5])); maxY = maxY * 1.15;
+  var n = vals.length, pts = vals.map(function(v, i){
+    var x = pad + (W - pad * 2) * (i / (n - 1));
+    var y = (H - pad) - (H - pad * 2) * (v / maxY);
+    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+  });
+  var line = pts.map(function(p, i){ return (i ? 'L' : 'M') + p[0] + ' ' + p[1]; }).join(' ');
+  var area = 'M' + pts[0][0] + ' ' + (H - pad) + ' ' + pts.map(function(p){ return 'L' + p[0] + ' ' + p[1]; }).join(' ') + ' L' + pts[n-1][0] + ' ' + (H - pad) + ' Z';
+  var last = pts[n-1];
+  return '<svg class="gp-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+    '<defs><linearGradient id="gpFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--sage)" stop-opacity="0.16"/><stop offset="100%" stop-color="var(--sage)" stop-opacity="0"/></linearGradient></defs>' +
+    '<path d="' + area + '" fill="url(#gpFill)" stroke="none"/>' +
+    '<path d="' + line + '" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<circle class="gp-node' + (glow ? ' mature' : '') + '" cx="' + last[0] + '" cy="' + last[1] + '" r="' + (Math.round(nodeR * 10) / 10) + '"/></svg>';
+}
+function renderGrokvelden(moduleId){
+  gpRollover();
+  var day = loadPoengDag(), t = loadPoengTrend();
+  var g = gpGuidance(t, day.sum);
+  var dir = (t.hist.length >= 3) ? gpDir(t) : '';
+  var html = '<div class="card gp-card">';
+  html += '<div class="gp-head"><div><div class="eyebrow">Over tid</div><h2 class="serif">Grokvelden</h2></div>' +
+    '<div class="gp-score" id="gpScore"><b>' + day.sum + '</b><span>poeng i dag</span></div></div>';
+  html += '<div class="gp-spark-wrap">' + gpSparkline(t) + (dir ? '<span class="gp-dir">' + dir + '</span>' : '') + '</div>';
+  if (t.hist.length < 3){
+    html += '<p class="gp-guide">' + GP_COPY.sparse + '</p>';
+  } else {
+    html += '<p class="gp-guide' + (g.state === 'fall' ? ' soft' : '') + '">' + escapeHtml(g.text) + '</p>';
+    if (g.state === 'fall' || g.state === 'reentry')
+      html += '<button class="dp-textbtn" onclick="gpOpenRoutine()">' + ic('repeat') + 'Hent fram en rutine</button>';
+  }
+  html += '</div>';
+  return html;
+}
+function gpRefreshHome(){ var host = document.getElementById('gpHost'); if (host) host.innerHTML = renderGrokvelden(dpPrimaryMod()); }
+function gpGlimt(n){
+  if (gpReduced()) return;
+  var sc = document.getElementById('gpScore'); if (!sc) return;
+  var g = document.createElement('span'); g.className = 'gp-glimt'; g.textContent = '+' + n;
+  sc.appendChild(g);
+  var node = document.querySelector('#gpHost .gp-node');
+  if (node){ node.classList.add('breath'); setTimeout(function(){ node.classList.remove('breath'); }, 620); }
+  setTimeout(function(){ if (g.parentNode) g.parentNode.removeChild(g); }, 2500);
+}
+function gpOpenRoutine(){ openFromHome('adhd', 'adhd_rutine'); }
+
 // ---------- EMOSJONSKORT (log) ----------
 var EMO_ICONS = { 'Glad':'😊','Rolig':'😌','Trist':'😢','Sint':'😠','Redd':'😨','Frustrert':'😤','Overveldet':'🥴','Skuffet':'😞','Ensom':'🫥','Stolt':'🌱','Sliten':'🥱','Nøytral':'😐' };
 var EMO_VAL = { 'Glad':'v-pos','Rolig':'v-pos','Stolt':'v-pos','Trist':'v-neg','Sint':'v-neg','Redd':'v-neg','Frustrert':'v-neg','Overveldet':'v-neg','Skuffet':'v-neg','Ensom':'v-neg','Sliten':'v-mid','Nøytral':'v-mid' };
@@ -3940,6 +4100,24 @@ function logDelete(moduleId, toolId, i){
 // (best-effort) timer på lås-skjerm via Media Session + dokument-tittel.
 var RT = { iv:null, idx:0, left:0, running:false, items:[], header:'', toolId:null, moduleId:null, mode:'edit' };
 var _routineAudioCtx = null, _routineKeepalive = null, _routineOrigTitle = null;
+// Ferdige rutine-forslag (kan hentes inn i rutinebyggeren med ett trykk)
+var ROUTINE_SUGGESTIONS = [
+  { name:'Morgenstell', sub:'rolig start', items:[{text:'Drikk et glass vann',min:1},{text:'Vask ansikt + puss tenner',min:3},{text:'Kle på dagens klær',min:3},{text:'Tre rolige pust ved vinduet',min:1},{text:'Se på dagens tre holdepunkter',min:2},{text:'Legg telefonen klar, men ikke åpne den ennå',min:2}] },
+  { name:'Kort morgenrutine', sub:'travel dag', items:[{text:'Drikk vann',min:1},{text:'Tenner + ansikt',min:2},{text:'Klær',min:2},{text:'Ett pust og én ting du gleder deg til',min:1}] },
+  { name:'Kveldsrutine', sub:'lande for natten', items:[{text:'Rydd én flate',min:4},{text:'Legg fram klær til i morgen',min:2},{text:'Skjerm bort, lys ned',min:1},{text:'Varm drikke uten koffein',min:5},{text:'Pust 4 inn / 6 ut, ti runder',min:3},{text:'Skriv én ting som var greit i dag',min:5}] },
+  { name:'Stress-avbrudd', sub:'når det koker', items:[{text:'Reis deg og rist løs armer og bein i 30 sek',min:1},{text:'Kaldt vann i ansiktet eller på håndleddet',min:1},{text:'Pust inn på 4, ut på 6 — seks runder',min:3}] },
+  { name:'Overgang jobb → fri', sub:'legg fra deg dagen', items:[{text:'Skriv ned det uferdige så hodet slipper å holde det',min:3},{text:'Skift klær eller vask hendene som et skille-ritual',min:2},{text:'Kort gåtur eller stå ute i to minutter',min:5}] },
+  { name:'Komme i gang', sub:'mot utsettelse', items:[{text:'Velg ÉN oppgave og skriv det aller minste første steget',min:2},{text:'Sett timer på 5 minutter og bare begynn',min:5},{text:'Kryss av og kjenn etter om du vil fortsette',min:1}] },
+  { name:'Restitusjonspause', sub:'ved utmattelse', items:[{text:'Legg deg ned eller sett deg godt til rette',min:1},{text:'Kroppsskanning ovenfra og ned',min:8},{text:'Ingenting-tid uten skjerm',min:6}] },
+  { name:'Søndagsforberedelse', sub:'mild ukestart', items:[{text:'Se over ukens faste holdepunkter',min:5},{text:'Legg inn 2–3 ankere i dagsplanen',min:5},{text:'Velg én ting du gleder deg til',min:2},{text:'Avslutt — resten tar du dag for dag',min:3}] },
+  { name:'Energilading', sub:'midt på dagen', items:[{text:'Gå ut eller til et vindu for dagslys',min:3},{text:'Drikk vann',min:1},{text:'Gjør én ting som gir deg energi',min:3}] }
+];
+function routineApplySuggestion(i){
+  var s = ROUTINE_SUGGESTIONS[i]; if (!s) return;
+  RT.header = s.name;
+  RT.items = s.items.map(function(it){ return { text: it.text, min: it.min }; });
+  routineSave(); routinePaintEdit();
+}
 function routineData(toolId){
   var d = loadTool(toolId) || { header:'', items:[] };
   d.items = (d.items || []).map(function(it){
@@ -3978,6 +4156,8 @@ function routinePaintEdit(){
   html += '<div class="add-row"><input type="text" id="rtNew" placeholder="Ny oppgave (f.eks. Tannpuss)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();routineAdd()}">' +
     '<input type="number" id="rtNewMin" min="0" inputmode="numeric" placeholder="min" style="width:74px;flex:none">' +
     '<button class="btn small" onclick="routineAdd()">Legg til</button></div>';
+  html += '<div class="rt-sugg"><div class="rt-sugg-lbl">' + (RT.items.length ? 'Eller hent et ferdig forslag' : 'Kom raskt i gang — hent et ferdig forslag') + '</div><div class="rt-sugg-chips">' +
+    ROUTINE_SUGGESTIONS.map(function(s, i){ var mn = s.items.reduce(function(a,it){ return a + (it.min||0); }, 0); return '<button type="button" onclick="routineApplySuggestion(' + i + ')"><b>' + escapeHtml(s.name) + '</b><span>' + escapeHtml(s.sub) + ' · ~' + mn + ' min</span></button>'; }).join('') + '</div></div>';
   if (RT.items.length){
     html += '<div class="rt-startbar"><div class="rt-total">' + RT.items.length + ' oppgaver · ' + (total ? '~' + total + ' min' : 'ingen timere satt') + '</div>' +
       '<button class="btn rt-start" onclick="routineStart()">Start rutine ▶</button></div>';
@@ -4047,6 +4227,7 @@ function routineFinish(){
     '<h3 class="serif">Rutinen er fullført.</h3><p>' + escapeHtml(RT.header || 'Rutinen') + ' er gjort unna. Fint å ha det av veien.</p>' +
     '<button class="btn" onclick="routineStart()">Kjør på nytt</button> <button class="btn ghost" onclick="routinePaintEdit2()">Rediger rutinen</button></div>';
   celebrate(w, 'Rutine fullført');
+  gpAward('rutine', 'rutine:' + RT.toolId, 5, true);
   // kjørt fra dagsplanen? hak av blokken og lukk fullskjerms-overlayet
   if (RT._fromBlockId){
     var fid = RT._fromBlockId; RT._fromBlockId = null;
@@ -4152,7 +4333,7 @@ var FT = { total:25*60, left:25*60, running:false, mode:'fokus', iv:null };
 function renderTimerTool(body, moduleId, tool){
   var presets = (tool && tool.presets) || [10, 15, 25, 45];
   FT.simple = !!(tool && tool.simple);
-  FT.breakMin = (tool && tool.breakMin) || 5;
+  FT.breakMin = Math.max(1, (tool && tool.breakMin) || 5);   // aldri 0-min pause (hindrer lyn-sykling)
   FT.base = presets[0] * 60;
   var btns = presets.map(function(m, i){
     return '<button class="' + (i === 0 ? 'sel' : '') + '" onclick="ftPreset(this,' + m + ')">' + m + ' min</button>';
@@ -4190,11 +4371,13 @@ function ftToggle(){
           var sd = document.getElementById('ftStart'); if (sd) sd.textContent = 'Start på nytt';
           var md = document.getElementById('ftMode'); if (md) md.textContent = 'Du kom i gang 🎉';
           celebrate(document.getElementById('ftSvg'), 'Du er i gang');
+          gpAward('fokus', 'fokus:' + todayKey() + ':' + (FT._n = (FT._n || 0) + 1), 2, true);
         } else {
           FT.mode = 'pause'; FT.total = FT.left = FT.breakMin * 60;
           var m = document.getElementById('ftMode');
           if (m) m.textContent = 'Fint jobbet — pause nå';
           celebrate(document.getElementById('ftSvg'), 'Økt fullført');
+          gpAward('fokus', 'fokus:' + todayKey() + ':' + (FT._n = (FT._n || 0) + 1), 3, true);
         }
       } else if (FT.mode === 'pause') {
         FT.mode = 'fokus'; stopFocusTimer();
@@ -4316,6 +4499,7 @@ function brTick(){
     if (BR.phaseI >= phases.length){
       BR.phaseI = 0; BR.cycles++;
       var cy = document.getElementById('brCycles'); if (cy) cy.textContent = String(BR.cycles);
+      if (BR.cycles === 3) gpAward('mikro', 'pust:' + todayKey(), 2, true);  // meningsfull pusteøkt nådd
     }
     BR.phaseT0 = Date.now();
   }
@@ -4355,7 +4539,7 @@ function groundPaint(){
     '<p style="font-size:var(--text-sm);color:var(--ink-faint);margin-top:var(--space-3);text-align:center">Du trenger ikke fylle ut alt — det holder å legge merke til.</p>' +
     '</div>';
 }
-function groundNext(){ GR.step++; groundPaint(); if (GR.step >= GROUND_STEPS.length) celebrate(document.getElementById('groundWrap'), 'Du er her nå'); }
+function groundNext(){ GR.step++; groundPaint(); if (GR.step >= GROUND_STEPS.length){ celebrate(document.getElementById('groundWrap'), 'Du er her nå'); gpAward('mikro', 'grounding:' + todayKey(), 2, true); } }
 function groundRestart(){ GR.step = 0; groundPaint(); }
 
 // ---------- VELGER (Reguleringsmeny / Toleransevindu) ----------
@@ -4468,6 +4652,7 @@ function pmrDone(){
   if (ct) ct.textContent = '';
   if (s) s.textContent = 'Start på nytt';
   celebrate(document.querySelector('.pmr-stage'), 'Gjennomgått');
+  gpAward('mikro', 'pmr:' + todayKey(), 2, true);
 }
 
 // ---------- TIDSESTIMAT-TRENER ----------
@@ -4537,6 +4722,7 @@ function estimateStop(){
   if (ES.log.length > 8) ES.log.length = 8;
   ES.phase = 'done'; estimatePaint();
   celebrate(document.getElementById('estWrap'), 'Målt');
+  gpAward('mikro', 'estimat:' + todayKey(), 2, true);
 }
 function estimateReset(){
   stopEstimate(); ES.phase = 'input'; ES.task = ''; ES.guessMin = 0; ES.elapsed = 0; estimatePaint();
