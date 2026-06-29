@@ -4012,7 +4012,7 @@ function renderGrokvelden(moduleId){
   } else {
     html += '<p class="gp-guide' + (g.state === 'fall' ? ' soft' : '') + '">' + escapeHtml(g.text) + '</p>';
     if (g.state === 'fall' || g.state === 'reentry')
-      html += '<button class="dp-textbtn" onclick="gpOpenRoutine()">' + ic('repeat') + 'Hent fram en rutine</button>';
+      html += '<button class="dp-textbtn" onclick="gpOpenRoutine()">' + ic('repeat') + escapeHtml(gpComeback().label) + '</button>';
   }
   html += '<button class="gp-info" onclick="gpExplain()">Hva er dette?</button>';
   html += '</div>';
@@ -4038,7 +4038,14 @@ function gpGlimt(n){
   if (node){ node.classList.add('breath'); setTimeout(function(){ node.classList.remove('breath'); }, 620); }
   setTimeout(function(){ if (g.parentNode) g.parentNode.removeChild(g); }, 2500);
 }
-function gpOpenRoutine(){ openFromHome('adhd', 'adhd_rutine'); }
+// «Hent fram …»-knappen må peke på et verktøy brukeren faktisk har (ikke ADHD-rutine for alle)
+var GP_COMEBACK = {
+  adhd:       { mod:'adhd',       tool:'adhd_rutine',     label:'Hent fram en rutine' },
+  utbrenthet: { mod:'utbrenthet', tool:'utb_restitusjon', label:'Ta en liten restitusjonspause' },
+  autism:     { mod:'autism',     tool:'aut_sekvens',     label:'Hent fram en sekvens' }
+};
+function gpComeback(){ var c = GP_COMEBACK[dpPrimaryMod()]; return (c && findTool(c.mod, c.tool)) ? c : GP_COMEBACK.adhd; }
+function gpOpenRoutine(){ var c = gpComeback(); openFromHome(c.mod, c.tool); }
 
 // ---------- EMOSJONSKORT (log) ----------
 var EMO_ICONS = { 'Glad':'😊','Rolig':'😌','Trist':'😢','Sint':'😠','Redd':'😨','Frustrert':'😤','Overveldet':'🥴','Skuffet':'😞','Ensom':'🫥','Stolt':'🌱','Sliten':'🥱','Nøytral':'😐' };
