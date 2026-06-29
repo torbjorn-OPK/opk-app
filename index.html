@@ -916,6 +916,8 @@ body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
 .gp-dir{position:absolute;right:0;bottom:-15px;font-size:var(--text-2xs);font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
 .gp-guide{font-size:var(--text-sm);color:var(--ink-soft);line-height:1.55;margin:var(--space-5) 0 0;max-width:54ch}
 .gp-guide.soft{color:var(--clay-700)}
+.gp-info{display:inline-block;margin-top:var(--space-4);background:none;border:none;color:var(--ink-faint);font-size:var(--text-2xs);font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:0}
+.gp-info:hover{color:var(--sage-dark)}
 .gp-card .dp-textbtn{margin-top:var(--space-3)}
 body.dark .gp-guide.soft{color:var(--clay-300)}
 body.dark .gp-node.mature{filter:drop-shadow(0 0 6px rgba(216,167,123,.6))}
@@ -3505,7 +3507,7 @@ function renderDayplanCard(){
   var ensoOff = (ensoC * (1 - (total ? done/total : 0))).toFixed(1);
   var ensoFull = (total > 0 && done === total) ? ' full' : '';
   var html = '<div class="card dp-card">';
-  html += '<div class="dp-head"><div><div class="eyebrow">I dag</div><h2 class="serif">Dagen</h2><div class="dp-date">' + escapeHtml(dateLbl) + '</div></div>';
+  html += '<div class="dp-head"><div><div class="eyebrow">Dagsplan</div><h2 class="serif">Dagen</h2><div class="dp-date">' + escapeHtml(dateLbl) + '</div></div>';
   html += '<div class="dp-enso' + ensoFull + '" id="dpEnso" title="' + done + ' av ' + total + ' gjort"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="dp-arc-track" cx="32" cy="32" r="26" stroke-width="5"/><circle class="dp-arc" id="dpArc" cx="32" cy="32" r="26" stroke-width="5" transform="rotate(-90 32 32)" stroke-dasharray="' + ensoC.toFixed(1) + '" stroke-dashoffset="' + ensoOff + '"/></svg><span class="dp-num" id="dpNum">' + done + ' / ' + total + '</span></div>';
   html += '</div>';
   html += '<div id="dpNextUp">' + dpNextUpHtml(blocks, nowM, total, done) + '</div>';
@@ -4012,8 +4014,19 @@ function renderGrokvelden(moduleId){
     if (g.state === 'fall' || g.state === 'reentry')
       html += '<button class="dp-textbtn" onclick="gpOpenRoutine()">' + ic('repeat') + 'Hent fram en rutine</button>';
   }
+  html += '<button class="gp-info" onclick="gpExplain()">Hva er dette?</button>';
   html += '</div>';
   return html;
+}
+function gpExplain(){
+  var el = dpModalEl();
+  el.innerHTML = '<div class="dp-modal" role="dialog" aria-modal="true" aria-label="Om Grokvelden"><div class="dp-modal-ico">' + ic('leaf') + '</div>' +
+    '<h3 class="serif">Om Grokvelden</h3>' +
+    '<p>Hver gang du fullfører en rutine eller et verktøy, legger Grokvelden til litt — og bygger en rolig trend som vokser sakte over dager og uker.</p>' +
+    '<p>Det handler ikke om å gjøre mest mulig på én dag, men om å la gode vaner få feste litt etter litt. En rolig dag teller ikke som tap. Dette er bare for deg — ingen andre ser det.</p>' +
+    '<div class="dp-modal-btns"><button class="btn" onclick="dpCloseModal()">Skjønner</button></div></div>';
+  el.style.display = 'flex';
+  try { var f = el.querySelector('.btn'); if (f) f.focus(); } catch(e){}
 }
 function gpRefreshHome(){ var host = document.getElementById('gpHost'); if (host) host.innerHTML = renderGrokvelden(dpPrimaryMod()); }
 function gpGlimt(n){
