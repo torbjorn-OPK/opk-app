@@ -27,18 +27,40 @@
    Sleepio (innsikt-grafer), How We Feel (emosjonskort).
    ============================================================ */
 :root {
-  --sage:#5C6B4A; --sage-dark:#3E4A33; --sage-deep:#2E3726;
-  --sage-light:#A8B49A; --sage-pale:#C5CEBA; --sage-mist:#EDF0E8;
-  --bg:#FAF8F5; --bg-warm:#F2EDE4; --card:#FFFFFF; --border:#ECE6DC;
-  --ink:#2A2A28; --ink-soft:#5C5C58; --ink-faint:#746E62;
-  --accent:#C8956D; --accent-soft:#F6EADC;        /* ADHD   */
+  /* === PRIMITIVER (rå fargestopp — se DESIGNSYSTEM.md) === */
+  --sage-900:#2E3726; --sage-800:#3E4A33; --sage-700:#4A573B; --sage-600:#5C6B4A;
+  --sage-500:#6A7A5A; --sage-400:#92A06F; --sage-300:#A8B49A; --sage-200:#C5CEBA; --sage-100:#EDF0E8;
+  --cream-0:#FFFFFF; --cream-50:#FFFCF7; --cream-100:#FAF8F5; --cream-200:#F2EDE4; --cream-300:#ECE6DC;
+  --clay-700:#9C6A3C; --clay-500:#C8956D; --clay-300:#E0B488; --clay-200:#D8A77B;
+  --ink-900:#2A2A28; --ink-600:#5C5C58; --ink-400:#746E62;
+  /* === SEMANTISKE ALIAS (identiske verdier som før) === */
+  --sage:var(--sage-600); --sage-dark:var(--sage-800); --sage-deep:var(--sage-900);
+  --sage-light:var(--sage-300); --sage-pale:var(--sage-200); --sage-mist:var(--sage-100);
+  --bg:var(--cream-100); --bg-warm:var(--cream-200); --card:var(--cream-0); --border:var(--cream-300);
+  --ink:var(--ink-900); --ink-soft:var(--ink-600); --ink-faint:var(--ink-400);
+  --accent:var(--clay-500); --accent-soft:#F6EADC;        /* ADHD   */
   --blue:#5E7290;  --blue-soft:#E9EDF3;           /* Søvn   */
   --teal:#5F8575;  --teal-soft:#E4EDE8;           /* Autisme*/
   --good:#4A7C59; --warn:#A8742F; --bad:#B05A4A;
   --shadow:0 10px 40px -18px rgba(60,74,51,.28);
   --shadow-lift:0 18px 50px -18px rgba(60,74,51,.35);
-  --r-card:20px; --r-pill:100px;
+  --shadow-inset:inset 0 1px 2px rgba(60,74,51,.05);
+  --shadow-sm:0 4px 12px -6px rgba(60,74,51,.35);
+  --r-xs:4px; --r-sm:8px; --r-md:14px; --r-card:20px; --r-pill:100px; --r-full:50%;
   --ease:cubic-bezier(.4,0,.2,1);
+  /* === TYPOGRAFI-SKALA (ny) === */
+  --text-2xs:11px; --text-xs:12px; --text-sm:13px; --text-base:14px; --text-md:16px;
+  --text-lg:18px; --text-xl:21px; --text-2xl:24px; --text-3xl:30px; --text-display:clamp(40px,5vw,60px);
+  --track-caps:.12em; --track-serif:-.01em; --lh-tight:1.1; --lh-snug:1.3; --lh-body:1.55;
+  /* === SPACING-SKALA (ny) === */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px;
+  /* === GLASS / BACKDROP (ny) === */
+  --blur-sm:7px; --blur-md:14px; --blur-lg:18px;
+  --glass-sheer:rgba(255,253,250,.74); --glass-solid:rgba(255,253,250,.93);
+  --glass-subtle:rgba(255,251,245,.6); --glass-scrim:rgba(30,38,22,.45);
+  /* === STATES (ny) === */
+  --focus-ring:0 0 0 4px rgba(92,107,74,.10);
+  --state-hover:rgba(92,107,74,.08); --state-active:rgba(92,107,74,.16); --state-disabled-opacity:.5;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
