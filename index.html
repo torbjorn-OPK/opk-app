@@ -925,7 +925,11 @@ body.dark .gp-q{background:rgba(168,180,154,.18);color:var(--sage-pale)}
 .gami-header{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);background:linear-gradient(135deg,var(--sage-mist),var(--card));border:1px solid var(--sage-light);border-radius:var(--r-card);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-5);cursor:pointer;position:relative;box-shadow:var(--shadow-sm);transition:transform .2s var(--ease),box-shadow .25s var(--ease)}
 .gami-header:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
 .gami-header:focus-visible{outline:none;box-shadow:var(--focus-ring)}
-.gami-eyebrow{font-size:var(--text-2xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-dark);display:block;margin-bottom:var(--space-3)}
+.gami-eyebrow{display:flex;align-items:center;gap:6px;font-size:var(--text-2xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:var(--space-3)}
+.gami-q{flex-shrink:0;width:17px;height:17px;border-radius:var(--r-full);border:1.4px solid var(--sage-light);background:var(--card);color:var(--sage-dark);font:700 10px/1 Inter,sans-serif;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;text-transform:none;letter-spacing:0;transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease)}
+.gami-q:hover{background:var(--sage);color:var(--cream-0);border-color:var(--sage)}
+.gami-q:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+body.dark .gami-q{background:rgba(168,180,154,.18);color:var(--sage-pale)}
 .gami-row{display:flex;align-items:center;gap:var(--space-5)}
 .gami-stat{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
 .gami-stat>span{font-size:var(--text-2xs);color:var(--ink-faint);margin-top:3px}
@@ -4097,13 +4101,13 @@ function gamiHeaderInner(){
   var done = task.filter(function(b){ return b.done; }).length, total = task.length;
   var dir = gamiTrendDir(t);
   var ensoC = 2 * Math.PI * 14, ensoOff = (ensoC * (1 - (total ? done/total : 0))).toFixed(1);
-  var html = '<div class="gami-main"><div class="gami-eyebrow">Din fremdrift</div><div class="gami-row">';
+  var html = '<div class="gami-main"><div class="gami-eyebrow">Driv<button class="gami-q" onclick="event.stopPropagation();gpExplain()" onkeydown="event.stopPropagation()" aria-label="Hva er Driv?">?</button></div><div class="gami-row">';
   html += '<div class="gami-stat gami-points"><b id="gamiPts">' + day.sum + '</b><span>poeng i dag</span></div>';
   if (total > 0){
     html += '<div class="gami-stat"><span class="gami-enso"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" class="ge-track" stroke-width="3"/><circle cx="16" cy="16" r="14" class="ge-arc" stroke-width="3" transform="rotate(-90 16 16)" stroke-dasharray="' + ensoC.toFixed(1) + '" stroke-dashoffset="' + ensoOff + '"/></svg><i>' + done + '/' + total + '</i></span><span>plan i dag</span></div>';
   }
   html += '<div class="gami-stat gami-trend"><b>' + dir.a + '</b><span>' + dir.l + '</span></div>';
-  html += '</div></div><span class="gami-go">Driv →</span>';
+  html += '</div></div><span class="gami-go">Se mer →</span>';
   return html;
 }
 function gamiHeaderHtml(){
