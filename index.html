@@ -307,9 +307,6 @@ body.calm .onbo-overlay,body.calm .onbo-card{transition:none}
 .ti-en{min-height:44px;padding:var(--space-2) var(--space-4);border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--bg);font-size:var(--text-sm);font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s var(--ease)}
 .ti-en:hover{border-color:var(--sage-light)}
 .ti-en.sel{background:var(--sage);border-color:var(--sage);color:var(--cream-0);box-shadow:0 6px 14px -6px rgba(92,107,74,.5)}
-.today-focus{margin:var(--space-4) 0 0;padding:var(--space-3) var(--space-4) var(--space-3) var(--space-4);border-left:3px solid var(--sage-light);background:linear-gradient(90deg,var(--sage-mist),rgba(237,240,232,0) 94%);border-radius:0 13px 13px 0}
-.tf-eyebrow{font-size:var(--text-2xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-dark)}
-.today-focus p{font-family:'DM Serif Display',serif;font-size:var(--text-md);letter-spacing:-.01em;color:var(--ink);margin:var(--space-1) 0 0;line-height:1.3}
 .stuck-btn{display:block;width:100%;margin:var(--space-4) 0 0;padding:var(--space-3) var(--space-4);border:none;border-radius:var(--r-md);background:linear-gradient(180deg,#6A7A5A,var(--sage));color:var(--cream-0);font-size:var(--text-base);font-weight:700;cursor:pointer;box-shadow:0 10px 24px -12px rgba(92,107,74,.65),inset 0 1px 0 rgba(255,255,255,.16);transition:transform .2s var(--ease),filter .2s var(--ease)}
 .stuck-btn:hover{transform:translateY(-1px)}
 .stuck-btn:active{transform:translateY(0);filter:brightness(.97)}
@@ -325,7 +322,7 @@ body.dark .ti-mood,body.dark .ti-en,body.dark .tt-chip{background:rgba(40,44,33,
 body.dark .ti-mood.sel,body.dark .ti-en.sel{background:rgba(168,180,154,.25);color:#E7EBDF;border-color:var(--sage-light)}
 body.dark .tt-chip{color:#C9D2BD}
 /* mørk modus: sage-dark mikro-etiketter blir for svake → lysere */
-body.dark .tf-eyebrow,body.dark .sc-glabel{color:var(--sage-pale)}
+body.dark .sc-glabel{color:var(--sage-pale)}
 body.dark .callout b{color:#C9D2BD}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:var(--space-4) var(--space-5);box-shadow:var(--shadow)}
 .stat .lbl{font-size:var(--text-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
@@ -395,8 +392,15 @@ body.dark .tool-intro{background:linear-gradient(90deg,rgba(168,180,154,.12),tra
   border:1px solid var(--sage-light);box-shadow:0 1px 0 rgba(92,107,74,.18),inset 0 1px 0 rgba(255,255,255,.7)}
 body.dark .callout{background:linear-gradient(90deg,rgba(168,180,154,.14),transparent 94%)}
 body.dark .callout kbd{background:rgba(40,44,33,.7);border-color:rgba(168,180,154,.35);color:#C9D2BD;box-shadow:none}
-.tool-back{background:none;border:none;color:var(--sage);font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-4);display:inline-flex;align-items:center;gap:var(--space-2)}
-.tool-back:hover{text-decoration:underline;text-underline-offset:3px}
+.tool-back{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--card);border:1.5px solid var(--border);color:var(--sage-dark);font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);border-radius:var(--r-pill);box-shadow:var(--shadow-sm);cursor:pointer;transition:background .28s var(--ease),border-color .28s var(--ease),color .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease)}
+.tool-back .tb-ico{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:var(--r-full);background:var(--sage-mist);color:var(--sage);transition:background .28s var(--ease),transform .28s var(--ease)}
+.tool-back .tb-ico svg{width:14px;height:14px}
+.tool-back:hover{background:var(--sage-mist);border-color:var(--sage-light);color:var(--sage-deep);transform:translateX(-2px);box-shadow:var(--shadow)}
+.tool-back:hover .tb-ico{background:var(--sage);color:var(--cream-0);transform:translateX(-1px)}
+.tool-back:active{transform:translateX(-1px) scale(.985)}
+.tool-back:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+body.dark .tool-back{background:rgba(255,255,255,.04)}
+body.dark .tool-back .tb-ico{background:rgba(168,180,154,.18)}
 .tool-toolbar{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;margin-top:var(--space-6);padding-top:var(--space-4);border-top:1px solid var(--border)}
 .save-hint{font-size:var(--text-sm);color:var(--good);font-weight:600;opacity:0;transition:opacity .4s var(--ease);display:inline-flex;align-items:center;gap:var(--space-1)}
 .save-hint.show{opacity:1;animation:savePop .5s var(--ease)}
@@ -771,6 +775,120 @@ body.calm .hero-card{background:var(--sage-dark)}
 .pl-sugg{display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:center}
 .pl-sugg button{border:1.5px dashed var(--sage-light);background:var(--card);border-radius:var(--r-pill);padding:var(--space-2) var(--space-4);font-size:var(--text-sm);font-weight:600;color:var(--sage-dark);transition:all .25s var(--ease)}
 .pl-sugg button:hover{background:var(--sage-mist);border-style:solid;transform:translateY(-1px)}
+/* tick-av i tidslinje-blokk (verktøyets visuelle dagsplan) */
+.pl-blk .pl-tick{position:absolute;left:7px;top:7px;width:20px;height:20px;border-radius:var(--r-full);border:1.6px solid currentColor;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;opacity:.8;padding:0;cursor:pointer;transition:all .25s var(--ease)}
+.pl-blk .pl-tick svg{width:11px;height:11px;stroke:var(--cream-0);opacity:0;transform:scale(.4);transition:all .25s var(--ease)}
+.pl-blk.done .pl-tick{background:var(--sage);border-color:var(--sage);opacity:1}
+.pl-blk.done .pl-tick svg{opacity:1;transform:scale(1);animation:tickPop .38s var(--ease)}
+.pl-blk b,.pl-blk .tm{padding-left:24px}
+.pl-blk.done b{text-decoration:line-through}
+.pl-blk.done{opacity:.6;filter:saturate(.72)}
+
+/* ---------- «DAGEN» — dagsplan på Hjem ---------- */
+.dp-card{position:relative;overflow:hidden}
+.dp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4)}
+.dp-head h2{margin:0}
+.dp-date{font-size:var(--text-sm);color:var(--ink-faint);text-transform:capitalize;margin-top:2px}
+.dp-enso{position:relative;width:66px;height:66px;flex-shrink:0}
+.dp-enso svg{width:100%;height:100%;transform:rotate(-6deg)}
+.dp-enso .dp-arc-track{stroke:var(--border);fill:none}
+.dp-enso .dp-arc{stroke:var(--sage);fill:none;stroke-linecap:round;transition:stroke-dashoffset .65s var(--ease)}
+.dp-enso .dp-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:var(--text-sm);font-weight:700;color:var(--sage-dark);font-variant-numeric:tabular-nums}
+.dp-enso.full .dp-arc{filter:drop-shadow(0 0 5px rgba(200,149,109,.55))}
+body.dark .dp-enso .dp-arc-track{stroke:rgba(255,255,255,.12)}
+body.dark .dp-enso .dp-num{color:var(--sage-pale)}
+.dp-next{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-4) 0 var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sage-mist);border-radius:var(--r-md)}
+.dp-next .dp-next-txt{flex:1;min-width:0}
+.dp-next-lbl{font-size:var(--text-2xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-dark);display:block;margin-bottom:1px}
+.dp-next-task{font-size:var(--text-base);font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-allgood{display:flex;align-items:center;gap:var(--space-2);color:var(--sage-dark);font-weight:600;font-size:var(--text-base);margin:var(--space-4) 0 var(--space-2)}
+.dp-allgood svg{width:18px;height:18px;stroke:var(--sage)}
+body.dark .dp-next{background:rgba(168,180,154,.14)}
+.dp-list{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3)}
+.dp-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--r-md);background:var(--bg-warm);border-left:4px solid var(--sage-light);transition:opacity .3s var(--ease),background .25s var(--ease)}
+.dp-row.cat-rutine{border-left-color:var(--sage)}
+.dp-row.cat-fokus{border-left-color:var(--blue)}
+.dp-row.cat-pause{border-left-color:var(--teal)}
+.dp-row.cat-sosialt{border-left-color:var(--accent)}
+.dp-row.cat-anna{border-left-color:var(--ink-faint)}
+.dp-row.now{background:var(--sage-mist);box-shadow:inset 0 0 0 1.5px var(--sage-light)}
+.dp-row.now .dp-time{color:var(--sage-dark)}
+.dp-row.past{opacity:.72}
+.dp-row.done{opacity:.55}
+.dp-check{width:28px;height:28px;border-radius:var(--r-full);border:1.7px solid var(--sage-light);background:var(--card);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;cursor:pointer;transition:all .28s var(--ease)}
+.dp-check svg{width:13px;height:13px;stroke:var(--cream-0);opacity:0;transform:scale(.4);transition:all .28s var(--ease)}
+.dp-row.done .dp-check{background:var(--sage);border-color:var(--sage)}
+.dp-row.done .dp-check svg{opacity:1;transform:scale(1);animation:tickPop .4s var(--ease)}
+.dp-check:active{transform:scale(.9)}
+.dp-time{font-size:var(--text-sm);font-weight:600;color:var(--ink-faint);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:42px}
+.dp-row-main{flex:1;min-width:0}
+.dp-row-task{font-size:var(--text-base);color:var(--ink);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-row.done .dp-row-task{text-decoration:line-through;color:var(--ink-faint)}
+.dp-row-sub{font-size:var(--text-2xs);color:var(--ink-faint);display:flex;align-items:center;gap:5px}
+.dp-row-sub .dp-bell-on{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-weight:600}
+.dp-row-sub .dp-bell-on svg{width:11px;height:11px}
+.dp-row-acts{display:flex;gap:6px;flex-shrink:0}
+.dp-iconbtn{width:32px;height:32px;border-radius:var(--r-full);border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);padding:0;cursor:pointer;transition:all .25s var(--ease)}
+.dp-iconbtn svg{width:15px;height:15px}
+.dp-iconbtn:hover{border-color:var(--sage-light);color:var(--sage-dark);background:var(--sage-mist)}
+.dp-iconbtn.on{color:var(--accent);border-color:var(--accent)}
+.dp-iconbtn.dp-go{background:var(--sage);border-color:var(--sage);color:var(--cream-0)}
+.dp-iconbtn.dp-go svg{width:13px;height:13px}
+.dp-iconbtn.dp-go:hover{background:var(--sage-dark);color:var(--cream-0)}
+.dp-start{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--sage);color:var(--cream-0);border:none;border-radius:var(--r-pill);padding:var(--space-2) var(--space-4);font-size:var(--text-sm);font-weight:700;cursor:pointer;box-shadow:0 6px 16px -8px rgba(92,107,74,.6);transition:transform .2s var(--ease),background .25s var(--ease)}
+.dp-start svg{width:13px;height:13px;fill:var(--cream-0)}
+.dp-start:hover{background:var(--sage-dark);transform:translateY(-1px)}
+.dp-foot{margin-top:var(--space-4);display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.dp-foot .dp-addrow{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;width:100%}
+.dp-textbtn{background:none;border:none;color:var(--sage-dark);font-weight:600;font-size:var(--text-sm);cursor:pointer;padding:var(--space-1) 0;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.dp-textbtn svg{width:15px;height:15px;flex-shrink:0}
+.dp-textbtn:hover{text-decoration:underline;text-underline-offset:3px}
+.dp-note{width:100%;font-size:var(--text-xs);color:var(--ink-faint);line-height:1.45;margin-top:var(--space-2);display:flex;gap:6px;align-items:flex-start}
+.dp-note svg{width:13px;height:13px;stroke:var(--ink-faint);flex-shrink:0;margin-top:2px}
+.dp-rout-inline{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;width:100%;background:var(--bg-warm);padding:var(--space-3);border-radius:var(--r-md);margin-top:var(--space-2)}
+.dp-rout-inline input[type=time]{padding:var(--space-2);border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--card);font-variant-numeric:tabular-nums}
+.dp-rout-inline .dp-rout-name{font-weight:600;font-size:var(--text-sm);flex:1;min-width:90px}
+.dp-rout-hint{width:100%;font-size:var(--text-xs);color:var(--ink-faint);margin-top:6px}
+
+/* topp-timer (i toppen av skjermen) */
+.dp-topbar{position:fixed;top:0;left:0;right:0;z-index:60;background:var(--sage-dark);color:var(--cream-0);transform:translateY(-100%);transition:transform .38s var(--ease);box-shadow:0 8px 24px -10px rgba(0,0,0,.5);padding-top:env(safe-area-inset-top,0)}
+.dp-topbar.show{transform:none}
+.dp-topbar-in{display:flex;align-items:center;gap:var(--space-3);padding:10px var(--space-4);max-width:760px;margin:0 auto}
+.dp-tb-dot{width:9px;height:9px;border-radius:var(--r-full);background:var(--accent);flex-shrink:0}
+.dp-tb-task{flex:1;min-width:0;font-size:var(--text-sm);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
+.dp-tb-clock{font-size:var(--text-lg);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.dp-tb-ctrls{display:flex;gap:6px;flex-shrink:0}
+.dp-tb-ctrls button{background:rgba(255,255,255,.14);border:none;color:var(--cream-0);border-radius:var(--r-sm);height:36px;min-width:36px;padding:0 12px;font-size:var(--text-xs);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:background .2s var(--ease)}
+.dp-tb-ctrls button:hover{background:rgba(255,255,255,.26)}
+.dp-tb-ctrls button svg{width:13px;height:13px}
+.dp-tb-ctrls .dp-tb-done{background:var(--sage);color:var(--cream-0)}
+.dp-top-prog{height:3px;background:var(--accent);width:100%;transition:width 1s linear}
+.dp-topbar.over{background:var(--clay-700)}
+body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
+
+/* rutine-overlay (kjører eksisterende RT-motor i fullskjerm) */
+.dp-rout-overlay{position:fixed;inset:0;z-index:80;background:var(--bg);overflow-y:auto;display:none}
+.dp-rout-overlay.show{display:block;animation:fadeIn .35s var(--ease)}
+.dp-rout-overlay .dp-rout-inner{max-width:520px;margin:0 auto;padding:calc(40px + env(safe-area-inset-top,0)) var(--space-5) var(--space-7)}
+.dp-rout-overlay .dp-rout-close{background:none;border:none;color:var(--ink-faint);font-size:var(--text-sm);font-weight:600;display:inline-flex;align-items:center;gap:6px;margin-bottom:var(--space-4);cursor:pointer}
+.dp-rout-overlay .dp-rout-close svg{width:14px;height:14px}
+.dp-rout-overlay .rt-stop{display:none}
+.dp-rout-overlay .rt-done .btn.ghost{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* varsel-modal (pling: Start / Utsett / Avvis) */
+.dp-modal-ov{position:fixed;inset:0;z-index:90;background:rgba(40,46,33,.46);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:var(--space-5);animation:fadeIn .3s var(--ease)}
+.dp-modal{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow-lift);max-width:380px;width:100%;padding:var(--space-7) var(--space-6);text-align:center;animation:popIn .42s var(--ease)}
+.dp-modal .dp-modal-ico{width:54px;height:54px;border-radius:var(--r-full);background:var(--sage-mist);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-4)}
+.dp-modal .dp-modal-ico svg{width:26px;height:26px;stroke:var(--sage)}
+.dp-modal h3{font-family:'DM Serif Display',serif;font-size:var(--text-xl);margin:0 0 var(--space-2);color:var(--ink)}
+.dp-modal p{font-size:var(--text-base);color:var(--ink-soft);margin:0 0 var(--space-5);line-height:1.5}
+.dp-modal .dp-modal-btns{display:flex;flex-direction:column;gap:var(--space-2)}
+.dp-modal .dp-modal-btns .btn{width:100%}
+.dp-modal .dp-snooze-chips{display:flex;flex-wrap:wrap;gap:var(--space-2);justify-content:center;margin-top:var(--space-2)}
+.dp-modal .dp-snooze-chips button{border:1.5px solid var(--border);background:var(--bg);border-radius:var(--r-pill);padding:var(--space-2) var(--space-4);font-size:var(--text-sm);font-weight:600;color:var(--sage-dark);cursor:pointer;transition:all .2s var(--ease)}
+.dp-modal .dp-snooze-chips button:hover{background:var(--sage-mist);border-color:var(--sage-light)}
+.dp-modal .dp-dismiss{background:none;border:none;color:var(--ink-faint);font-size:var(--text-sm);font-weight:600;cursor:pointer;padding:var(--space-2);text-decoration:underline;text-underline-offset:3px}
 
 /* emosjonskort */
 .emo{position:relative}
@@ -1191,6 +1309,10 @@ var ICONS = {
   x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   arrowup:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg>',
   arrowdn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5.5 12.5L12 19l6.5-6.5"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>',
+  belloff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8a6 6 0 018-2M18 8c0 4 1.5 6.5 2.5 7.8M5 5l14 14M6 8c0 7-3 9-3 9h13M13.7 21a2 2 0 01-3.4 0"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M7 5.5v13a1 1 0 001.5.87l11-6.5a1 1 0 000-1.74l-11-6.5A1 1 0 007 5.5z"/></svg>',
   wind:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5h10.5a2.8 2.8 0 10-2.8-2.8M3 15.5h13a3 3 0 11-3 3M3 12h6"/></svg>',
   anchor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5.5" r="2.5"/><path d="M12 8V21M5 13a7 7 0 0014 0M5 13H8M19 13h-3"/></svg>',
   gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1116 0"/><path d="M12 19l4-5"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/></svg>',
@@ -1203,7 +1325,7 @@ var ICONS = {
   battery_half:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="16" height="9" rx="2.5"/><path d="M21.5 11v3"/><rect x="5" y="10.5" width="5" height="4" rx="1" fill="currentColor" stroke="none"/></svg>',
   eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.4-6.5 9.5-6.5S21.5 12 21.5 12 18.1 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>'
 };
-function ic(name){ return ICONS[name] || ''; }
+function ic(name){ var s = ICONS[name] || ''; return s ? s.replace('<svg ', '<svg aria-hidden="true" focusable="false" ') : ''; }
 function escapeHtml(s){
   if (s === null || s === undefined) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -1609,6 +1731,7 @@ function toggleDark(){var d=document.body.classList.toggle('dark');var l=documen
 })();
 function handleLogout(){
   if (!confirm('Er du sikker på at du vil logge ut?')) return;
+  try { dpStopScan(); dpStopTopbar(); } catch(e){}   // rydd dagsplan-intervaller (kjører ellers økt-globalt)
   state.user = null;
   state.portalCode = '';
   state.demoMode = PREVIEW;
@@ -1664,7 +1787,7 @@ function fmtDateShort(iso){
 }
 
 // ---------- DASHBORD ----------
-// ---------- «I DAG»-FLATE (daglig innsjekk + fokus + relevante verktøy) ----------
+// ---------- «I DAG»-FLATE (daglig innsjekk + relevante verktøy) ----------
 // Charterets viktigste enkeltendring: en daglig grunn til å komme tilbake.
 var TODAY_TOOLS = {
   adhd:       [['adhd_pust','Pust 3-6'], ['adhd_komigang','Kom i gang'], ['adhd_regulering','Reguleringsmeny']],
@@ -1676,12 +1799,6 @@ var STUCK = {
   adhd:       { t:'adhd_regulering', label:'Jeg står fast — vis meg en vei' },
   utbrenthet: { t:'utb_stress',      label:'Det er for mye nå — hjelp meg å lande' },
   autism:     { t:'aut_energi',      label:'Jeg er overveldet — la meg sortere' }
-};
-var TODAY_FOCUS = {
-  adhd:       ['Ett lite steg er nok i dag.', 'Du trenger ikke gjøre alt — velg én ting.', 'Pauser er en del av jobben, ikke en svikt.', 'Det vanskeligste er å begynne. Gjør det aller første steget.', 'Vær like snill med deg selv som du ville vært med en venn.'],
-  utbrenthet: ['Hvile er ikke latskap — det er medisin i dag.', 'Du trenger ikke yte for å være nok.', 'Senk skuldrene. Ett pust om gangen.', 'Mindre i dag kan bety mer i morgen.', 'Legg merke til én ting som lader deg.'],
-  autism:     ['Det er greit å ta ting i ditt eget tempo.', 'Forutsigbarhet er en styrke, ikke en begrensning.', 'Du bestemmer selv hvor mye du orker i dag.', 'En kort pause i et stille rom teller.'],
-  'default':  ['Ta det i ditt tempo i dag.', 'Én ting om gangen.', 'Det er nok å være til stede.']
 };
 function todayKey(){ return new Date().toISOString().slice(0,10); }
 function todayDayIdx(){ var n = new Date(); return Math.floor((n - new Date(n.getFullYear(),0,0)) / 86400000); }
@@ -1699,8 +1816,6 @@ function renderTodayCard(moduleId){
   var d = loadToday();
   var moods = [['1','😞'],['2','😕'],['3','😐'],['4','🙂'],['5','😊']];
   var energies = [['1','Lav'],['2','Middels'],['3','God']];
-  var foci = TODAY_FOCUS[moduleId] || TODAY_FOCUS['default'];
-  var focus = foci[todayDayIdx() % foci.length];
   var tools = TODAY_TOOLS[moduleId] || [];
   var checked = (d.mood && d.energy);
   var html = '<div class="card today-card">';
@@ -1710,7 +1825,6 @@ function renderTodayCard(moduleId){
     moods.map(function(m){ return '<button class="ti-mood' + (d.mood === m[0] ? ' sel' : '') + '" onclick="todaySet(\'mood\',\'' + m[0] + '\',\'' + moduleId + '\')" aria-label="Humør ' + m[0] + ' av 5">' + m[1] + '</button>'; }).join('') + '</div></div>';
   html += '<div class="ti-block"><span class="ti-label">Energi</span><div class="ti-opts">' +
     energies.map(function(e){ return '<button class="ti-en' + (d.energy === e[0] ? ' sel' : '') + '" onclick="todaySet(\'energy\',\'' + e[0] + '\',\'' + moduleId + '\')">' + e[1] + '</button>'; }).join('') + '</div></div>';
-  html += '<div class="today-focus"><span class="tf-eyebrow">Dagens lille fokus</span><p>' + escapeHtml(focus) + '</p></div>';
   var stuck = STUCK[moduleId];
   if (stuck){
     html += '<button class="stuck-btn" onclick="openFromHome(\'' + moduleId + '\',\'' + stuck.t + '\')">' + escapeHtml(stuck.label) + '</button>';
@@ -1752,6 +1866,10 @@ function renderDashboard(){
   // «I dag»-flate øverst for forbruker-modulene (ikke søvn — den har eget rikt dashbord)
   if (!sleep && TODAY_TOOLS[primaryMod]){
     html += '<div id="todayHost">' + renderTodayCard(primaryMod) + '</div>';
+  }
+  // «Dagen» — den visuelle dagsplanen lever på Hjem (ADHD-modulen)
+  if (!sleep && hasModule('adhd')){
+    html += '<div id="dpHost">' + renderDayplanCard() + '</div>';
   }
   // hero-rad
   html += '<div class="hero-row">';
@@ -1830,6 +1948,7 @@ function renderDashboard(){
   }
   document.getElementById('dashboard-view').innerHTML = html;
   if (sleep) renderDailyChecklist();
+  if (document.getElementById('dpHost')){ dpPaintEnso(); dpStartScan(); }
 }
 function toolShortcut(view, icon, title, desc, acc){
   return '<div class="tool-card ' + acc + '" onclick="switchView(\'' + view + '\')"><div class="ico">' + ic(icon) + '</div>' +
@@ -2841,7 +2960,7 @@ function openTool(moduleId, toolId, histMode){
   stopPmr();
   stopEstimate();
   stopRoutine();
-  var html = '<button class="tool-back" onclick="portalToolBack(\'' + moduleId + '\')">← Alle ' + escapeHtml(TOOLS[moduleId].label).toLowerCase() + '</button>';
+  var html = '<button class="tool-back" onclick="portalToolBack(\'' + moduleId + '\')"><span class="tb-ico">' + ic('back') + '</span>Alle ' + escapeHtml(TOOLS[moduleId].label) + '</button>';
   html += '<div class="tool-head"><span class="th-ico">' + ic(tool.icon) + '</span><h2 class="serif">' + escapeHtml(tool.title) + '</h2></div>';
   if (tool.intro) html += '<div class="tool-intro">' + escapeHtml(tool.intro) + '</div>';
   html += '<div class="card"><div id="toolBody"></div>' + toolToolbar(moduleId, tool) + '</div>';
@@ -3184,6 +3303,7 @@ var PL_SUGG = [
 ];
 function renderPlannerTool(body, moduleId, tool, data){
   data = data || { blocks:[] };
+  dpNormalize(data, tool.id);
   PL.cat = PL.cat || 'rutine';
   body.innerHTML =
     '<div class="pl-comp"><div class="row1">' +
@@ -3205,6 +3325,7 @@ function plMin(hm){ var p = (hm || '00:00').split(':'); return (+p[0]) * 60 + (+
 function renderPlannerDay(moduleId, tool, data){
   var el = document.getElementById('plDay');
   if (!el) return;
+  dpNormalize(data, (tool && tool.id) || 'adhd_dagsplan'); // tildel + persistér stabile id-er (så hak-av finner blokken)
   if (PL.nowIv){ clearInterval(PL.nowIv); PL.nowIv = null; }
   var blocks = (data.blocks || []).slice().sort(function(a,b){ return plMin(a.from) - plMin(b.from); });
   if (!blocks.length){
@@ -3232,11 +3353,11 @@ function renderPlannerDay(moduleId, tool, data){
     while (lane < laneEnd.length && laneEnd[lane] > f) lane++;
     laneEnd[lane] = t;
     var cat = PLAN_CATS.find(function(c){ return c.id === b.cat; }) || PLAN_CATS[4];
-    var idx = data.blocks.indexOf(b);
-    var cls = 'pl-blk ' + cat.cls + (t <= nowM ? ' past' : (f <= nowM && nowM < t ? ' now' : ''));
-    html += '<div class="' + cls + '" style="top:' + ((f - top0) * PX) + 'px;height:' + Math.max(30, (t - f) * PX - 4) + 'px;margin-left:' + (lane * 26) + 'px;animation-delay:' + (bi * 45) + 'ms">' +
+    var cls = 'pl-blk ' + cat.cls + (b.done ? ' done' : '') + (b.done ? '' : (t <= nowM ? ' past' : (f <= nowM && nowM < t ? ' now' : '')));
+    html += '<div class="' + cls + '" data-id="' + b.id + '" style="top:' + ((f - top0) * PX) + 'px;height:' + Math.max(34, (t - f) * PX - 4) + 'px;margin-left:' + (lane * 26) + 'px;animation-delay:' + (bi * 45) + 'ms">' +
+      '<button class="pl-tick" title="Marker utført" aria-label="Marker utført" onclick="dpToggleDone(\'' + b.id + '\')">' + ic('tick') + '</button>' +
       '<b>' + escapeHtml(b.text) + '</b><span class="tm">' + b.from + '–' + (b.to || '') + '</span>' +
-      '<button class="del" title="Fjern" onclick="plDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + idx + ')">' + ic('x') + '</button></div>';
+      '<button class="del" title="Fjern" onclick="plDelete(\'' + moduleId + '\',\'' + tool.id + '\',\'' + b.id + '\')">' + ic('x') + '</button></div>';
   });
   // nå-linje
   if (nowM >= top0 && nowM <= endH * 60){
@@ -3257,29 +3378,469 @@ function plAdd(moduleId, toolId){
   var txt = document.getElementById('plText').value.trim();
   if (!txt) return;
   var data = loadTool(toolId) || { blocks:[] };
+  data.date = todayKey();
   data.blocks.push({
+    id: dpNewId(),
     from: document.getElementById('plFrom').value || '09:00',
     to: document.getElementById('plTo').value || '10:00',
     text: txt,
-    cat: PL.cat || 'rutine'
+    cat: PL.cat || 'rutine',
+    done: false, doneAt: null, remindMin: 0, routineRef: null
   });
   persistTool(toolId, data);
   document.getElementById('plText').value = '';
   renderPlannerDay(moduleId, findTool(moduleId, toolId), data);
+  dpRepaint();
 }
 function plAddSugg(moduleId, toolId, i){
   var s = PL_SUGG[i];
   var data = loadTool(toolId) || { blocks:[] };
-  data.blocks.push({ from: s.from, to: s.to, text: s.text, cat: s.cat });
+  data.date = todayKey();
+  data.blocks.push({ id: dpNewId(), from: s.from, to: s.to, text: s.text, cat: s.cat, done:false, doneAt:null, remindMin:0, routineRef:null });
   persistTool(toolId, data);
   renderPlannerDay(moduleId, findTool(moduleId, toolId), data);
+  dpRepaint();
 }
-function plDelete(moduleId, toolId, idx){
+function plDelete(moduleId, toolId, ref){
   var data = loadTool(toolId) || { blocks:[] };
+  var idx = (typeof ref === 'number') ? ref : dpIdxById(data, ref);
+  if (idx < 0) return;
   data.blocks.splice(idx, 1);
   persistTool(toolId, data);
   renderPlannerDay(moduleId, findTool(moduleId, toolId), data);
+  dpRepaint();
 }
+
+// ---------- «DAGEN» — visuell dagsplan på Hjem ----------
+// Gjenbruker dagsplan-dataene (adhd_dagsplan). Hak-av, påminnelser, topp-timer,
+// rutine-innlegging på justerbar morgentid, og pling + Start/Utsett/Avvis.
+// Gamification er objekt-fokusert: det tilfredsstillende haket + en ensō-ring som
+// LUKKES gjennom dagen + en «Neste opp»-kjede. Aldri person-ros, ingen poeng/streaks.
+var DP = { scanIv:null, topIv:null, fired:{}, timer:null, _routineRowOpen:false, _mediaTick:0 };
+
+function dpNewId(){ return 'b_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); }
+function dpIdxById(data, id){
+  if (!data || !data.blocks) return -1;
+  for (var i=0;i<data.blocks.length;i++){ if (data.blocks[i].id === id) return i; }
+  return -1;
+}
+function loadPlan(){ var d = loadTool('adhd_dagsplan') || { blocks:[] }; if (!d.blocks) d.blocks = []; return d; }
+function savePlan(d){ persistTool('adhd_dagsplan', d); }
+function loadDpState(){ var d = loadTool('dagsplan_state') || {}; if (!d.snooze) d.snooze = {}; if (!d.morningRoutineTime) d.morningRoutineTime = '07:30'; return d; }
+function saveDpState(d){ persistTool('dagsplan_state', d); }
+function dpRollover(data){
+  if (data.date && data.date !== todayKey()){
+    (data.blocks || []).forEach(function(b){ b.done = false; b.doneAt = null; });
+    data.date = todayKey(); DP.fired = {}; savePlan(data);
+    // rydd utløpte utsettelser (behold framtidige, f.eks. «i morgen tidlig»)
+    var st = loadDpState(), now = Date.now(), kept = {}, n = 0;
+    Object.keys(st.snooze || {}).forEach(function(k){ if (st.snooze[k] > now){ kept[k] = st.snooze[k]; n++; } });
+    if (n !== Object.keys(st.snooze || {}).length){ st.snooze = kept; saveDpState(st); }
+    return true;
+  }
+  return false;
+}
+function dpNormalize(data, toolId){
+  var changed = false;
+  if (!data.blocks){ data.blocks = []; changed = true; }
+  data.blocks.forEach(function(b){
+    if (!b.id){ b.id = dpNewId(); changed = true; }
+    if (b.done === undefined){ b.done = false; changed = true; }
+    if (b.doneAt === undefined){ b.doneAt = null; changed = true; }
+    if (b.remindMin === undefined){ b.remindMin = 0; changed = true; }
+    if (b.routineRef === undefined){ b.routineRef = null; changed = true; }
+  });
+  if (!data.date){ data.date = todayKey(); changed = true; }
+  else if (data.date !== todayKey()){ dpRollover(data); changed = false; }
+  if (changed) persistTool(toolId || 'adhd_dagsplan', data);
+  return data;
+}
+
+// ----- Hjem-kortet -----
+function dpPrimaryMod(){ return (state.user && (state.user.modules||[]).filter(function(m){ return m!=='core'; })[0]) || 'adhd'; }
+function renderDayplanCard(){
+  var data = loadPlan(); dpNormalize(data, 'adhd_dagsplan');
+  var blocks = (data.blocks || []).slice().sort(function(a,b){ return plMin(a.from) - plMin(b.from); });
+  var now = new Date(); var nowM = now.getHours()*60 + now.getMinutes();
+  var task = blocks.filter(function(b){ return b.cat !== 'pause'; });
+  var done = task.filter(function(b){ return b.done; }).length, total = task.length;
+  var dateLbl = now.toLocaleDateString('no-NO', { weekday:'long', day:'numeric', month:'long' }).replace(/\.$/,'');
+  var ensoC = 2 * Math.PI * 26;
+  var ensoOff = (ensoC * (1 - (total ? done/total : 0))).toFixed(1);
+  var ensoFull = (total > 0 && done === total) ? ' full' : '';
+  var html = '<div class="card dp-card">';
+  html += '<div class="dp-head"><div><div class="eyebrow">I dag</div><h2 class="serif">Dagen</h2><div class="dp-date">' + escapeHtml(dateLbl) + '</div></div>';
+  html += '<div class="dp-enso' + ensoFull + '" id="dpEnso" title="' + done + ' av ' + total + ' gjort"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="dp-arc-track" cx="32" cy="32" r="26" stroke-width="5"/><circle class="dp-arc" id="dpArc" cx="32" cy="32" r="26" stroke-width="5" transform="rotate(-90 32 32)" stroke-dasharray="' + ensoC.toFixed(1) + '" stroke-dashoffset="' + ensoOff + '"/></svg><span class="dp-num" id="dpNum">' + done + ' / ' + total + '</span></div>';
+  html += '</div>';
+  html += '<div id="dpNextUp">' + dpNextUpHtml(blocks, nowM, total, done) + '</div>';
+  if (!blocks.length){
+    html += '<div class="pl-empty" style="padding:var(--space-4) var(--space-2) var(--space-2)"><p>Dagen er åpen. Legg inn noen holdepunkter — eller hent inn en rutine.</p></div>';
+  } else {
+    html += '<div class="dp-list">' + blocks.map(function(b){ return dpRowHtml(b, nowM); }).join('') + '</div>';
+    html += '<button class="dp-textbtn" style="margin-top:var(--space-3)" onclick="openFromHome(\'adhd\',\'adhd_dagsplan\')">Vis hele dagen →</button>';
+  }
+  html += dpFootHtml();
+  html += '</div>';
+  return html;
+}
+function dpNextUp(blocks, nowM){
+  var notDone = blocks.filter(function(b){ return !b.done; });
+  if (!notDone.length) return null;
+  var active = null, upcoming = null;
+  notDone.forEach(function(b){
+    var f = plMin(b.from), t = Math.max(plMin(b.to || b.from), f + 1);
+    if (f <= nowM && nowM < t && !active) active = b;
+    if (f > nowM && (!upcoming || plMin(b.from) < plMin(upcoming.from))) upcoming = b;
+  });
+  if (active) return { block:active, lbl:'Nå', when:'' };
+  if (upcoming) return { block:upcoming, lbl:'Straks', when:upcoming.from };
+  return { block:notDone[0], lbl:'Nå', when:'' };
+}
+function dpNextUpHtml(blocks, nowM, total, done){
+  if (total > 0 && done === total) return '<div class="dp-allgood">' + ic('tick') + '<span>Dagen er gjort.</span></div>';
+  var nx = dpNextUp(blocks, nowM);
+  if (!nx) return '';
+  var act = nx.block.routineRef ? ('dpRunRoutine(\'' + nx.block.id + '\')') : ('dpStartBlockTimerById(\'' + nx.block.id + '\')');
+  return '<div class="dp-next"><div class="dp-next-txt"><span class="dp-next-lbl">' + nx.lbl + (nx.when ? ' · ' + nx.when : '') + '</span><span class="dp-next-task">' + escapeHtml(nx.block.text) + '</span></div>' +
+    '<button class="dp-start" onclick="' + act + '">' + ic('play') + 'Start</button></div>';
+}
+function dpRowHtml(b, nowM){
+  var f = plMin(b.from), t = Math.max(plMin(b.to || b.from), f + 1);
+  var st = b.done ? 'done' : (t <= nowM ? 'past' : (f <= nowM && nowM < t ? 'now' : ''));
+  var cat = PLAN_CATS.find(function(c){ return c.id === b.cat; }) || PLAN_CATS[4];
+  var sub = b.from + (b.to ? '–' + b.to : '');
+  if (b.remindMin) sub += ' <span class="dp-bell-on">' + ic('bell') + b.remindMin + ' min</span>';
+  var startBtn = b.routineRef
+    ? '<button class="dp-iconbtn dp-go" title="Start rutinen" aria-label="Start rutinen" onclick="dpRunRoutine(\'' + b.id + '\')">' + ic('play') + '</button>'
+    : '<button class="dp-iconbtn" title="Start timer" aria-label="Start timer på oppgaven" onclick="dpStartBlockTimerById(\'' + b.id + '\')">' + ic('hour') + '</button>';
+  var bellBtn = '<button class="dp-iconbtn' + (b.remindMin ? ' on' : '') + '" title="Påminnelse" aria-label="Påminnelse" onclick="dpCycleBell(\'' + b.id + '\')">' + ic(b.remindMin ? 'bell' : 'belloff') + '</button>';
+  return '<div class="dp-row ' + cat.cls + (st ? ' ' + st : '') + '" data-id="' + b.id + '">' +
+    '<button class="dp-check" aria-label="Marker som utført" onclick="dpToggleDone(\'' + b.id + '\')">' + ic('tick') + '</button>' +
+    '<span class="dp-time">' + b.from + '</span>' +
+    '<div class="dp-row-main"><div class="dp-row-task">' + escapeHtml(b.text) + '</div><div class="dp-row-sub">' + sub + '</div></div>' +
+    '<div class="dp-row-acts">' + startBtn + bellBtn + '</div></div>';
+}
+function dpFootHtml(){
+  var rd = loadTool('adhd_rutine'); var hasRoutine = !!(rd && rd.items && rd.items.length);
+  var st = loadDpState();
+  var h = '<div class="dp-foot">';
+  h += '<button class="dp-textbtn" onclick="openFromHome(\'adhd\',\'adhd_dagsplan\')">' + ic('plus') + 'Legg til</button>';
+  if (hasRoutine) h += '<button class="dp-textbtn" onclick="dpToggleRoutineRow()">' + ic('repeat') + 'Rutine i dag</button>';
+  if (typeof Notification !== 'undefined' && Notification.permission !== 'granted')
+    h += '<button class="dp-textbtn" onclick="dpRequestNotif()">' + ic('bell') + 'Skru på varsler</button>';
+  if (DP._routineRowOpen && hasRoutine){
+    h += '<div class="dp-rout-inline"><span class="dp-rout-name">' + escapeHtml(rd.header || 'Morgenrutine') + '</span>' +
+      '<input type="time" id="dpRoutTime" value="' + (st.morningRoutineTime || '07:30') + '">' +
+      '<button class="btn small" onclick="dpAddRoutineBlock(document.getElementById(\'dpRoutTime\').value)">Legg til</button>' +
+      '<div class="dp-rout-hint">I morgen står du opp senere? Endre klokkeslettet — det gjelder bare i dag.</div></div>';
+  }
+  h += '<div class="dp-note">' + ic('bell') + '<span>Påminnelsene kommer med et lite pling så lenge appen er åpen — også i bakgrunnen. En nettside kan dessverre ikke vekke deg når den er helt lukket.</span></div>';
+  h += '</div>';
+  return h;
+}
+function dpRepaint(){
+  var host = document.getElementById('dpHost'); if (!host) return;
+  host.innerHTML = renderDayplanCard();
+  dpPaintEnso();
+}
+function dpRefreshHome(){
+  if (!document.getElementById('dpHost')) return;
+  if (DP._routineRowOpen && document.activeElement && document.activeElement.id === 'dpRoutTime') return;
+  dpRepaint();
+}
+function dpPaintEnso(){
+  var arc = document.getElementById('dpArc'), num = document.getElementById('dpNum'), wrap = document.getElementById('dpEnso');
+  if (!arc) return;
+  var data = loadPlan();
+  var task = (data.blocks || []).filter(function(b){ return b.cat !== 'pause'; });
+  var done = task.filter(function(b){ return b.done; }).length, total = task.length;
+  var frac = total ? done/total : 0;
+  var C = 2 * Math.PI * 26;
+  arc.style.strokeDashoffset = (C * (1 - frac)).toFixed(1);
+  if (num) num.textContent = done + ' / ' + total;
+  if (wrap) wrap.classList.toggle('full', total > 0 && done === total);
+}
+function dpToggleRoutineRow(){ DP._routineRowOpen = !DP._routineRowOpen; dpRepaint(); }
+
+// ----- hak av «utført» -----
+function dpSetDone(id, val){
+  var data = loadPlan(); var idx = dpIdxById(data, id); if (idx < 0) return;
+  var task = data.blocks.filter(function(b){ return b.cat !== 'pause'; });
+  var wasAll = task.length > 0 && task.every(function(b){ return b.done; });
+  data.blocks[idx].done = val;
+  data.blocks[idx].doneAt = val ? new Date().toISOString() : null;
+  data.date = todayKey();
+  savePlan(data);
+  if (val && !document.body.classList.contains('calm')) dpBlip();
+  if (document.getElementById('plDay')) renderPlannerDay('adhd', findTool('adhd','adhd_dagsplan'), data);
+  dpRepaint();
+  if (DP.timer && DP.timer.blockId === id && val) dpStopTopbar();
+  var isAll = task.length > 0 && task.every(function(b){ return b.done; });
+  if (isAll && !wasAll) celebrate(document.getElementById('dpHost') || document.body, 'Dagen er gjort');
+}
+function dpToggleDone(id){
+  var data = loadPlan(); var idx = dpIdxById(data, id); if (idx < 0) return;
+  dpSetDone(id, !data.blocks[idx].done);
+}
+function dpCycleBell(id){
+  var order = [0,5,10,15];
+  var data = loadPlan(); var idx = dpIdxById(data, id); if (idx < 0) return;
+  var cur = data.blocks[idx].remindMin || 0;
+  data.blocks[idx].remindMin = order[(order.indexOf(cur) + 1) % order.length];
+  DP.fired[id] = false; data.date = todayKey(); savePlan(data);
+  if (document.getElementById('plDay')) renderPlannerDay('adhd', findTool('adhd','adhd_dagsplan'), data);
+  dpRepaint();
+}
+// kort, mykt enkelt-blip ved hak-av (ikke belønnings-jingle)
+function dpBlip(){
+  try {
+    _routineAudioCtx = _routineAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    var ctx = _routineAudioCtx; if (ctx.state === 'suspended') ctx.resume();
+    var t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = 987.8; o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.11, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+    o.start(t); o.stop(t + 0.55);
+  } catch(e){}
+}
+
+// ----- topp-timer (i toppen av skjermen) -----
+function dpTopbarEl(){
+  var el = document.getElementById('dpTopbar');
+  if (!el){ el = document.createElement('div'); el.id = 'dpTopbar'; el.className = 'dp-topbar'; document.body.appendChild(el); }
+  return el;
+}
+function dpStartBlockTimerById(id){ var data = loadPlan(); var idx = dpIdxById(data, id); if (idx >= 0) dpStartBlockTimer(data.blocks[idx]); }
+function dpStartBlockTimer(block){
+  if (DP.topIv){ clearInterval(DP.topIv); DP.topIv = null; }
+  DP._mediaTick = 0;
+  var dur = block.to ? Math.max(60, (plMin(block.to) - plMin(block.from)) * 60) : 25*60;
+  DP.timer = { blockId:block.id, text:block.text, total:dur, endTs:Date.now() + dur*1000, paused:false, pauseLeft:0, kind:'block', over:false };
+  document.body.classList.add('dp-has-topbar');
+  dpPaintTopbar();
+  var bar = dpTopbarEl(); requestAnimationFrame(function(){ bar.classList.add('show'); });
+  dpMedia(true, 'dp');
+  DP.topIv = setInterval(dpTopTick, 1000);
+}
+function dpTopTick(){
+  if (!DP.timer || DP.timer.paused) return;
+  var left = Math.round((DP.timer.endTs - Date.now()) / 1000);
+  if (left <= 0 && !DP.timer.over){
+    DP.timer.over = true; if (DP.topIv){ clearInterval(DP.topIv); DP.topIv = null; }
+    playPling(); dpMedia(true, 'dp'); dpPaintTopbar(); return;
+  }
+  dpUpdateTopbar(left);
+}
+function dpUpdateTopbar(left){
+  var c = document.getElementById('dpTbClock'); if (c) c.textContent = fmtClock(Math.max(0, left));
+  var p = document.getElementById('dpTbProg'); if (p && DP.timer) p.style.width = Math.max(0, Math.min(100, Math.round(left / DP.timer.total * 100))) + '%';
+  DP._mediaTick++; if (DP._mediaTick % 5 === 0) dpMedia(true, 'dp');
+}
+function dpPaintTopbar(){
+  var el = dpTopbarEl(); if (!DP.timer) return;
+  var over = DP.timer.over;
+  var left = over ? 0 : Math.max(0, Math.round((DP.timer.endTs - Date.now()) / 1000));
+  var pct = over ? 0 : Math.max(0, Math.min(100, Math.round(left / DP.timer.total * 100)));
+  el.classList.toggle('over', over);
+  var ctrls = over
+    ? '<button class="dp-tb-done" onclick="dpTopMarkDone()">' + ic('tick') + 'Marker utført</button><button onclick="dpTopExtend()">+10 min</button><button onclick="dpStopTopbar()">Lukk</button>'
+    : '<button onclick="dpTopPauseToggle()" id="dpTbPause">' + (DP.timer.paused ? 'Fortsett' : 'Pause') + '</button><button class="dp-tb-done" onclick="dpTopMarkDone()">' + ic('tick') + 'Ferdig</button><button onclick="dpStopTopbar()" aria-label="Lukk timer">' + ic('x') + '</button>';
+  el.innerHTML = '<div class="dp-topbar-in"><span class="dp-tb-dot"></span><span class="dp-tb-task">' + escapeHtml(DP.timer.text || 'Oppgave') + (over ? ' · Tiden er ute' : '') + '</span><span class="dp-tb-clock" id="dpTbClock">' + (over ? '0:00' : fmtClock(left)) + '</span><div class="dp-tb-ctrls">' + ctrls + '</div></div><div class="dp-top-prog" id="dpTbProg" style="width:' + pct + '%"></div>';
+}
+function dpTopPauseToggle(){
+  if (!DP.timer) return;
+  if (DP.timer.paused){ DP.timer.endTs = Date.now() + DP.timer.pauseLeft*1000; DP.timer.paused = false; if (!DP.topIv) DP.topIv = setInterval(dpTopTick, 1000); }
+  else { DP.timer.pauseLeft = Math.max(0, Math.round((DP.timer.endTs - Date.now()) / 1000)); DP.timer.paused = true; if (DP.topIv){ clearInterval(DP.topIv); DP.topIv = null; } }
+  dpPaintTopbar(); dpMedia(true, 'dp');
+}
+function dpTopExtend(){
+  if (!DP.timer) return;
+  if (DP.topIv){ clearInterval(DP.topIv); DP.topIv = null; }
+  DP.timer.over = false; DP.timer.total = 10*60; DP.timer.endTs = Date.now() + 10*60*1000; DP.timer.paused = false;
+  DP.topIv = setInterval(dpTopTick, 1000);
+  dpPaintTopbar(); dpMedia(true, 'dp');
+}
+function dpTopMarkDone(){ if (!DP.timer) return; var id = DP.timer.blockId; dpSetDone(id, true); }
+function dpStopTopbar(){
+  if (DP.topIv){ clearInterval(DP.topIv); DP.topIv = null; }
+  var el = document.getElementById('dpTopbar'); if (el) el.classList.remove('show');
+  document.body.classList.remove('dp-has-topbar');
+  dpMedia(false, 'dp');
+  DP.timer = null; DP._mediaTick = 0;
+}
+function dpMedia(on, who){
+  if (on && DP.timer){
+    var left = DP.timer.over ? 0 : Math.max(0, Math.round((DP.timer.endTs - Date.now()) / 1000));
+    var clk = DP.timer.over ? 'Tiden er ute' : fmtClock(left);
+    mediaActivate('dp', clk + ' · ' + (DP.timer.text || 'Oppgave'), (DP.timer.text || 'Oppgave') + ' — ' + clk, 'Dagsplan',
+      { pause:function(){ dpTopPauseToggle(); }, play:function(){ dpTopPauseToggle(); } });
+  } else { mediaDeactivate('dp'); }
+}
+
+// ----- påminnelse-poll (kjører hele økten mens appen er åpen) -----
+// Bevisst økt-global (ikke stoppet ved view-bytte) så påminnelser fyrer uansett hvor du er i appen.
+// Singleton (guard hindrer dobling). Ryddes ved utlogging (handleLogout) — se også topp-timeren.
+function dpStartScan(){ if (DP.scanIv) return; DP.scanIv = setInterval(dpScan, 20000); dpScan(); }
+function dpStopScan(){ if (DP.scanIv){ clearInterval(DP.scanIv); DP.scanIv = null; } }
+function dpScan(){
+  if (!state.user || !hasModule('adhd')) return;
+  var data = loadPlan(); if (!data) return;
+  dpRollover(data);
+  var st = loadDpState();
+  var now = new Date(); var nowM = now.getHours()*60 + now.getMinutes();
+  (data.blocks || []).forEach(function(b){
+    if (b.done || DP.fired[b.id]) return;
+    var snz = (st.snooze && st.snooze[b.id]) || 0;
+    if (snz){ if (Date.now() >= snz) dpFireReminder(b); return; }
+    if (!b.remindMin) return;
+    var fireM = plMin(b.from) - b.remindMin;
+    if (nowM >= fireM && nowM < plMin(b.from) + 1) dpFireReminder(b);
+  });
+  dpRefreshHome();
+}
+function dpFireReminder(b){
+  DP.fired[b.id] = true;
+  var st = loadDpState(); if (st.snooze && st.snooze[b.id]){ delete st.snooze[b.id]; saveDpState(st); }
+  playPling();
+  dpShowNotifModal(b);
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) dpOsNotify(b);
+}
+
+// ----- varsel-modal: Start / Utsett / Avvis -----
+function dpModalEl(){
+  var el = document.getElementById('dpNotifModal');
+  if (!el){
+    el = document.createElement('div'); el.id = 'dpNotifModal'; el.className = 'dp-modal-ov'; el.style.display = 'none';
+    el.addEventListener('click', function(e){ if (e.target === el) dpCloseModal(); });
+    el.addEventListener('keydown', function(e){ if (e.key === 'Escape') dpCloseModal(); });
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function dpRoutinePhrase(name){
+  var n = (name || 'rutinen').trim();
+  // «Morgenrutine» → «morgenrutinen din» (matcher naturlig bokmål); ellers navnet i anførsel
+  if (/rutine$/i.test(n)) return escapeHtml(n.toLowerCase()) + 'n din';
+  return '«' + escapeHtml(n) + '»';
+}
+function dpShowNotifModal(b){
+  var el = dpModalEl();
+  var isR = !!b.routineRef;
+  var title = escapeHtml(b.text || (isR ? 'Rutine' : 'Oppgave'));
+  var msg = isR
+    ? ('Du har nå planlagt ' + dpRoutinePhrase(b.text) + '. Vil du starte den nå?')
+    : (escapeHtml(b.text || 'Oppgaven') + ' starter nå. Vil du sette i gang?');
+  el.innerHTML = '<div class="dp-modal" role="dialog" aria-modal="true" aria-label="Påminnelse"><div class="dp-modal-ico">' + ic('bell') + '</div>' +
+    '<h3 class="serif">' + title + '</h3><p>' + msg + '</p>' +
+    '<div class="dp-modal-btns" id="dpModalBtns">' +
+      '<button class="btn" onclick="dpModalStart(\'' + b.id + '\')">' + ic('play') + 'Start</button>' +
+      '<button class="btn ghost" onclick="dpModalSnoozeMenu(\'' + b.id + '\')">Utsett</button>' +
+      '<button class="dp-dismiss" onclick="dpDismiss(\'' + b.id + '\')">Avvis</button>' +
+    '</div></div>';
+  el.style.display = 'flex';
+  // a11y: flytt fokus til primærknappen (Esc lukker via lytteren på overlayet)
+  try { var f = el.querySelector('.dp-modal-btns .btn'); if (f) f.focus(); } catch(e){}
+}
+function dpCloseModal(){ var el = document.getElementById('dpNotifModal'); if (el) el.style.display = 'none'; }
+function dpModalStart(id){
+  dpCloseModal();
+  try { window.focus(); } catch(e){}
+  var data = loadPlan(); var idx = dpIdxById(data, id); if (idx < 0) return;
+  var b = data.blocks[idx];
+  if (b.routineRef) dpRunRoutine(id); else dpStartBlockTimer(b);
+}
+function dpModalSnoozeMenu(id){
+  var box = document.getElementById('dpModalBtns'); if (!box) return;
+  box.innerHTML = '<div class="dp-snooze-chips">' +
+    '<button onclick="dpSnooze(\'' + id + '\',' + (10*60000) + ')">10 min</button>' +
+    '<button onclick="dpSnooze(\'' + id + '\',' + (30*60000) + ')">30 min</button>' +
+    '<button onclick="dpSnooze(\'' + id + '\',' + (60*60000) + ')">1 time</button>' +
+    '<button onclick="dpSnoozeTomorrow(\'' + id + '\')">I morgen tidlig</button>' +
+    '</div><button class="dp-dismiss" onclick="dpCloseModal()">Lukk</button>';
+}
+function dpSnooze(id, ms){
+  var st = loadDpState(); st.snooze = st.snooze || {}; st.snooze[id] = Date.now() + ms; saveDpState(st);
+  DP.fired[id] = false; dpCloseModal();
+}
+function dpSnoozeTomorrow(id){
+  var n = new Date(); var tm = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1, 7, 0, 0, 0);
+  dpSnooze(id, tm.getTime() - Date.now());
+}
+function dpDismiss(id){ DP.fired[id] = true; dpCloseModal(); }
+function dpRequestNotif(){
+  if (typeof Notification === 'undefined'){ alert('Denne nettleseren støtter ikke varsler. Påminnelsene fungerer fortsatt med pling så lenge appen er åpen.'); return; }
+  if (Notification.permission === 'granted'){ dpRepaint(); return; }
+  try {
+    Notification.requestPermission().then(function(p){
+      var st = loadDpState(); st.notifReady = (p === 'granted'); saveDpState(st); dpRepaint();
+    }).catch(function(){});
+  } catch(e){}
+}
+function dpOsNotify(b){
+  try {
+    var title = b.text || 'Dagsplan';
+    var opts = { body:'Planlagt nå · trykk for å åpne', tag:b.id };
+    if (navigator.serviceWorker && navigator.serviceWorker.controller){
+      navigator.serviceWorker.ready.then(function(reg){ try { reg.showNotification(title, opts); } catch(e){ dpNewNotification(title, opts, b); } }).catch(function(){ dpNewNotification(title, opts, b); });
+    } else dpNewNotification(title, opts, b);
+  } catch(e){}
+}
+function dpNewNotification(title, opts, b){
+  try { var n = new Notification(title, opts); n.onclick = function(){ try { window.focus(); } catch(e){} dpShowNotifModal(b); n.close(); }; } catch(e){}
+}
+
+// ----- rutine inn i dagsplanen (justerbar morgentid) + kjøring via RT-motoren -----
+function dpAddRoutineBlock(startHHMM){
+  startHHMM = startHHMM || '07:30';
+  var rd = routineData('adhd_rutine');
+  if (!rd.items || !rd.items.length){ return; }
+  var sum = rd.items.reduce(function(s, it){ return s + (it.min || 0); }, 0) || 30;
+  var endM = plMin(startHHMM) + sum;
+  var to = ('0' + Math.floor(endM/60)).slice(-2) + ':' + ('0' + (endM%60)).slice(-2);
+  var data = loadPlan(); data.date = todayKey();
+  var existing = -1;
+  for (var i=0;i<data.blocks.length;i++){ if (data.blocks[i].routineRef) { existing = i; break; } }
+  var blk = { id: existing >= 0 ? data.blocks[existing].id : dpNewId(), from:startHHMM, to:to, text: rd.header || 'Morgenrutine', cat:'rutine', done:false, doneAt:null, remindMin:10, routineRef:{ toolId:'adhd_rutine' } };
+  if (existing >= 0) data.blocks[existing] = blk; else data.blocks.push(blk);
+  savePlan(data);
+  var st = loadDpState(); st.morningRoutineTime = startHHMM; saveDpState(st);
+  DP._routineRowOpen = false; DP.fired[blk.id] = false;
+  if (document.getElementById('plDay')) renderPlannerDay('adhd', findTool('adhd','adhd_dagsplan'), data);
+  dpRepaint();
+}
+function dpRoutineOverlayEl(){
+  var el = document.getElementById('dpRoutineOverlay');
+  if (!el){
+    el = document.createElement('div'); el.id = 'dpRoutineOverlay'; el.className = 'dp-rout-overlay';
+    el.innerHTML = '<div class="dp-rout-inner"><button class="dp-rout-close" onclick="dpCloseRoutineOverlay()">' + ic('back') + 'Avslutt rutinen</button><div id="routineWrap"></div></div>';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function dpRunRoutine(id){
+  var pdata = loadPlan(), bi = dpIdxById(pdata, id);
+  var toolId = (bi >= 0 && pdata.blocks[bi].routineRef && pdata.blocks[bi].routineRef.toolId) || 'adhd_rutine';
+  var d = routineData(toolId);
+  if (!d.items || !d.items.length){ dpStartBlockTimerById(id); return; }
+  RT.toolId = toolId; RT.moduleId = 'adhd'; RT.header = d.header || ''; RT.items = d.items; RT.mode = 'run'; RT._fromBlockId = id;
+  var ov = dpRoutineOverlayEl();
+  // unngå duplikat #routineWrap (verktøyets stale kopi) — la overlayets være den eneste
+  document.querySelectorAll('[id="routineWrap"]').forEach(function(w){ if (!ov.contains(w)) w.id = 'routineWrap__stash'; });
+  ov.classList.add('show'); window.scrollTo(0, 0);
+  routineStart();
+}
+function dpCloseRoutineOverlay(){
+  var force = (arguments[0] === true);
+  if (!force){ stopRoutine(); RT._fromBlockId = null; }
+  var ov = document.getElementById('dpRoutineOverlay');
+  if (ov){ ov.classList.remove('show'); var w = ov.querySelector('#routineWrap'); if (w) w.innerHTML = ''; }
+  document.querySelectorAll('[id="routineWrap__stash"]').forEach(function(w){ w.id = 'routineWrap'; });
+}
+function dpOnVisible(){
+  if (document.hidden) return;
+  if (DP.timer && !DP.timer.paused && DP.topIv) dpTopTick();
+  if (DP.scanIv) dpScan();
+}
+try { document.addEventListener('visibilitychange', dpOnVisible); } catch(e){}
 
 // ---------- EMOSJONSKORT (log) ----------
 var EMO_ICONS = { 'Glad':'😊','Rolig':'😌','Trist':'😢','Sint':'😠','Redd':'😨','Frustrert':'😤','Overveldet':'🥴','Skuffet':'😞','Ensom':'🫥','Stolt':'🌱','Sliten':'🥱','Nøytral':'😐' };
@@ -3461,6 +4022,13 @@ function routineFinish(){
     '<h3 class="serif">Rutinen er fullført.</h3><p>' + escapeHtml(RT.header || 'Rutinen') + ' er gjort unna. Fint å ha det av veien.</p>' +
     '<button class="btn" onclick="routineStart()">Kjør på nytt</button> <button class="btn ghost" onclick="routinePaintEdit2()">Rediger rutinen</button></div>';
   celebrate(w, 'Rutine fullført');
+  // kjørt fra dagsplanen? hak av blokken og lukk fullskjerms-overlayet
+  if (RT._fromBlockId){
+    var fid = RT._fromBlockId; RT._fromBlockId = null;
+    dpSetDone(fid, true);
+    dpStopTopbar();
+    setTimeout(function(){ dpCloseRoutineOverlay(true); }, 1800);
+  }
 }
 function routinePaintEdit2(){ RT.mode='edit'; routinePaintEdit(); }
 function stopRoutine(){
@@ -3511,37 +4079,49 @@ function playPling(){
   } catch(e){}
 }
 // ----- lås-skjerm / status-bar (best-effort: Media Session + tittel) -----
-function routineMedia(on){
+// Felles eier av document.title + MediaSession: bare den aktive (mediaOwner) skriver.
+var mediaOwner = null;
+function mediaActivate(owner, docTitle, metaTitle, artist, handlers){
   try {
-    if (on && RT.running){
-      var it = RT.items[RT.idx] || {};
-      var rem = it.min > 0 ? fmtClock(RT.left) + ' igjen' : 'pågår';
-      document.title = (it.min > 0 ? fmtClock(RT.left) + ' · ' : '') + (it.text || 'Rutine');
-      if ('mediaSession' in navigator){
-        if (!_routineKeepalive){
-          // stille lyd-loop holder media-session aktiv så lås-skjermen viser timeren
-          _routineKeepalive = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=');
-          _routineKeepalive.loop = true; _routineKeepalive.volume = 0;
-          _routineKeepalive.play().catch(function(){});
-        }
-        try {
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: (it.text || 'Rutine') + (it.min > 0 ? ' — ' + rem : ''),
-            artist: RT.header || 'Rutine',
-            album: 'Oslo Psykologkontor'
-          });
-          navigator.mediaSession.setActionHandler('nexttrack', function(){ routineSkip(); });
-          navigator.mediaSession.setActionHandler('pause', function(){ routinePauseToggle(); });
-          navigator.mediaSession.setActionHandler('play', function(){ routinePauseToggle(); });
-        } catch(e){}
+    mediaOwner = owner;
+    if (_routineOrigTitle == null) _routineOrigTitle = 'Klientportalen — Oslo Psykologkontor';
+    document.title = docTitle;
+    if ('mediaSession' in navigator){
+      if (!_routineKeepalive){
+        _routineKeepalive = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=');
+        _routineKeepalive.loop = true; _routineKeepalive.volume = 0;
+        _routineKeepalive.play().catch(function(){});
       }
-    } else {
-      if (_routineOrigTitle == null) _routineOrigTitle = 'Klientportalen — Oslo Psykologkontor';
-      document.title = _routineOrigTitle;
-      if (_routineKeepalive){ try { _routineKeepalive.pause(); } catch(e){} _routineKeepalive = null; }
-      if ('mediaSession' in navigator){ try { navigator.mediaSession.metadata = null; } catch(e){} }
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: metaTitle || docTitle, artist: artist || 'Oslo Psykologkontor', album: 'Oslo Psykologkontor' });
+        navigator.mediaSession.setActionHandler('nexttrack', (handlers && handlers.next) || null);
+        navigator.mediaSession.setActionHandler('pause', (handlers && handlers.pause) || null);
+        navigator.mediaSession.setActionHandler('play', (handlers && handlers.play) || null);
+      } catch(e){}
     }
   } catch(e){}
+}
+function mediaDeactivate(owner){
+  try {
+    if (mediaOwner && owner && mediaOwner !== owner) return; // en annen timer eier den fortsatt
+    mediaOwner = null;
+    document.title = _routineOrigTitle || 'Klientportalen — Oslo Psykologkontor';
+    if (_routineKeepalive){ try { _routineKeepalive.pause(); } catch(e){} _routineKeepalive = null; }
+    if ('mediaSession' in navigator){ try { navigator.mediaSession.metadata = null; } catch(e){} }
+  } catch(e){}
+}
+function routineMedia(on){
+  if (on && RT.running){
+    var it = RT.items[RT.idx] || {};
+    var rem = it.min > 0 ? fmtClock(RT.left) + ' igjen' : 'pågår';
+    mediaActivate('rt',
+      (it.min > 0 ? fmtClock(RT.left) + ' · ' : '') + (it.text || 'Rutine'),
+      (it.text || 'Rutine') + (it.min > 0 ? ' — ' + rem : ''),
+      RT.header || 'Rutine',
+      { next:function(){ routineSkip(); }, pause:function(){ routinePauseToggle(); }, play:function(){ routinePauseToggle(); } });
+  } else {
+    mediaDeactivate('rt');
+  }
 }
 var FT = { total:25*60, left:25*60, running:false, mode:'fokus', iv:null };
 function renderTimerTool(body, moduleId, tool){
