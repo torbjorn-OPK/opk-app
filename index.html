@@ -746,7 +746,7 @@ body.calm .hero-card{background:var(--sage-dark)}
 .list-row.done .check-box{background:var(--sage);border-color:var(--sage)}
 .list-row.done .check-box svg{opacity:1;transform:scale(1);stroke:var(--cream-0)}
 .list-row .txt{transition:color .3s var(--ease)}
-.list-row .ops button{display:flex;align-items:center;justify-content:center;width:28px;height:28px}
+.list-row .ops button{display:flex;align-items:center;justify-content:center;width:34px;height:34px}
 .list-row .ops button svg{width:13px;height:13px}
 
 /* kanban */
@@ -950,7 +950,12 @@ body.dark .gami-q{background:rgba(168,180,154,.18);color:var(--sage-pale)}
 .gami-enso .ge-track{stroke:var(--border);fill:none}
 .gami-enso .ge-arc{stroke:var(--sage);fill:none;stroke-linecap:round;transition:stroke-dashoffset .5s var(--ease)}
 .gami-enso i{position:absolute;font-size:10px;font-weight:700;font-style:normal;color:var(--sage-dark);font-variant-numeric:tabular-nums}
-.gami-go{flex-shrink:0;font-size:var(--text-2xs);font-weight:600;color:var(--sage);white-space:nowrap}
+.gami-go{flex-shrink:0;font-size:var(--text-2xs);font-weight:600;color:var(--sage);white-space:nowrap;margin-right:var(--space-4)}
+.gami-hide{position:absolute;top:var(--space-2);right:var(--space-2);width:24px;height:24px;border:none;background:none;color:var(--ink-faint);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;border-radius:var(--r-full);opacity:.55;transition:opacity .2s var(--ease),background .2s var(--ease)}
+.gami-hide svg{width:13px;height:13px}
+.gami-hide:hover{opacity:1;background:var(--sage-mist)}
+.gami-collapsed{margin-bottom:var(--space-4)}
+.gami-collapsed .dp-textbtn{color:var(--sage-dark)}
 .gami-pulse{display:inline-block;animation:gpBreath .52s var(--ease)}
 body.dark .gami-header{background:linear-gradient(135deg,rgba(168,180,154,.16),rgba(255,255,255,.03));border-color:rgba(168,180,154,.22)}
 body.dark .gami-points b,body.dark .gami-enso i{color:var(--sage-pale)}
@@ -3159,9 +3164,9 @@ function renderListItems(moduleId, tool, data){
       (tool.checkable ? '<div class="check-box" onclick="listToggle(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + ic('tick') + '</div>' : '<span style="color:var(--ink-faint);font-size:var(--text-sm);width:20px;text-align:center;font-weight:600">' + (i+1) + '</span>') +
       '<span class="txt">' + escapeHtml(item.text) + '</span>' +
       '<div class="ops">' +
-      '<button title="Flytt opp" onclick="listMove(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ',-1)">' + ic('arrowup') + '</button>' +
-      '<button title="Flytt ned" onclick="listMove(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ',1)">' + ic('arrowdn') + '</button>' +
-      '<button title="Slett" onclick="listDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + ic('x') + '</button></div></div>';
+      '<button title="Flytt opp" aria-label="Flytt opp" onclick="listMove(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ',-1)">' + ic('arrowup') + '</button>' +
+      '<button title="Flytt ned" aria-label="Flytt ned" onclick="listMove(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ',1)">' + ic('arrowdn') + '</button>' +
+      '<button title="Slett" aria-label="Slett" onclick="listDelete(\'' + moduleId + '\',\'' + tool.id + '\',' + i + ')">' + ic('x') + '</button></div></div>';
   }).join('');
   if (tool.checkable && data.items.length > 1 && data.items.every(function(x){ return x.done; })){
     html += '<div class="t-done-msg">' + ic('tick') + ' Hele lista er fullført.</div>';
@@ -3463,7 +3468,7 @@ function renderPlannerDay(moduleId, tool, data){
     html += '<div class="' + cls + '" data-id="' + b.id + '" style="top:' + ((f - top0) * PX) + 'px;height:' + Math.max(34, (t - f) * PX - 4) + 'px;margin-left:' + (lane * 26) + 'px;animation-delay:' + (bi * 45) + 'ms">' +
       '<button class="pl-tick" title="Marker utført" aria-label="Marker utført" onclick="dpToggleDone(\'' + b.id + '\')">' + ic('tick') + '</button>' +
       '<b>' + escapeHtml(b.text) + '</b><span class="tm">' + b.from + '–' + (b.to || '') + '</span>' +
-      '<button class="del" title="Fjern" onclick="plDelete(\'' + moduleId + '\',\'' + tool.id + '\',\'' + b.id + '\')">' + ic('x') + '</button></div>';
+      '<button class="del" title="Fjern" aria-label="Fjern blokk" onclick="plDelete(\'' + moduleId + '\',\'' + tool.id + '\',\'' + b.id + '\')">' + ic('x') + '</button></div>';
   });
   // nå-linje
   if (nowM >= top0 && nowM <= endH * 60){
@@ -4018,7 +4023,7 @@ var GP_COPY = {
   oppstart: 'Vi begynner helt rolig. Drivet ditt vokser litt etter litt — det viktige er ikke i dag, men over tid.',
   sprang: 'Det var en innsatsrik dag — fint. Et lite råd fra oss: store hopp er vanskelige å holde over tid. Det som varer, bygges gjerne i små steg du nesten ikke merker. Du trenger ikke gjenta dagens nivå i morgen — la drivet vokse i sitt eget tempo.',
   jevn: 'Jevn kurs. Drivet ditt ligger stødig — akkurat slik gode rutiner får feste.',
-  fall: 'Drivet ditt har roet seg litt den siste tiden. Er det andre ting som opptar deg, eller noe som stresser eller belaster deg? Husk at gode rutiner er spesielt viktige nettopp når vi har mye krevende i livene våre.',
+  fall: 'Drivet ditt har roet seg litt den siste tiden — det er helt menneskelig. Er det andre ting som tar av deg om dagen, eller noe som stresser eller belaster deg? Du er ikke på feil spor; du tilpasser deg. Og nettopp når livet er krevende, kan én liten rutine være en snill ting å gi seg selv.',
   reentry: 'Velkommen tilbake. Vi tar opp tråden akkurat der du er — ingen stress.',
   sparse: 'Drivet ditt starter her — det vokser sakte når du bruker det som hjelper.'
 };
@@ -4189,8 +4194,15 @@ function gamiHeaderInner(){
   return html;
 }
 function gamiHeaderHtml(){
-  return '<div id="gamiHeader" class="gami-header" role="button" tabindex="0" onclick="switchView(\'dashboard\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();switchView(\'dashboard\')}" aria-label="Se hele fremdriften din på Hjem">' + gamiHeaderInner() + '</div>';
+  if (loadDpState().gamiHidden){
+    return '<div class="gami-collapsed"><button class="dp-textbtn" onclick="dpToggleGami()">' + ic('spark') + 'Vis fremdrift</button></div>';
+  }
+  return '<div id="gamiHeader" class="gami-header" role="button" tabindex="0" onclick="switchView(\'dashboard\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();switchView(\'dashboard\')}" aria-label="Se hele fremdriften din på Hjem">' +
+    gamiHeaderInner() +
+    '<button class="gami-hide" onclick="event.stopPropagation();dpToggleGami()" onkeydown="event.stopPropagation()" aria-label="Skjul fremdriftskortet" title="Skjul">' + ic('x') + '</button>' +
+    '</div>';
 }
+function dpToggleGami(){ var st = loadDpState(); st.gamiHidden = !st.gamiHidden; saveDpState(st); renderToolLauncher('adhd'); }
 
 // ---------- EMOSJONSKORT (log) ----------
 var EMO_ICONS = { 'Glad':'😊','Rolig':'😌','Trist':'😢','Sint':'😠','Redd':'😨','Frustrert':'😤','Overveldet':'🥴','Skuffet':'😞','Ensom':'🫥','Stolt':'🌱','Sliten':'🥱','Nøytral':'😐' };
@@ -4313,9 +4325,9 @@ function routinePaintEdit(){
       '<span class="rt-num">' + (i+1) + '</span>' +
       '<input type="text" class="rt-task" value="' + escapeHtml(it.text) + '" placeholder="Oppgave" oninput="routineEditTask(' + i + ',\'text\',this.value)">' +
       '<div class="rt-min"><input type="number" min="0" inputmode="numeric" value="' + (it.min || '') + '" placeholder="0" oninput="routineEditTask(' + i + ',\'min\',this.value)"><span>min</span></div>' +
-      '<div class="rt-ops"><button title="Flytt opp" onclick="routineMove(' + i + ',-1)">' + ic('arrowup') + '</button>' +
-      '<button title="Flytt ned" onclick="routineMove(' + i + ',1)">' + ic('arrowdn') + '</button>' +
-      '<button title="Slett" onclick="routineDel(' + i + ')">' + ic('x') + '</button></div></div>';
+      '<div class="rt-ops"><button title="Flytt opp" aria-label="Flytt opp" onclick="routineMove(' + i + ',-1)">' + ic('arrowup') + '</button>' +
+      '<button title="Flytt ned" aria-label="Flytt ned" onclick="routineMove(' + i + ',1)">' + ic('arrowdn') + '</button>' +
+      '<button title="Slett" aria-label="Slett" onclick="routineDel(' + i + ')">' + ic('x') + '</button></div></div>';
   });
   html += '</div>';
   html += '<div class="add-row"><input type="text" id="rtNew" placeholder="Ny oppgave (f.eks. Tannpuss)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();routineAdd()}">' +
