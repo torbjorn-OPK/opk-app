@@ -1938,39 +1938,34 @@ function renderDashboard(){
   }
 
   var html = '';
-  // «I dag»-flate øverst for forbruker-modulene (ikke søvn — den har eget rikt dashbord)
-  if (!sleep && TODAY_TOOLS[primaryMod]){
-    html += '<div id="todayHost">' + renderTodayCard(primaryMod) + '</div>';
-  }
-  // «Dagen» — den visuelle dagsplanen lever på Hjem (ADHD-modulen)
-  if (!sleep && hasModule('adhd')){
-    html += '<div id="dpHost">' + renderDayplanCard() + '</div>';
-  }
-  // «Grokvelden» — dagspoeng + treg trend (alle forbruker-moduler, ikke søvn)
-  if (!sleep && primaryMod){
-    html += '<div id="gpHost">' + renderGrokvelden(primaryMod) + '</div>';
-  }
-  // hero-rad
-  html += '<div class="hero-row">';
-  html += '<div class="hero-card"><div class="deco"></div>';
-  html += '<div class="eyebrow" style="color:var(--sage-pale)">Ditt program</div>';
-  html += '<h2>' + escapeHtml(u.program) + '</h2><div class="sub">Du er i gang med uke ' + u.week + ' av ' + u.totalWeeks + ' — ett steg av gangen.</div>';
-  html += '<div class="hero-flex">';
-  html += '<div class="ring-wrap"><svg width="104" height="104" viewBox="0 0 104 104"><circle class="ring-bg" cx="52" cy="52" r="44" fill="none" stroke-width="9"/><circle class="ring-fg" cx="52" cy="52" r="44" fill="none" stroke-width="9" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct/100)).toFixed(1) + '"/></svg><div class="ring-center"><b>' + pct + '%</b><span>Uke ' + u.week + '/' + u.totalWeeks + '</span></div></div>';
-  html += '<div class="hero-meta">';
+  // Forbruker-moduler: handling først. ADHD leder med Dagen («Neste opp → Start»),
+  // så den varme innsjekken, så Driv. (Den informative hero-en flyttes lenger ned.)
+  var todayHtml = (!sleep && TODAY_TOOLS[primaryMod]) ? '<div id="todayHost">' + renderTodayCard(primaryMod) + '</div>' : '';
+  var dagenHtml = (!sleep && hasModule('adhd')) ? '<div id="dpHost">' + renderDayplanCard() + '</div>' : '';
+  var drivHtml  = (!sleep && primaryMod) ? '<div id="gpHost">' + renderGrokvelden(primaryMod) + '</div>' : '';
+  html += dagenHtml + todayHtml + drivHtml;
+
+  // hero-rad (bygges som variabel så den kan plasseres ulikt: høyt for søvn, lavere for forbruker-moduler)
+  var heroHtml = '<div class="hero-row"><div class="hero-card"><div class="deco"></div>' +
+    '<div class="eyebrow" style="color:var(--sage-pale)">Ditt program</div>' +
+    '<h2>' + escapeHtml(u.program) + '</h2><div class="sub">Du er i gang med uke ' + u.week + ' av ' + u.totalWeeks + ' — ett steg av gangen.</div>' +
+    '<div class="hero-flex">' +
+    '<div class="ring-wrap"><svg width="104" height="104" viewBox="0 0 104 104"><circle class="ring-bg" cx="52" cy="52" r="44" fill="none" stroke-width="9"/><circle class="ring-fg" cx="52" cy="52" r="44" fill="none" stroke-width="9" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct/100)).toFixed(1) + '"/></svg><div class="ring-center"><b>' + pct + '%</b><span>Uke ' + u.week + '/' + u.totalWeeks + '</span></div></div>' +
+    '<div class="hero-meta">';
   if (sleep){
-    html += '<div class="row"><b>' + streak + ' dager</b>&nbsp;med dagbok på rad</div>';
-    html += '<div class="row">Søvneffektivitet&nbsp;<b>' + avgSe + '%</b>&nbsp;(' + (avgSe >= prevSe ? '+' : '') + (avgSe - prevSe) + ' siden forrige uke)</div>';
+    heroHtml += '<div class="row"><b>' + streak + ' dager</b>&nbsp;med dagbok på rad</div>';
+    heroHtml += '<div class="row">Søvneffektivitet&nbsp;<b>' + avgSe + '%</b>&nbsp;(' + (avgSe >= prevSe ? '+' : '') + (avgSe - prevSe) + ' siden forrige uke)</div>';
     var eduNow = EDU[u.week - 1];
-    html += '<div class="row">Neste: <b>Modul ' + u.week + (eduNow ? ' — ' + eduNow.t : '') + '</b></div>';
+    heroHtml += '<div class="row">Neste: <b>Modul ' + u.week + (eduNow ? ' — ' + eduNow.t : '') + '</b></div>';
   } else {
-    html += '<div class="row"><b>Verktøyene her er dine.</b>&nbsp;Bruk det som hjelper.</div>';
-    html += '<div class="row">Struktur, tid og følelser — ett steg av gangen</div>';
-    html += '<div class="row">Ta det i ditt eget tempo</div>';
+    heroHtml += '<div class="row"><b>Verktøyene her er dine.</b>&nbsp;Bruk det som hjelper.</div>';
+    heroHtml += '<div class="row">Struktur, tid og følelser — ett steg av gangen</div>';
+    heroHtml += '<div class="row">Ta det i ditt eget tempo</div>';
   }
-  html += '</div></div></div>';
+  heroHtml += '</div></div></div>';
 
   if (sleep){
+    html += heroHtml;   // søvn-modulen leder med hero-dashbordet
     // søvnvindu (med subtil natt-dekor)
     html += '<div class="card window-card">' + nightDeco() + '<div class="eyebrow">Ditt søvnvindu denne uken</div>';
     html += renderSleepClock(u.sleepWindow.bed, u.sleepWindow.rise);
@@ -2008,6 +2003,9 @@ function renderDashboard(){
     var lead = sleep ? '' : '<p style="font-size:var(--text-base);color:var(--ink-faint);margin:-2px 0 var(--space-4);max-width:46ch">Velg et verktøy for å komme i gang. Du kan alltid hoppe mellom dem.</p>';
     html += '<div style="margin-top:var(--space-4)"><div class="eyebrow" style="margin-bottom:' + (sleep ? '14px' : '10px') + '">Mine verktøy</div>' + lead + '<div class="module-grid">' + shortcuts + '</div></div>';
   }
+
+  // Forbruker-moduler: hero («Ditt program») demotert hit, under de handlingsrettede kortene
+  if (!sleep) html += heroHtml;
 
   // flere moduler (roadmap) — appen vokser gradvis; det som ikke er klart er merket «Ikke bygget»
   var future = FUTURE_MODULES.filter(function(m){ return !hasModule(m.id); });
