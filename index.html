@@ -39,6 +39,7 @@
   --bg:var(--cream-100); --bg-warm:var(--cream-200); --card:var(--cream-0); --border:var(--cream-300);
   --ink:var(--ink-900); --ink-soft:var(--ink-600); --ink-faint:var(--ink-400);
   --accent:var(--clay-500); --accent-soft:#F6EADC;        /* ADHD   */
+  --accent-text:var(--clay-700);   /* clay som LITEN TEKST: mørk nok for WCAG AA (clay-500 er for lys) */
   --blue:#5E7290;  --blue-soft:#E9EDF3;           /* Søvn   */
   --teal:#5F8575;  --teal-soft:#E4EDE8;           /* Autisme*/
   --good:#4A7C59; --warn:#A8742F; --bad:#B05A4A;
@@ -411,6 +412,10 @@ body.dark .tool-back .tb-ico{background:rgba(168,180,154,.18)}
 .tool-toolbar{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;margin-top:var(--space-6);padding-top:var(--space-4);border-top:1px solid var(--border)}
 .save-hint{font-size:var(--text-sm);color:var(--good);font-weight:600;opacity:0;transition:opacity .4s var(--ease);display:inline-flex;align-items:center;gap:var(--space-1)}
 .save-hint.show{opacity:1;animation:savePop .5s var(--ease)}
+.save-hint.warn{color:var(--clay-700)}
+.se-save{font-size:var(--text-sm);color:var(--ink-soft);max-width:280px}
+.se-save.warn{color:var(--bad);font-weight:600}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @keyframes savePop{0%{opacity:0;transform:translateY(5px) scale(.95)}60%{transform:translateY(0) scale(1.05)}100%{opacity:1;transform:none}}
 
 /* ---------- dagbok / skjema ---------- */
@@ -776,7 +781,7 @@ body.calm .hero-card{background:var(--sage-dark)}
 .pl-blk.now{animation:blockIn .45s var(--ease) both,softPulse 2.6s ease-in-out infinite}
 .pl-nowline{position:absolute;left:-6px;right:0;height:2px;background:var(--accent);border-radius:2px;z-index:3}
 .pl-nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:var(--r-full);background:var(--accent)}
-.pl-nowline .lbl{position:absolute;right:0;top:-19px;font-size:var(--text-2xs);font-weight:700;color:var(--accent);letter-spacing:.06em}
+.pl-nowline .lbl{position:absolute;right:0;top:-19px;font-size:var(--text-2xs);font-weight:700;color:var(--accent-text);letter-spacing:.06em}
 .pl-empty{text-align:center;padding:var(--space-7) var(--space-2) var(--space-2)}
 .pl-empty p{font-size:var(--text-sm);color:var(--ink-faint);margin-bottom:var(--space-4)}
 .pl-sugg{display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:center}
@@ -832,13 +837,13 @@ body.dark .dp-next{background:rgba(168,180,154,.14)}
 .dp-row-task{font-size:var(--text-base);color:var(--ink);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dp-row.done .dp-row-task{text-decoration:line-through;color:var(--ink-faint)}
 .dp-row-sub{font-size:var(--text-2xs);color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.dp-row-sub .dp-bell-on{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-weight:600;vertical-align:middle}
+.dp-row-sub .dp-bell-on{display:inline-flex;align-items:center;gap:3px;color:var(--accent-text);font-weight:600;vertical-align:middle}
 .dp-row-sub .dp-bell-on svg{width:11px;height:11px}
 .dp-row-acts{display:flex;gap:6px;flex-shrink:0}
 .dp-iconbtn{width:32px;height:32px;border-radius:var(--r-full);border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);padding:0;cursor:pointer;transition:all .25s var(--ease)}
 .dp-iconbtn svg{width:15px;height:15px}
 .dp-iconbtn:hover{border-color:var(--sage-light);color:var(--sage-dark);background:var(--sage-mist)}
-.dp-iconbtn.on{color:var(--accent);border-color:var(--accent)}
+.dp-iconbtn.on{color:var(--accent-text);border-color:var(--accent-text)}
 .dp-iconbtn.dp-go{background:var(--sage);border-color:var(--sage);color:var(--cream-0)}
 .dp-iconbtn.dp-go svg{width:13px;height:13px}
 .dp-iconbtn.dp-go:hover{background:var(--sage-dark);color:var(--cream-0)}
@@ -904,7 +909,7 @@ body.dp-has-topbar{padding-top:calc(54px + env(safe-area-inset-top,0))}
 .gp-score{position:relative;text-align:right;flex-shrink:0;line-height:1.1}
 .gp-score b{font-family:'DM Serif Display',serif;font-size:var(--text-2xl);color:var(--ink);display:block;font-variant-numeric:tabular-nums}
 .gp-score span{font-size:var(--text-2xs);color:var(--ink-faint);letter-spacing:.02em}
-.gp-glimt{position:absolute;right:0;top:-14px;font-size:var(--text-sm);font-weight:700;color:var(--accent);animation:gpGlimt 2.4s var(--ease) forwards;pointer-events:none;white-space:nowrap}
+.gp-glimt{position:absolute;right:0;top:-14px;font-size:var(--text-sm);font-weight:700;color:var(--accent-text);animation:gpGlimt 2.4s var(--ease) forwards;pointer-events:none;white-space:nowrap}
 .gp-glimt i{font-style:normal;font-weight:600;font-size:var(--text-2xs);opacity:.85;margin-left:3px}
 @keyframes gpGlimt{0%{opacity:0;transform:translateY(6px)}18%{opacity:1;transform:translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
 .gp-driv-float{position:fixed;top:calc(20px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:120;background:var(--sage);color:var(--cream-0);font-size:var(--text-sm);font-weight:700;padding:7px 16px;border-radius:var(--r-pill);box-shadow:0 10px 26px -8px rgba(60,74,51,.55);pointer-events:none;animation:gpDrivFloat 1.7s var(--ease) forwards}
@@ -1180,7 +1185,7 @@ body.calm .adhd-bubbles{display:none}
 body.dark{
   --bg:#16180F; --bg-warm:#20231A; --card:#23261C; --border:rgba(255,255,255,.12);
   --ink:#ECE9E1; --ink-soft:#BBB6AB; --ink-faint:#938E82;
-  --sage-mist:rgba(168,180,154,.18); --sage-pale:#9FAE8C; --good:#82B891; --accent:#D8A77B;
+  --sage-mist:rgba(168,180,154,.18); --sage-pale:#9FAE8C; --good:#82B891; --accent:#D8A77B; --accent-text:var(--clay-300);
   --shadow:0 12px 40px -18px rgba(0,0,0,.55); --shadow-lift:0 20px 52px -18px rgba(0,0,0,.65);
   background:radial-gradient(125% 110% at 52% 6%, #23271C 0%, #191C12 46%, #111308 100%) !important;
 }
@@ -1554,7 +1559,7 @@ function greeting(){
 }
 
 // ---------- API-LAG (GAS-backend med demo-fallback) ----------
-function apiCall(action, data){
+function apiCall(action, data, opts){
   if (state.demoMode) return Promise.resolve(getDemoData(action, data));
   return fetch(CONFIG.portalUrl, {
     method: 'POST',
@@ -1563,6 +1568,8 @@ function apiCall(action, data){
   })
   .then(function(r){ return r.json(); })
   .catch(function(err){
+    // Skriveoperasjoner: ikke maskér feil med demodata — la den boble opp så vi aldri later som det er lagret
+    if (opts && opts.noFallback) throw err;
     console.warn('Backend utilgjengelig, bruker demodata for: ' + action);
     return getDemoData(action, data);
   });
@@ -2229,14 +2236,27 @@ function saveSleepEntry(e){
     daytimeFunction: segVal('daytimeSeg') || 3
   };
   var entry = normalizeEntry(backendEntry);
-  state.sleepData = state.sleepData.filter(function(x){ return x.date !== entry.date; }).concat([entry]);
-  apiCall('saveSleepEntry', { entry: backendEntry });
   document.getElementById('entryResult').innerHTML =
     '<div class="result-banner">' + seRing(se, 88) +
     '<div class="metrics"><div class="m"><b>' + fmtMin(tib) + '</b><span>Tid i sengen</span></div>' +
     '<div class="m"><b>' + fmtMin(tst) + '</b><span>Total søvntid</span></div>' +
     '<div class="m"><b>' + se + '%</b><span>Søvneffektivitet</span></div></div>' +
-    '<div style="font-size:var(--text-sm);color:var(--ink-soft);max-width:280px">Lagret ✓ — fine tall å ta med videre. Husk: enkeltnetter betyr lite, mønsteret over uker er det som teller.</div></div>';
+    '<div class="se-save" id="seSaveMsg" role="status" aria-live="polite">Lagrer …</div></div>';
+  // Bekreft først NÅR det faktisk er lagret — aldri «Lagret ✓» på en feilet skriving
+  apiCall('saveSleepEntry', { entry: backendEntry }, { noFallback: true })
+    .then(function(resp){
+      if (state.demoMode || (resp && resp.success !== false)){
+        state.sleepData = state.sleepData.filter(function(x){ return x.date !== entry.date; }).concat([entry]);
+        var m = document.getElementById('seSaveMsg');
+        if (m){ m.className = 'se-save ok'; m.textContent = 'Lagret ✓ — fine tall å ta med videre. Husk: enkeltnetter betyr lite, mønsteret over uker er det som teller.'; }
+      } else { seSaveFailed(); }
+    })
+    .catch(function(){ seSaveFailed(); });
+}
+function seSaveFailed(){
+  var m = document.getElementById('seSaveMsg'); if (!m) return;
+  m.className = 'se-save warn';
+  m.textContent = 'Kunne ikke lagre akkurat nå. Tallene står fortsatt i skjemaet — sjekk nettforbindelsen og trykk «Lagre» på nytt.';
 }
 function diaryInsightHtml(){
   var data = state.sleepData.slice(-14);
@@ -2452,15 +2472,20 @@ function loadTool(toolId){
   catch(e){ return null; }
 }
 function persistTool(toolId, data){
-  try { localStorage.setItem(toolKey(toolId), JSON.stringify(data)); } catch(e){}
-  flashSaved();
+  var ok = true;
+  try { localStorage.setItem(toolKey(toolId), JSON.stringify(data)); }
+  catch(e){ ok = false; }   // typisk QuotaExceededError — ikke later som det er lagret
+  flashSaved(ok);
+  return ok;
 }
 function clearToolStore(toolId){ try { localStorage.removeItem(toolKey(toolId)); } catch(e){} }
-function flashSaved(){
+function flashSaved(ok){
   var el = document.getElementById('saveHint');
   if (!el) return;
+  if (ok === false){ el.textContent = 'Lagringen er nesten full'; el.classList.add('warn'); }
+  else { el.textContent = 'Lagret ✓'; el.classList.remove('warn'); }
   el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 1600);
+  setTimeout(function(){ el.classList.remove('show'); }, ok === false ? 3400 : 1600);
 }
 
 var TOOL_ACCENTS = { adhd:'acc-accent', autism:'acc-teal', utbrenthet:'acc-sage' };
@@ -3164,7 +3189,17 @@ function listSaveHeader(moduleId, toolId){
 // Rask, visuell dopamin-hit i øyeblikket (ikke streaks/score — jf. calm-tech).
 // Roser aldri personen («flink») — kun nøytral kvittering + partikkel-burst.
 // Av i Ro-modus / reduced-motion (da kun en kort, stille kvittering).
+// Skjult live-region: annonserer fullføringer/poeng/hak til skjermlesere (uavhengig av Ro-modus)
+function announce(msg){
+  try {
+    var el = document.getElementById('srLive');
+    if (!el){ el = document.createElement('div'); el.id = 'srLive'; el.className = 'sr-only'; el.setAttribute('aria-live', 'polite'); el.setAttribute('aria-atomic', 'true'); document.body.appendChild(el); }
+    el.textContent = '';
+    setTimeout(function(){ el.textContent = msg; }, 40);   // tøm-så-sett, så gjentakelser også leses opp
+  } catch(e){}
+}
 function celebrate(anchor, label){
+  announce(label || 'Fullført');
   var reduced = document.body.classList.contains('calm') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   var cx = window.innerWidth / 2, cy = window.innerHeight * 0.40;
   try { if (anchor && anchor.getBoundingClientRect){ var r = anchor.getBoundingClientRect(); if (r.width){ cx = r.left + r.width/2; cy = r.top + Math.min(r.height/2, 150); } } } catch(e){}
@@ -3652,6 +3687,7 @@ function dpSetDone(id, val){
   dpRepaint();
   if (DP.timer && DP.timer.blockId === id && val) dpStopTopbar();
   var isAll = task.length > 0 && task.every(function(b){ return b.done; });
+  if (!(isAll && !wasAll)) announce(data.blocks[idx].text + (val ? ' merket som utført' : ' ikke utført'));
   if (val && data.blocks[idx].cat !== 'pause') gpAward('dagsplan', 'dp:' + id, 2, (isAll && !wasAll));
   if (isAll && !wasAll) celebrate(document.getElementById('dpHost') || document.body, 'Dagen er gjort');
 }
@@ -3998,7 +4034,7 @@ function gpAward(category, eventKey, basePoints, silent){
   var gained = day.sum - before;
   gpRefreshHome();
   // «+N driv»-belønning ved hver opptjening — ved telleren hvis synlig, ellers flytende midt-øverst (også inne i verktøy)
-  if (gained > 0) gpGlimt(gained);
+  if (gained > 0){ gpGlimt(gained); announce('Pluss ' + gained + ' driv'); }
 }
 function gpDir(t){ var f = t.acute - t.trend; return f > 0.6 ? 'stiger rolig' : (f < -0.6 ? 'roer seg' : 'ligger stødig'); }
 function gpGuidance(t, dpToday){
@@ -4013,9 +4049,10 @@ function gpSparkline(t){
   var hist = t.hist || [], W = 280, H = 42, pad = 4;
   var nodeMat = Math.max(0, Math.min(1, t.trend / GP_MAL));
   var nodeR = 3 + 5 * nodeMat, glow = t.trend >= GP_MAL;
+  var lbl = (hist.length >= 3) ? ('Driv-trend, ' + gpDir(t)) : 'Driv-trend bygges opp';
   if (hist.length < 3){
     // tom/sparsom: ett knopp-frø på en rolig grunnlinje
-    return '<svg class="gp-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+    return '<svg class="gp-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="' + lbl + '">' +
       '<line x1="0" y1="' + (H - pad) + '" x2="' + W + '" y2="' + (H - pad) + '" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="2 5"/>' +
       '<circle class="gp-node' + (glow ? ' mature' : '') + '" cx="' + (W * 0.5) + '" cy="' + (H - pad) + '" r="' + (3 + 3 * nodeMat) + '"/></svg>';
   }
@@ -4029,7 +4066,7 @@ function gpSparkline(t){
   var line = pts.map(function(p, i){ return (i ? 'L' : 'M') + p[0] + ' ' + p[1]; }).join(' ');
   var area = 'M' + pts[0][0] + ' ' + (H - pad) + ' ' + pts.map(function(p){ return 'L' + p[0] + ' ' + p[1]; }).join(' ') + ' L' + pts[n-1][0] + ' ' + (H - pad) + ' Z';
   var last = pts[n-1];
-  return '<svg class="gp-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+  return '<svg class="gp-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="' + lbl + '">' +
     '<defs><linearGradient id="gpFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--sage)" stop-opacity="0.16"/><stop offset="100%" stop-color="var(--sage)" stop-opacity="0"/></linearGradient></defs>' +
     '<path d="' + area + '" fill="url(#gpFill)" stroke="none"/>' +
     '<path d="' + line + '" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
