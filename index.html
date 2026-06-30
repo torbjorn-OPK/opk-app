@@ -3878,13 +3878,45 @@ function dpSnoozeTomorrow(id){
 }
 function dpDismiss(id){ DP.fired[id] = true; dpCloseModal(); }
 function dpRequestNotif(){
-  if (typeof Notification === 'undefined'){ alert('Denne nettleseren støtter ikke varsler. Påminnelsene fungerer fortsatt med pling så lenge appen er åpen.'); return; }
-  if (Notification.permission === 'granted'){ dpRepaint(); return; }
+  if (typeof Notification === 'undefined'){ dpNotifInfo('unsupported'); return; }
+  if (Notification.permission === 'granted'){ dpNotifInfo('granted'); return; }
+  if (Notification.permission === 'denied'){ dpNotifInfo('denied'); return; }
   try {
     Notification.requestPermission().then(function(p){
-      var st = loadDpState(); st.notifReady = (p === 'granted'); saveDpState(st); dpRepaint();
+      var st = loadDpState(); st.notifReady = (p === 'granted'); saveDpState(st);
+      dpRepaint();
+      if (p === 'granted') dpNotifInfo('granted');
+      else if (p === 'denied') dpNotifInfo('denied');
     }).catch(function(){});
   } catch(e){}
+}
+// Ærlig oppsett/forventning til varsler (iOS-installasjon, avslått, og hva som faktisk virker)
+function dpNotifInfo(kind){
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+  var standalone = dpIsStandalone();
+  var title, body;
+  if (kind === 'unsupported'){
+    title = 'Varsler krever hjem-skjerm';
+    body = ios
+      ? 'På iPhone må appen legges til på hjem-skjermen før den kan gi varsler: trykk Del-knappen og velg «Legg til på Hjem-skjerm». Så lenge appen er åpen, får du uansett et lite pling.'
+      : 'Denne nettleseren kan dessverre ikke gi systemvarsler her. Så lenge appen er åpen — også i bakgrunnen — får du uansett et lite pling ved påminnelser.';
+  } else if (kind === 'denied'){
+    title = 'Varsler er slått av';
+    body = 'Varsler er blokkert for appen. Du kan slå dem på igjen i innstillingene for nettleseren eller telefonen. Påminnelsene virker uansett med et pling så lenge appen er åpen.';
+  } else {
+    title = 'Varsler er på';
+    body = standalone
+      ? 'Fint — du får et pling og et varsel når en oppgave starter. Husk at en app ikke kan varsle deg når den er helt lukket.'
+      : 'Fint — du får et pling når en oppgave starter. Tips: legg appen på hjem-skjermen, så kommer varslene også på låst skjerm.';
+  }
+  var el = dpModalEl();
+  el.innerHTML = '<div class="dp-modal" role="dialog" aria-modal="true" aria-label="' + escapeHtml(title) + '"><div class="dp-modal-ico">' + ic('bell') + '</div>' +
+    '<h3 class="serif">' + escapeHtml(title) + '</h3><p>' + escapeHtml(body) + '</p>' +
+    '<div class="dp-modal-btns">' +
+      (kind === 'granted' && !standalone ? '<button class="btn" onclick="dpInstallHint()">Legg på hjem-skjerm</button><button class="dp-dismiss" onclick="dpCloseModal()">Lukk</button>' : '<button class="btn" onclick="dpCloseModal()">Skjønner</button>') +
+    '</div></div>';
+  el.style.display = 'flex';
+  try { var f = el.querySelector('.btn'); if (f) f.focus(); } catch(e){}
 }
 function dpOsNotify(b){
   try {
